@@ -1,10 +1,22 @@
-# 💍 Jewellery E-Commerce – Buy Page
+Perfect 👍
+Here’s an **updated, clean, professional `README.md`** that:
 
-A modern, visually appealing **Buy Jewellery page** built using **Next.js App Router** and **Tailwind CSS**, following a strict and clean project structure.
+* Includes your **live website URL**
+* Explicitly states **“Before commit, run `npm run build`”**
+* Respects **all your project rules**
+* Fits a real-world **production-grade repo**
 
-This page is accessible at:
+You can **copy-paste this directly as `README.md`**.
 
-👉 **http://localhost:3000/buy**
+---
+
+```md
+# 💍 Jewellery E-Commerce Website
+
+A modern, scalable **Jewellery E-Commerce web application** built with **Next.js App Router**, **Tailwind CSS**, and **shadcn/ui**, following a strict and clean project architecture.
+
+🌐 **Live Website**  
+👉 https://jewellery-ecommerce-iota.vercel.app/
 
 ---
 
@@ -12,17 +24,17 @@ This page is accessible at:
 
 - **Next.js (App Router)**
 - **React**
-- **Tailwind CSS**
-- **shadcn/ui** (official components only, inside `src/components/ui`)
+- **Tailwind CSS** (configured in `globals.css`)
+- **shadcn/ui** (official components only)
 - **JavaScript (ES6+)**
 
 ---
 
-## 📁 Project Rules Followed
+## 📁 Project Structure Rules
 
-This project strictly follows the following constraints:
+This project follows **strict structural constraints** for maintainability and scalability.
 
-### ❌ Not Touched
+### ❌ Do NOT Touch
 - `.next`
 - `.yarn`
 - `node_modules`
@@ -30,24 +42,114 @@ This project strictly follows the following constraints:
 - `lib` folder
 
 ### ✅ Allowed & Used
-- `src/app/buy/page.js` → page entry point
-- `src/components/` → reusable components only
-- `src/components/ui/` → official shadcn/ui components
-- `public/` → static assets like images
+- `src/app/` → routing & pages
+- `src/app/buy/page.js` → Buy page
+- `src/components/` → reusable components only  
+  - `src/components/ui/` → official shadcn/ui components
+- `public/` → static assets (images, icons, etc.)
 
 No configuration files were modified.
 
 ---
 
-## 📄 Buy Page Overview
+## 🛒 Buy Page
 
-The **Buy Page** is designed for selling jewellery and includes:
+📍 **Route:** `/buy`  
+📍 **URL:** `http://localhost:3000/buy`
 
-- Clean, luxury-inspired UI
+The Buy Page is designed specifically for **selling jewellery** and includes:
+
+- Elegant, premium UI
 - Responsive layout
-- Dummy JSON data defined inside the same file
-- Reusable component-friendly structure
-- Tailwind-based styling (no extra CSS files)
+- Dummy JSON data defined **inside the same file**
+- Tailwind-only styling (no extra CSS)
+- App Router–compatible default export
 
-The page is implemented as a **single file**:
+📄 File location:
+```
+
+src/app/buy/page.js
+
+````
+
+---
+
+## 🧩 Implementation Notes
+
+- The page is implemented as a **single file**
+- Dummy JSON data is declared at the **top of the file**
+- Designed to easily plug into APIs later
+- Reusable components can be extracted into `src/components/` when needed
+
+---
+
+## ▶️ Running the Project Locally
+
+1. Install dependencies:
+   ```bash
+   npm install
+````
+
+2. Start development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open in browser:
+
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## ✅ Mandatory Before Commit
+
+⚠️ **IMPORTANT**
+
+Before committing any code, you **must** run:
+
+```bash
+npm run build
+```
+
+This ensures:
+
+* No App Router errors
+* No invalid exports
+* Production-ready build passes successfully
+
+Commits without a successful build are not allowed.
+
+---
+
+## 🎨 Design Philosophy
+
+* Luxury jewellery brand aesthetics
+* Minimal & clean UI
+* Conversion-focused layout
+* Scalable component architecture
+
+---
+
+## 🔮 Future Enhancements
+
+* Backend integration (products & pricing)
+* Filters (Gold / Diamond / Price range)
+* Seller onboarding & valuation
+* Checkout & payment gateway
+* Admin dashboard
+
+---
+
+## 📌 Notes
+
+* Static assets belong in `/public`
+* No external image config required
+* Fully compatible with Vercel deployment
+
+---
+
+
 
