@@ -1,14 +1,3 @@
-Perfect 👍
-Here’s an **updated, clean, professional `README.md`** that:
-
-* Includes your **live website URL**
-* Explicitly states **“Before commit, run `npm run build`”**
-* Respects **all your project rules**
-* Fits a real-world **production-grade repo**
-
-You can **copy-paste this directly as `README.md`**.
-
----
 
 ```md
 # 💍 Jewellery E-Commerce Website
@@ -26,7 +15,7 @@ A modern, scalable **Jewellery E-Commerce web application** built with **Next.js
 - **React**
 - **Tailwind CSS** (configured in `globals.css`)
 - **shadcn/ui** (official components only)
-- **JavaScript (ES6+)**
+- **Yarn** (package manager)
 
 ---
 
@@ -55,7 +44,7 @@ No configuration files were modified.
 ## 🛒 Buy Page
 
 📍 **Route:** `/buy`  
-📍 **URL:** `http://localhost:3000/buy`
+📍 **Local URL:** `http://localhost:3000/buy`
 
 The Buy Page is designed specifically for **selling jewellery** and includes:
 
@@ -76,10 +65,10 @@ src/app/buy/page.js
 
 ## 🧩 Implementation Notes
 
-- The page is implemented as a **single file**
-- Dummy JSON data is declared at the **top of the file**
-- Designed to easily plug into APIs later
-- Reusable components can be extracted into `src/components/` when needed
+- Implemented as a **single file**
+- Dummy JSON data declared at the **top of the file**
+- Ready for API integration
+- Reusable components live in `src/components/`
 
 ---
 
@@ -87,13 +76,13 @@ src/app/buy/page.js
 
 1. Install dependencies:
    ```bash
-   npm install
+   yarn
 ````
 
 2. Start development server:
 
    ```bash
-   npm run dev
+   yarn dev
    ```
 
 3. Open in browser:
@@ -111,32 +100,32 @@ src/app/buy/page.js
 Before committing any code, you **must** run:
 
 ```bash
-npm run build
+yarn build
 ```
 
 This ensures:
 
-* No App Router errors
+* App Router compatibility
 * No invalid exports
-* Production-ready build passes successfully
+* Successful production build
 
-Commits without a successful build are not allowed.
+Commits without a successful build are **not allowed**.
 
 ---
 
 ## 🎨 Design Philosophy
 
 * Luxury jewellery brand aesthetics
-* Minimal & clean UI
+* Minimal and elegant UI
 * Conversion-focused layout
-* Scalable component architecture
+* Scalable architecture
 
 ---
 
 ## 🔮 Future Enhancements
 
-* Backend integration (products & pricing)
-* Filters (Gold / Diamond / Price range)
+* Backend & database integration
+* Product filters (Gold / Diamond / Price range)
 * Seller onboarding & valuation
 * Checkout & payment gateway
 * Admin dashboard
@@ -146,10 +135,7 @@ Commits without a successful build are not allowed.
 ## 📌 Notes
 
 * Static assets belong in `/public`
-* No external image config required
+* No external image configuration required
 * Fully compatible with Vercel deployment
 
 ---
-
-
-
