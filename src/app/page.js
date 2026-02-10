@@ -17,141 +17,132 @@ import { Separator } from "@/components/ui/separator";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <div className="bg-black text-white overflow-x-hidden">
 
       {/* ================= NAVBAR ================= */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b">
+      <header className="fixed top-0 z-50 w-full bg-black/70 backdrop-blur border-b border-yellow-500/20">
         <div className="container mx-auto flex items-center justify-between py-4">
-          <h1 className="text-2xl font-bold tracking-tight">
-            💎 JewelleryMart
+          <h1 className="text-2xl font-extrabold tracking-widest text-yellow-500">
+            JEWELLERY<span className="text-white">MART</span>
           </h1>
 
-          <nav className="hidden md:flex gap-6 text-sm font-medium">
+          <nav className="hidden md:flex gap-8 text-sm tracking-wider">
             {["Home", "Collections", "About", "Contact"].map((item) => (
               <a
                 key={item}
                 href="#"
-                className="hover:text-primary transition"
+                className="hover:text-yellow-500 transition"
               >
                 {item}
               </a>
             ))}
           </nav>
 
-          <Button>
+          <Button className="bg-yellow-500 text-black hover:bg-yellow-400">
             <ShoppingBag className="mr-2 h-4 w-4" />
             Shop Now
           </Button>
         </div>
       </header>
 
-      {/* ================= HERO ================= */}
-      <section className="relative bg-gradient-to-br from-black via-neutral-900 to-black text-white">
-        <div className="container mx-auto py-28 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Badge className="mb-4">Luxury • Trust • Craftsmanship</Badge>
+      {/* ================= VIDEO HERO ================= */}
+      <section className="relative h-screen flex items-center justify-center">
+        {/* Background Video */}
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-50"
+        >
+          <source src="/videos/jewellery.mp4" type="video/mp4" />
+        </video>
 
-            <h2 className="text-5xl md:text-7xl font-extrabold leading-tight">
-              Timeless <span className="text-primary">Jewellery</span>
-            </h2>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/70" />
 
-            <p className="mt-6 text-gray-300 max-w-2xl mx-auto">
-              Buy, sell & explore premium gold, diamond and custom jewellery —
-              crafted for elegance and legacy.
-            </p>
+        {/* Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 60 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="relative z-10 text-center max-w-4xl px-6"
+        >
+          <Badge className="mb-6 bg-yellow-500 text-black">
+            Luxury • Gold • Legacy
+          </Badge>
 
-            <div className="mt-10 flex justify-center gap-4">
-              <Button size="lg">
-                Explore Collection <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button size="lg" variant="outline">
-                Sell Jewellery
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+          <h2 className="text-6xl md:text-8xl font-extrabold leading-tight">
+            Crafted in <span className="text-yellow-500">Gold</span>
+            <br /> Designed for Eternity
+          </h2>
 
-      {/* ================= FEATURES ================= */}
-      <section className="container mx-auto py-20 grid md:grid-cols-4 gap-6">
-        <Feature icon={<Gem />} title="Certified Jewellery" desc="Guaranteed purity & authenticity" />
-        <Feature icon={<ShieldCheck />} title="Secure Payments" desc="End-to-end encrypted checkout" />
-        <Feature icon={<Truck />} title="Fast Delivery" desc="Insured doorstep shipping" />
-        <Feature icon={<Star />} title="Premium Craft" desc="Designed by master artisans" />
-      </section>
+          <p className="mt-8 text-gray-300 text-lg">
+            Discover premium gold & diamond jewellery — designed to define
+            elegance, power, and timeless beauty.
+          </p>
 
-      <Separator />
-
-      {/* ================= COLLECTIONS ================= */}
-      <section className="py-20 bg-muted">
-        <div className="container mx-auto">
-          <h3 className="text-4xl font-bold text-center mb-14">
-            Signature Collections
-          </h3>
-
-          <div className="grid md:grid-cols-3 gap-10">
-            <CollectionCard
-              title="Gold Collection"
-              image="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed"
-            />
-            <CollectionCard
-              title="Diamond Collection"
-              image="https://images.unsplash.com/photo-1605100804763-247f67b3557e"
-            />
-            <CollectionCard
-              title="Wedding Specials"
-              image="https://images.unsplash.com/photo-1585386959984-a41552231693"
-            />
+          <div className="mt-12 flex justify-center gap-6">
+            <Button size="lg" className="bg-yellow-500 text-black hover:bg-yellow-400">
+              Explore Collection <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500">
+              Sell Jewellery
+            </Button>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* ================= TESTIMONIALS ================= */}
-      <section className="container mx-auto py-20">
-        <h3 className="text-4xl font-bold text-center mb-12">
-          Loved by Customers
+      {/* ================= TRUST METRICS ================= */}
+      <section className="container mx-auto py-24 grid md:grid-cols-4 gap-8">
+        <Feature icon={<Gem />} title="Certified Gold" desc="100% purity & hallmark assurance" />
+        <Feature icon={<ShieldCheck />} title="Secure Payments" desc="Bank-grade encrypted checkout" />
+        <Feature icon={<Truck />} title="Insured Delivery" desc="Fast & protected shipping" />
+        <Feature icon={<Star />} title="Elite Craftsmanship" desc="Designed by master artisans" />
+      </section>
+
+      <Separator className="bg-yellow-500/20" />
+
+      {/* ================= COLLECTION SHOWCASE ================= */}
+      <section className="py-24">
+        <h3 className="text-center text-5xl font-extrabold mb-16">
+          Signature <span className="text-yellow-500">Collections</span>
         </h3>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          <Testimonial
-            name="Ananya Sharma"
-            text="Absolutely stunning jewellery. The quality exceeded my expectations!"
-          />
-          <Testimonial
-            name="Rahul Mehta"
-            text="Secure, fast delivery and beautiful craftsmanship. Highly recommended."
-          />
-          <Testimonial
-            name="Neha Kapoor"
-            text="Perfect wedding collection. I felt confident and elegant."
-          />
+        <div className="container mx-auto grid md:grid-cols-3 gap-12">
+          <CollectionCard title="Gold Royal" image="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed" />
+          <CollectionCard title="Diamond Luxe" image="https://images.unsplash.com/photo-1605100804763-247f67b3557e" />
+          <CollectionCard title="Wedding Heirloom" image="https://images.unsplash.com/photo-1585386959984-a41552231693" />
         </div>
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="bg-black text-white py-20 text-center">
-        <h3 className="text-4xl font-bold">
-          Begin Your Jewellery Story
-        </h3>
-        <p className="mt-4 text-gray-400">
-          Join thousands who trust JewelleryMart for elegance & value.
+      <section className="bg-gradient-to-br from-black via-neutral-900 to-black py-24 text-center">
+        <motion.h3
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="text-5xl font-extrabold"
+        >
+          Your Legacy Begins Here
+        </motion.h3>
+
+        <p className="mt-6 text-gray-400 max-w-xl mx-auto">
+          Join thousands who trust JewelleryMart for elegance, value & authenticity.
         </p>
-        <Button size="lg" className="mt-8">
+
+        <Button size="lg" className="mt-10 bg-yellow-500 text-black hover:bg-yellow-400">
           Get Started
         </Button>
       </section>
 
       {/* ================= FOOTER ================= */}
-      <footer className="bg-neutral-950 text-gray-400 py-10">
-        <div className="container mx-auto grid md:grid-cols-3 gap-8">
+      <footer className="bg-black border-t border-yellow-500/20 py-12">
+        <div className="container mx-auto grid md:grid-cols-3 gap-8 text-gray-400">
           <div>
-            <h4 className="text-white font-bold mb-2">JewelleryMart</h4>
+            <h4 className="text-yellow-500 font-bold mb-2">JewelleryMart</h4>
             <p className="text-sm">
-              A premium jewellery marketplace built on trust & luxury.
+              Premium jewellery marketplace built on trust & luxury.
             </p>
           </div>
 
@@ -171,7 +162,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <p className="text-center text-xs mt-8">
+        <p className="text-center text-xs mt-8 text-gray-600">
           © {new Date().getFullYear()} JewelleryMart. All rights reserved.
         </p>
       </footer>
@@ -179,21 +170,18 @@ export default function HomePage() {
   );
 }
 
-/* ================= COMPONENTS ================= */
+/* ================= REUSABLE COMPONENTS ================= */
 
 function Feature({ icon, title, desc }) {
   return (
-    <motion.div
-      whileHover={{ y: -6 }}
-      transition={{ type: "spring", stiffness: 200 }}
-    >
-      <Card className="text-center">
-        <CardContent className="pt-6">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+    <motion.div whileHover={{ y: -10 }} transition={{ type: "spring", stiffness: 200 }}>
+      <Card className="bg-neutral-900 border-yellow-500/20 text-center">
+        <CardContent className="pt-8">
+          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-yellow-500/10 text-yellow-500">
             {icon}
           </div>
-          <h4 className="font-semibold">{title}</h4>
-          <p className="text-sm text-muted-foreground mt-2">{desc}</p>
+          <h4 className="font-semibold text-lg">{title}</h4>
+          <p className="text-sm text-gray-400 mt-3">{desc}</p>
         </CardContent>
       </Card>
     </motion.div>
@@ -202,30 +190,19 @@ function Feature({ icon, title, desc }) {
 
 function CollectionCard({ title, image }) {
   return (
-    <motion.div whileHover={{ scale: 1.05 }}>
-      <Card className="overflow-hidden cursor-pointer">
+    <motion.div whileHover={{ scale: 1.08 }}>
+      <Card className="bg-neutral-900 overflow-hidden border-yellow-500/20 cursor-pointer">
         <div
-          className="h-64 bg-cover bg-center"
+          className="h-72 bg-cover bg-center"
           style={{ backgroundImage: `url(${image})` }}
         />
-        <CardContent className="p-6">
-          <h4 className="text-xl font-semibold">{title}</h4>
-          <Button variant="outline" className="mt-4 w-full">
+        <CardContent className="p-6 text-center">
+          <h4 className="text-2xl font-semibold">{title}</h4>
+          <Button className="mt-6 bg-yellow-500 text-black hover:bg-yellow-400 w-full">
             View Collection
           </Button>
         </CardContent>
       </Card>
     </motion.div>
-  );
-}
-
-function Testimonial({ name, text }) {
-  return (
-    <Card>
-      <CardContent className="p-6">
-        <p className="italic text-muted-foreground">“{text}”</p>
-        <p className="mt-4 font-semibold">{name}</p>
-      </CardContent>
-    </Card>
   );
 }
