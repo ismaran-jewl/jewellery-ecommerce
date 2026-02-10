@@ -7,7 +7,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-white border-b border-neutral-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <h1 className="tracking-[0.3em] text-sm font-semibold text-neutral-900">
-          ISMARAN
+          ISMARN
         </h1>
 
         <nav className="hidden md:flex gap-8 text-sm text-neutral-700">

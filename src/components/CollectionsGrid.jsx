@@ -10,7 +10,7 @@ const collections = [
 
 export default function CollectionsGrid() {
   return (
-    <section className="py-24 bg-[#EFEDEA]">
+    <section className="py-24 bg-[#F8C8DC]">
       <div className="max-w-7xl mx-auto px-6">
         <h3 className="text-3xl md:text-4xl font-serif text-center mb-16 underline underline-offset-[12px] decoration-[#C59D5F]/30">
           Curated Collections
