@@ -1,87 +1,143 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
+const slides = [
+  { type: "video", src: "/videos/hero.mp4" },
+  { type: "video", src: "/videos/pero.mp4" },
+  { type: "video", src: "/videos/3.mp4" },
+  { type: "image", src: "/images/hero.jpg" },
+];
+
+// Premium Bezier Curve for Luxury feel
+const transitionSettings = {
+  duration: 1.5,
+  ease: [0.76, 0, 0.24, 1], 
 };
 
 export default function HeroSection() {
+  const [[current, direction], setCurrent] = useState([0, 0]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      paginate(1);
+    }, 6000); // Slightly longer for a luxury feel
+    return () => clearInterval(interval);
+  }, [current]);
+
+  const paginate = (newDirection) => {
+    let nextIndex = current + newDirection;
+    if (nextIndex < 0) nextIndex = slides.length - 1;
+    if (nextIndex >= slides.length) nextIndex = 0;
+    setCurrent([nextIndex, newDirection]);
+  };
+
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? "100%" : "-100%",
+      scale: 1.1, // Slight zoom-in effect on entry
+      opacity: 0,
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      scale: 1,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? "50%" : "-50%", // Parallax effect: moves slower than the incoming slide
+      opacity: 0,
+      transition: { ...transitionSettings, opacity: { duration: 0.6 } }
+    }),
+  };
+
   return (
-    <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
-      {/* Video background (unchanged) */}
+    <section className="relative h-[0.1vh] md:h-[55vh] flex items-center justify-center overflow-hidden bg-black">
+      
+      {/* SLIDER BACKGROUND */}
       <div className="absolute inset-0 z-0">
-        <video
-          className="w-full h-full object-cover"
-          src="/videos/hero.mp4"
-          autoPlay
-          muted
-          loop
-          playsInline
-          poster="https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?auto=format&fit=crop&q=80&w=1600"
-        />
-        {/* Layered luxury overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/60" />
-        <div className="absolute inset-0 backdrop-blur-[1px]" />
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
+          <motion.div
+            key={current}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={transitionSettings}
+            className="absolute inset-0 w-full h-full"
+          >
+            {slides[current].type === "video" ? (
+              <video
+                className="w-full h-full object-cover"
+                src={slides[current].src}
+                autoPlay
+                muted
+                loop
+                playsInline
+              />
+            ) : (
+              <img
+                src={slides[current].src}
+                alt="Luxury Jewellery"
+                className="w-full h-full object-cover"
+              />
+            )}
+        </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Decorative accents */}
-      <div className="pointer-events-none absolute inset-0 z-[1]">
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[70%] h-px bg-gradient-to-r from-transparent via-[#C59D5F]/70 to-transparent" />
-        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 w-[40%] h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
-      </div>
-
-      {/* Content */}
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeIn}
-        className="relative z-10 text-center px-6"
+      {/* NAVIGATION CONTROLS */}
+      <button
+        onClick={() => paginate(-1)}
+        className="absolute left-6 z-30 p-3 rounded-full border border-white/20 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all duration-500"
       >
-        <span className="inline-block mb-6 text-white/80 uppercase tracking-[0.45em] text-[11px] md:text-sm font-medium relative">
+        <ChevronLeft size={20} />
+      </button>
+
+      <button
+        onClick={() => paginate(1)}
+        className="absolute right-6 z-30 p-3 rounded-full border border-white/20 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all duration-500"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* CONTENT (Wrapped in motion for a subtle fade-in) */}
+      <motion.div 
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ delay: 0.5, duration: 0.8 }}
+  className="relative z-20 text-center px-6 text-white"
+>
+        <span className="inline-block mb-4 uppercase tracking-[0.4em] text-[10px] md:text-xs text-white/70">
           Exquisite Craftsmanship
-          <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-px bg-[#C59D5F]" />
         </span>
 
-        <h1 className="text-5xl md:text-7xl font-serif text-white mb-6 italic leading-tight drop-shadow-lg">
-          Memory Moulded In Jewel
+        <h1 className="text-4xl md:text-6xl font-serif italic mb-6 drop-shadow-2xl">
+          Memories Moulded In Jewel
         </h1>
 
-        <p className="text-white/90 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light italic leading-relaxed">
-          “Discover fine jewellery crafted for weddings, milestones, and everyday elegance.”
+        <p className="text-sm md:text-base max-w-xl mx-auto text-white/80 italic mb-8 font-light">
+          Discover fine jewellery crafted for weddings, milestones, and everyday elegance.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mt-4">
-          {/* Primary CTA – Luxury capsule button */}
-          <button
-            className="group relative px-14 py-6 rounded-full border border-[#C59D5F]/60 text-white text-[11px] tracking-[0.35em] uppercase overflow-hidden transition-all duration-500 hover:border-[#C59D5F]"
-          >
-            <span className="relative z-10 flex items-center gap-3">
-              Shop Now
-              <span className="inline-block w-6 h-px bg-[#C59D5F] transition-all duration-500 group-hover:w-10" />
-            </span>
-            <span className="absolute inset-0 bg-gradient-to-r from-[#C59D5F]/10 via-[#C59D5F]/30 to-[#C59D5F]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="flex gap-8 justify-center items-center">
+          <button className="px-10 py-3.5 rounded-full border border-[#C59D5F] text-[10px] tracking-[0.3em] uppercase hover:bg-[#C59D5F] hover:text-white transition-all duration-500">
+            Shop Now
           </button>
 
-          {/* Secondary CTA – Minimal underline link */}
-          <button
-            className="group relative text-white/90 text-[11px] tracking-[0.4em] uppercase pb-2"
-          >
+          <button className="text-[10px] tracking-[0.4em] uppercase relative group">
             Our Story
-            <span className="absolute left-0 -bottom-0.5 h-px w-0 bg-white transition-all duration-500 group-hover:w-full" />
+            <span className="absolute left-0 -bottom-1 h-px w-0 bg-[#C59D5F] transition-all duration-500 group-hover:w-full" />
           </button>
         </div>
       </motion.div>
 
-      {/* Bottom fade into page */}
-      <div className="absolute bottom-0 left-0 w-full h-28 bg-gradient-to-t from-[#FAF9F6] to-transparent z-10" />
+      {/* Bottom fade */}
+      
     </section>
   );
 }
