@@ -1,22 +1,19 @@
 import "./globals.css";
-import { Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export const metadata = {
-  title: "Jewellery Store",
-  description: "Luxury Jewellery E-Commerce",
+  title: "LuxeJewels",
+  description: "Premium Jewellery Collection",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="bg-[#FAF9F6] text-[#2D2D2D]">
+        <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -2,8 +2,7 @@
 
 import { useState, useRef } from "react";
 import { motion, AnimatePresence, useMouseMoveCosmos } from "framer-motion";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import { Button } from "@/components/ui/button";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -78,7 +77,7 @@ export default function CartPage() {
         ))}
       </div>
 
-      <Navbar />
+     
 
       <section className="relative z-10 max-w-6xl mx-auto px-6 py-20">
         <header className="text-center mb-16">
@@ -233,7 +232,7 @@ export default function CartPage() {
         </div>
       </section>
 
-      <Footer />
+      
     </main>
   );
 }

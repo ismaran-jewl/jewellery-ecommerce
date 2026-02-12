@@ -2,8 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import Navbar from "@/app/layout/Navbar";
+import Footer from "@/app/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { ShoppingBag, ArrowLeft } from "lucide-react";
 

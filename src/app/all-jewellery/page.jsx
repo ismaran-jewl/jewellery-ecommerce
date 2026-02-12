@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import { Button } from "@/components/ui/button";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
@@ -48,7 +47,6 @@ const products = [
 export default function AllJewelleryPage() {
   return (
     <main className="bg-[#0a0a0a] text-[#C59D5F] min-h-screen">
-      <Navbar />
 
       {/* Header */}
       <section className="py-20 text-center border-b border-[#C59D5F]/20">
@@ -104,7 +102,7 @@ export default function AllJewelleryPage() {
 </section>
 
 
-      <Footer />
+      
     </main>
   );
 }

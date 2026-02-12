@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+
 import { Button } from "@/components/ui/button";
 import { motion, useSpring, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import { CreditCard, MapPin, Wallet, Truck, Landmark, ShieldCheck } from "lucide-react";
@@ -63,7 +62,7 @@ export default function CheckoutPage() {
         ))}
       </div>
 
-      <Navbar />
+     
 
       <div className="fixed left-12 top-1/2 -translate-y-1/2 z-50 flex items-end gap-3 pointer-events-none hidden xl:flex">
         <Minion type="bob" isPrivacy={isPrivacyMode} mX={springX} mY={springY} method={paymentMethod} />
@@ -134,7 +133,7 @@ export default function CheckoutPage() {
           </aside>
         </div>
       </section>
-      <Footer />
+     
     </main>
   );
 }
