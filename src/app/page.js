@@ -8,6 +8,7 @@ import SeasonalOffers from "@/components/SeasonalOffers";
  import Navbar from "@/components/Navbar";
  import Footer from "@/components/Footer";
 import ShareYourStory from "@/components/ShareYourStory";
+import VoiceGiftSection from "@/components/VoiceGiftSection";
 export default function HomePage() {
   return (
     <main className="bg-[#FAF9F6] text-[#2D2D2D] selection:bg-[#C59D5F] selection:text-white">
@@ -16,6 +17,7 @@ export default function HomePage() {
       <SeasonalOffers />
       <FeaturedProducts />
       <CollectionsGrid />
+      <VoiceGiftSection />
       <ShareYourStory></ShareYourStory>
       <TrustStrip />
       <Footer />
