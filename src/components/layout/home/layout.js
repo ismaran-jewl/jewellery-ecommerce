@@ -1,5 +1,5 @@
-import Navbar from "@/components/layout/home/navbar";
-import Footer from "@/components/layout/home/footer";
+import Navbar from "@/components/layout/home/Navbar";
+import Footer from "@/components/layout/home/Footer";
 import "@/app/globals.css";
 
 export default function HomeLayout({ children }) {

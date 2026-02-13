@@ -1,18 +1,16 @@
 "use client";
 
-import HeroSection from "@/components/home/HeroSection";
-import TrustStrip from "@/components/home/TrustStrip";
-import FeaturedProducts from "@/components/home/FeaturedProducts";
-import CollectionsGrid from "@/components/home/CollectionsGrid";
-import SeasonalOffers from "@/components/home/SeasonalOffers";
-import Navbar from "@/components/layout/home/navbar";
-import Footer from "@/components/layout/home/footer";
-import ShareYourStory from "@/components/home/ShareYourStory";
-import VoiceGiftSection from "@/components/home/VoiceGiftSection";
+import HeroSection from "@/components/layout/home/HeroSection";
+import TrustStrip from "@/components/layout/home/TrustStrip";
+import FeaturedProducts from "@/components/layout/home/FeaturedProducts";
+import CollectionsGrid from "@/components/layout/home/CollectionsGrid";
+import SeasonalOffers from "@/components/layout/home/SeasonalOffers";
+
+import ShareYourStory from "@/components/layout/home/ShareYourStory";
+import VoiceGiftSection from "@/components/layout/home/VoiceGiftSection";
 export default function HomePage() {
   return (
     <main className="bg-[#FAF9F6] text-[#2D2D2D] selection:bg-[#C59D5F] selection:text-white">
-      <Navbar />
       <HeroSection />
       <SeasonalOffers />
       <FeaturedProducts />
@@ -20,7 +18,6 @@ export default function HomePage() {
       <VoiceGiftSection />
       <ShareYourStory></ShareYourStory>
       <TrustStrip />
-      <Footer />
     </main>
   );
 }
