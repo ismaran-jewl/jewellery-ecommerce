@@ -1,62 +1,202 @@
+"use client";
+
+import { useState } from "react";
 import { products } from "@/data/products";
 import { Button } from "@/components/ui/button";
-
-// Dummy cart data
-const cart = [
-	{ id: 1, qty: 1 },
-	{ id: 3, qty: 2 },
-];
-const cartItems = cart.map((item) => {
-	const product = products.find((p) => p.id === item.id);
-	return { ...product, qty: item.qty };
-});
-const total = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { useCart } from "@/hooks/useCart";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { ArrowLeft, CreditCard, MapPin, Phone, User, Mail, ShieldCheck, Truck } from "lucide-react";
+import Link from "next/link";
 
 export default function Page() {
-	return (
-		<main className="min-h-screen bg-[#fffaf6] py-10">
-			<div className="container mx-auto px-4 max-w-3xl">
-				<h1 className="text-3xl font-bold mb-6 text-[#2d1a10]">Checkout</h1>
-				<form className="grid grid-cols-1 md:grid-cols-2 gap-8">
-					<div className="space-y-4">
-						<div>
-							<label className="block mb-1 font-medium">Full Name</label>
-							<input className="w-full border rounded px-3 py-2" placeholder="Enter your name" required />
-						</div>
-						<div>
-							<label className="block mb-1 font-medium">Address</label>
-							<input className="w-full border rounded px-3 py-2" placeholder="Enter your address" required />
-						</div>
-						<div>
-							<label className="block mb-1 font-medium">City</label>
-							<input className="w-full border rounded px-3 py-2" placeholder="Enter your city" required />
-						</div>
-						<div>
-							<label className="block mb-1 font-medium">Pincode</label>
-							<input className="w-full border rounded px-3 py-2" placeholder="Enter pincode" required />
-						</div>
-						<div>
-							<label className="block mb-1 font-medium">Phone</label>
-							<input className="w-full border rounded px-3 py-2" placeholder="Enter phone number" required />
+	const { cart, isLoaded, clearCart } = useCart();
+	const router = useRouter();
+	const [isProcessing, setIsProcessing] = useState(false);
+
+	const cartItems = cart.map((item) => {
+		const product = products.find((p) => p.id === item.id);
+		return product ? { ...product, qty: item.qty } : null;
+	}).filter(Boolean);
+
+	const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+	const shipping = subtotal > 10000 ? 0 : 500;
+	const total = subtotal + shipping;
+
+	const handlePlaceOrder = (e) => {
+		e.preventDefault();
+		setIsProcessing(true);
+
+		// Simulate API call
+		setTimeout(() => {
+			setIsProcessing(false);
+			clearCart();
+			router.push("/order-confirmation");
+			toast.success("Order placed successfully!");
+		}, 1500);
+	};
+
+	if (!isLoaded) {
+		return <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] text-[#5c4632]">Loading checkout...</div>;
+	}
+
+	if (cartItems.length === 0) {
+		return (
+			<main className="min-h-screen bg-[#f8fafc] py-20">
+				<div className="container mx-auto px-4 text-center max-w-md">
+					<div className="mb-6 flex justify-center">
+						<div className="h-24 w-24 bg-[#fff0e5] rounded-full flex items-center justify-center">
+							<CreditCard className="h-10 w-10 text-[#5c4632]" />
 						</div>
 					</div>
-					<div className="bg-white rounded-xl border p-6 shadow-sm flex flex-col gap-4">
-						<h2 className="text-xl font-semibold mb-2">Order Summary</h2>
-						<ul className="divide-y">
-							{cartItems.map((item) => (
-								<li key={item.id} className="py-2 flex justify-between">
-									<span>{item.name} x {item.qty}</span>
-									<span>₹{(item.price * item.qty).toLocaleString()}</span>
-								</li>
-							))}
-						</ul>
-						<div className="flex justify-between font-bold text-lg mt-4">
-							<span>Total:</span>
-							<span>₹{total.toLocaleString()}</span>
+					<h1 className="text-3xl font-bold mb-4 text-[#2d1a10]">Your cart is empty</h1>
+					<p className="text-[#7c6a58] mb-8">Looks like you haven't added any items to your cart yet.</p>
+					<Button asChild className="w-full sm:w-auto">
+						<Link href="/shop">Start Shopping</Link>
+					</Button>
+				</div>
+			</main>
+		);
+	}
+
+	return (
+		<main className="min-h-screen bg-[#f8fafc] py-10">
+			<div className="container mx-auto px-4 max-w-6xl">
+				<div className="mb-8">
+					<Link href="/cart" className="text-[#7c6a58] hover:text-[#2d1a10] flex items-center gap-2 text-sm font-medium transition-colors">
+						<ArrowLeft className="w-4 h-4" /> Back to Cart
+					</Link>
+				</div>
+				
+				<h1 className="text-3xl font-serif font-bold mb-8 text-[#2d1a10]">Checkout</h1>
+				
+				<form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+					{/* Left Column: Shipping & Payment */}
+					<div className="lg:col-span-7 space-y-8">
+						{/* Shipping Details */}
+						<Card className="border-none shadow-md">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2 text-xl">
+									<MapPin className="w-5 h-5 text-[#C59D5F]" /> Shipping Details
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div className="space-y-2 md:col-span-2">
+									<label className="text-sm font-medium text-[#2d1a10]">Full Name</label>
+									<div className="relative">
+										<User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+										<input className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="John Doe" required />
+									</div>
+								</div>
+								<div className="space-y-2 md:col-span-2">
+									<label className="text-sm font-medium text-[#2d1a10]">Email Address</label>
+									<div className="relative">
+										<Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+										<input type="email" className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="john@example.com" required />
+									</div>
+								</div>
+								<div className="space-y-2 md:col-span-2">
+									<label className="text-sm font-medium text-[#2d1a10]">Phone Number</label>
+									<div className="relative">
+										<Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+										<input type="tel" className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="+91 98765 43210" required />
+									</div>
+								</div>
+								<div className="space-y-2 md:col-span-2">
+									<label className="text-sm font-medium text-[#2d1a10]">Address</label>
+									<textarea className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all min-h-[80px]" placeholder="123, Street Name, Area" required />
+								</div>
+								<div className="space-y-2">
+									<label className="text-sm font-medium text-[#2d1a10]">City</label>
+									<input className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="Mumbai" required />
+								</div>
+								<div className="space-y-2">
+									<label className="text-sm font-medium text-[#2d1a10]">Pincode</label>
+									<input className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="400001" required />
+								</div>
+							</CardContent>
+						</Card>
+
+						{/* Payment Method */}
+						<Card className="border-none shadow-md">
+							<CardHeader>
+								<CardTitle className="flex items-center gap-2 text-xl">
+									<CreditCard className="w-5 h-5 text-[#C59D5F]" /> Payment Method
+								</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<div className="space-y-3">
+									<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+										<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" defaultChecked />
+										<span className="ml-3 font-medium text-[#2d1a10]">Credit / Debit Card</span>
+									</label>
+									<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+										<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" />
+										<span className="ml-3 font-medium text-[#2d1a10]">UPI / Net Banking</span>
+									</label>
+									<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+										<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" />
+										<span className="ml-3 font-medium text-[#2d1a10]">Cash on Delivery</span>
+									</label>
+								</div>
+							</CardContent>
+						</Card>
+					</div>
+
+					{/* Right Column: Order Summary */}
+					<div className="lg:col-span-5">
+						<div className="sticky top-24 space-y-6">
+							<Card className="border-none shadow-md bg-white">
+								<CardHeader className="pb-4 border-b">
+									<CardTitle className="text-xl">Order Summary</CardTitle>
+									<CardDescription>{cartItems.length} items in your cart</CardDescription>
+								</CardHeader>
+								<CardContent className="pt-6">
+									<ul className="space-y-4 max-h-[300px] overflow-auto pr-2 custom-scrollbar">
+										{cartItems.map((item) => (
+											<li key={item.id} className="flex gap-4">
+												<div className="h-16 w-16 rounded-md border overflow-hidden flex-shrink-0">
+													<img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+												</div>
+												<div className="flex-1 min-w-0">
+													<h4 className="text-sm font-medium text-[#2d1a10] truncate">{item.name}</h4>
+													<p className="text-xs text-[#7c6a58] capitalize">{item.material} {item.type}</p>
+													<div className="flex justify-between items-center mt-1">
+														<span className="text-xs text-[#7c6a58]">Qty: {item.qty}</span>
+														<span className="text-sm font-medium text-[#5c4632]">₹{(item.price * item.qty).toLocaleString()}</span>
+													</div>
+												</div>
+											</li>
+										))}
+									</ul>
+									
+									<div className="mt-6 space-y-3 pt-6 border-t">
+										<div className="flex justify-between text-sm text-[#7c6a58]">
+											<span>Subtotal</span>
+											<span>₹{subtotal.toLocaleString()}</span>
+										</div>
+										<div className="flex justify-between text-sm text-[#7c6a58]">
+											<span>Shipping</span>
+											<span>{shipping === 0 ? <span className="text-green-600 font-medium">Free</span> : `₹${shipping}`}</span>
+										</div>
+										<div className="flex justify-between text-lg font-bold text-[#2d1a10] pt-2">
+											<span>Total</span>
+											<span>₹{total.toLocaleString()}</span>
+										</div>
+									</div>
+								</CardContent>
+								<CardFooter className="flex-col gap-4 bg-[#fffaf6] rounded-b-xl p-6">
+									<Button className="w-full h-12 text-lg bg-[#2d1a10] hover:bg-[#4a2c1d]" disabled={isProcessing} type="submit">
+										{isProcessing ? "Processing..." : `Pay ₹${total.toLocaleString()}`}
+									</Button>
+									<div className="flex items-center justify-center gap-4 text-xs text-[#7c6a58]">
+										<span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Secure Payment</span>
+										<span className="flex items-center gap-1"><Truck className="w-3 h-3" /> Fast Delivery</span>
+									</div>
+								</CardFooter>
+							</Card>
 						</div>
-						<Button className="w-full mt-4" variant="default" asChild>
-							<a href="/order-confirmation">Place Order</a>
-						</Button>
 					</div>
 				</form>
 			</div>

@@ -14,11 +14,16 @@ import {
 import { Search, ShoppingBag, Heart, User, X } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useCart } from "@/hooks/useCart";
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const { wishlist } = useWishlist();
+  const { cart } = useCart();
+  const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
 
   const handleSearch = (e) => {
     if (e.key === "Enter" && searchQuery.trim()) {
@@ -124,16 +129,26 @@ export default function Navbar() {
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10 relative">
                 <Link href="/wishlist" aria-label="Wishlist">
                   <Heart className="h-6 w-6 text-[#1B4D3E]" />
+                  {wishlist.length > 0 && (
+                    <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                      {wishlist.length}
+                    </span>
+                  )}
                 </Link>
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10 relative">
                 <Link href="/cart" aria-label="Cart">
                   <ShoppingBag className="h-6 w-6 text-[#1B4D3E]" />
+                  {cartCount > 0 && (
+                    <span className="absolute top-0 right-0 bg-[#1B4D3E] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center border border-white">
+                      {cartCount}
+                    </span>
+                  )}
                 </Link>
               </Button>
             </motion.div>

@@ -9,13 +9,17 @@ import { Separator } from "@/components/ui/separator";
 import { Heart, ShoppingCart, Truck, ShieldCheck, ArrowRight, Minus, Plus, Star } from "lucide-react";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 
 export default function Page({ params }) {
 	const resolvedParams = use(params);
 	const id = Number(resolvedParams?.id);
 	const product = products.find((p) => p.id === id);
 	const [quantity, setQuantity] = useState(1);
-	const [isWishlisted, setIsWishlisted] = useState(false);
+	const { addToCart: addToCartHook } = useCart();
+	const { isInWishlist, toggleWishlist } = useWishlist();
+	const isWishlisted = isInWishlist(id);
 
 	if (!product) {
 		return (
@@ -33,12 +37,7 @@ export default function Page({ params }) {
 		.slice(0, 4);
 
 	const addToCart = () => {
-		toast.success(`Added ${quantity} ${product.name} to cart`);
-	};
-
-	const toggleWishlist = () => {
-		setIsWishlisted(!isWishlisted);
-		toast.success(isWishlisted ? "Removed from wishlist" : "Added to wishlist");
+		addToCartHook(product, quantity);
 	};
 
 	return (
@@ -112,7 +111,7 @@ export default function Page({ params }) {
 							<Button className="flex-1 h-10" size="lg" onClick={addToCart}>
 								<ShoppingCart className="w-4 h-4 mr-2" /> Add to Cart
 							</Button>
-							<Button variant="outline" size="icon" className="h-10 w-10" onClick={toggleWishlist}>
+							<Button variant="outline" size="icon" className="h-10 w-10" onClick={() => toggleWishlist(product)}>
 								<Heart className={`w-5 h-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
 							</Button>
 						</div>
