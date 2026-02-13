@@ -5,15 +5,19 @@ import { products } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
+import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ArrowLeft, CreditCard, MapPin, Phone, User, Mail, ShieldCheck, Truck } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Page() {
 	const { cart, isLoaded, clearCart } = useCart();
+	const { addOrder } = useUser();
 	const router = useRouter();
 	const [isProcessing, setIsProcessing] = useState(false);
+	const [paymentMethod, setPaymentMethod] = useState("card");
 
 	const cartItems = cart.map((item) => {
 		const product = products.find((p) => p.id === item.id);
@@ -28,9 +32,18 @@ export default function Page() {
 		e.preventDefault();
 		setIsProcessing(true);
 
+		const order = {
+			id: `ORD-${Date.now()}`,
+			date: new Date().toLocaleDateString(),
+			items: cartItems,
+			total: total,
+			status: "Processing",
+		};
+
 		// Simulate API call
 		setTimeout(() => {
 			setIsProcessing(false);
+			addOrder(order);
 			clearCart();
 			router.push("/order-confirmation");
 			toast.success("Order placed successfully!");
@@ -100,7 +113,7 @@ export default function Page() {
 									<label className="text-sm font-medium text-[#2d1a10]">Phone Number</label>
 									<div className="relative">
 										<Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-										<input type="tel" className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="+91 98765 43210" required />
+										<input type="tel" className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="+91 98765 43210" required minLength={10} pattern="[0-9]{10,}" title="Please enter a valid 10-digit mobile number" />
 									</div>
 								</div>
 								<div className="space-y-2 md:col-span-2">
@@ -127,18 +140,38 @@ export default function Page() {
 							</CardHeader>
 							<CardContent>
 								<div className="space-y-3">
-									<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-										<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" defaultChecked />
-										<span className="ml-3 font-medium text-[#2d1a10]">Credit / Debit Card</span>
-									</label>
-									<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-										<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" />
-										<span className="ml-3 font-medium text-[#2d1a10]">UPI / Net Banking</span>
-									</label>
-									<label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-										<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" />
-										<span className="ml-3 font-medium text-[#2d1a10]">Cash on Delivery</span>
-									</label>
+									<div className={`border rounded-lg transition-colors ${paymentMethod === 'card' ? 'border-[#C59D5F] bg-[#fffaf6]' : 'border-gray-200'}`}>
+										<label className="flex items-center p-4 cursor-pointer">
+											<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} />
+											<span className="ml-3 font-medium text-[#2d1a10]">Credit / Debit Card</span>
+										</label>
+										{paymentMethod === 'card' && (
+											<div className="px-4 pb-4 space-y-3 animate-in slide-in-from-top-2">
+												<input type="text" placeholder="Card Number" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
+												<div className="grid grid-cols-2 gap-4">
+													<input type="text" placeholder="MM/YY" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
+													<input type="text" placeholder="CVV" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
+												</div>
+											</div>
+										)}
+									</div>
+									<div className={`border rounded-lg transition-colors ${paymentMethod === 'upi' ? 'border-[#C59D5F] bg-[#fffaf6]' : 'border-gray-200'}`}>
+										<label className="flex items-center p-4 cursor-pointer">
+											<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} />
+											<span className="ml-3 font-medium text-[#2d1a10]">UPI / Net Banking</span>
+										</label>
+										{paymentMethod === 'upi' && (
+											<div className="px-4 pb-4 animate-in slide-in-from-top-2">
+												<input type="text" placeholder="UPI ID (e.g. user@upi)" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
+											</div>
+										)}
+									</div>
+									<div className={`border rounded-lg transition-colors ${paymentMethod === 'cod' ? 'border-[#C59D5F] bg-[#fffaf6]' : 'border-gray-200'}`}>
+										<label className="flex items-center p-4 cursor-pointer">
+											<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
+											<span className="ml-3 font-medium text-[#2d1a10]">Cash on Delivery</span>
+										</label>
+									</div>
 								</div>
 							</CardContent>
 						</Card>
@@ -192,7 +225,12 @@ export default function Page() {
 									</Button>
 									<div className="flex items-center justify-center gap-4 text-xs text-[#7c6a58]">
 										<span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Secure Payment</span>
-										<span className="flex items-center gap-1"><Truck className="w-3 h-3" /> Fast Delivery</span>
+										<div className="flex items-center gap-1">
+											<motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}>
+												<Truck className="w-3 h-3" />
+											</motion.div>
+											Fast Delivery
+										</div>
 									</div>
 								</CardFooter>
 							</Card>
