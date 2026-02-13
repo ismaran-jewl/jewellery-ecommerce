@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Search, ShoppingBag, Heart, User, X } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -29,15 +30,19 @@ export default function Navbar() {
   return (
     <div className="flex flex-col w-full">
       {/* Top Promotional Banner */}
-      <div className="bg-[#D1F2EB] text-[#1B4D3E] text-sm py-2.5 text-center tracking-wide font-medium">
-        <p>✨ Spring Sale is Live! Flat 20% off on Diamond Jewellery. Use Code: SPARKLE20 ✨</p>
+      <div className="bg-[#D1F2EB] text-[#1B4D3E] text-sm py-2.5 text-center tracking-wide font-medium overflow-hidden">
+        <motion.div
+          animate={{ x: [0, 5, 0, -5, 0] }}
+          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}>
+          <p>✨ Spring Sale is Live! Flat 20% off on Diamond Jewellery. Use Code: SPARKLE20 ✨</p>
+        </motion.div>
       </div>
 
       <nav className="w-full border-b bg-[#FFDAB9]/95 sticky top-0 z-50 backdrop-blur transition-colors duration-300">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className={`text-3xl font-serif font-bold tracking-tight text-[#1B4D3E] hover:text-[#2d1a10] transition-colors ${isSearchOpen ? 'hidden md:block' : ''}`}>
-            LuxeJewels
+            ISMARN
           </Link>
 
           {/* Center Navigation */}
@@ -106,39 +111,44 @@ export default function Navbar() {
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>
-
-                <NavigationMenuItem>
-                  <NavigationMenuLink asChild>
-                    <Link href="/about" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium transition-colors hover:bg-white/20 hover:text-[#1B4D3E] focus:bg-white/20 focus:text-[#1B4D3E] text-[#1B4D3E]">
-                      About
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </div>
           )}
 
           {/* Right Actions */}
-          <div className={`flex items-center gap-2 ${isSearchOpen ? 'hidden' : ''}`}>
-            <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
-                <Search className="h-6 w-6 text-[#1B4D3E]" />
-            </Button>
-            <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
-              <Link href="/wishlist" aria-label="Wishlist">
-                <Heart className="h-6 w-6 text-[#1B4D3E]" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
-              <Link href="/cart" aria-label="Cart">
-                <ShoppingBag className="h-6 w-6 text-[#1B4D3E]" />
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
-              <Link href="/account" aria-label="Account">
-                <User className="h-6 w-6 text-[#1B4D3E]" />
-              </Link>
-            </Button>
+          <div className={`flex items-center gap-3 ${isSearchOpen ? 'hidden' : ''}`}>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+                  <Search className="h-6 w-6 text-[#1B4D3E]" />
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+                <Link href="/wishlist" aria-label="Wishlist">
+                  <Heart className="h-6 w-6 text-[#1B4D3E]" />
+                </Link>
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+                <Link href="/cart" aria-label="Cart">
+                  <ShoppingBag className="h-6 w-6 text-[#1B4D3E]" />
+                </Link>
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+                <Link href="/account" aria-label="Account">
+                  <User className="h-6 w-6 text-[#1B4D3E]" />
+                </Link>
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button variant="ghost" asChild className="text-base font-medium text-[#1B4D3E] hover:text-[#1B4D3E] hover:bg-white/20 px-4">
+                <Link href="/about">About</Link>
+              </Button>
+            </motion.div>
           </div>
         </div>
       </nav>

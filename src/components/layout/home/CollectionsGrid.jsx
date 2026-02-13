@@ -21,7 +21,7 @@ const collections = [
   { 
     name: "Royal Heritage", 
     desc: "Inspired by ancient craftsmanship", 
-    image: "https://images.unsplash.com/photo-1617033935328-82aa5819c674?auto=format&fit=crop&q=80&w=800",
+    image: "https://i.pinimg.com/736x/28/26/f3/2826f32d2e67a1baf351356d800fd049.jpg",
     size: "md:col-span-3 h-[500px]" 
   },
 ];
