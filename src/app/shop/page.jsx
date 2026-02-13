@@ -6,6 +6,9 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription }
 import { Button } from "@/components/ui/button";
 import ProductFilters from "@/components/product/ProductFilters";
 import { useFilters } from "@/features/filters/useFilters";
+import { Heart, ShoppingCart } from "lucide-react";
+import { toast } from "sonner";
+import Link from "next/link";
 
 export default function Page() {
 	const { availableFilters, clearAllFilters } = useFilters();
@@ -31,6 +34,16 @@ export default function Page() {
 		setLocalFilters({});
 		setSearchQuery("");
 		clearAllFilters();
+	};
+
+	const addToCart = (e, product) => {
+		e.preventDefault();
+		toast.success(`Added ${product.name} to cart`);
+	};
+
+	const toggleWishlist = (e, product) => {
+		e.preventDefault();
+		toast.success(`Added ${product.name} to wishlist`);
 	};
 
 	const filteredProducts = useMemo(() => {
@@ -101,7 +114,13 @@ export default function Page() {
 						) : (
 							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 								{filteredProducts.map((product) => (
-									<Card key={product.id} className="hover:shadow-lg transition-shadow">
+									<Card key={product.id} className="hover:shadow-lg transition-shadow relative group">
+										<button
+											className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 z-10"
+											onClick={(e) => toggleWishlist(e, product)}
+										>
+											<Heart className="w-5 h-5" />
+										</button>
 										<CardHeader>
 											<img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-lg mb-2 border" loading="lazy" />
 											<CardTitle>{product.name}</CardTitle>
@@ -110,9 +129,12 @@ export default function Page() {
 										<CardContent>
 											<div className="text-[#5c4632] font-medium mb-2">₹{product.price.toLocaleString()}</div>
 										</CardContent>
-										<CardFooter>
-											<Button className="w-full" variant="default" asChild>
-												<a href={`/product/${product.id}`}>View Details</a>
+										<CardFooter className="gap-2">
+											<Button className="flex-1" variant="default" asChild>
+												<Link href={`/product/${product.id}`}>View Details</Link>
+											</Button>
+											<Button variant="outline" size="icon" onClick={(e) => addToCart(e, product)}>
+												<ShoppingCart className="w-4 h-4" />
 											</Button>
 										</CardFooter>
 									</Card>

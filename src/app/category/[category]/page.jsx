@@ -2,8 +2,8 @@ import { products } from "@/data/products";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export default function Page({ params }) {
-	const { category } = params || {};
+export default async function Page({ params }) {
+	const { category } = await params;
 	const filtered = products.filter((p) => p.category === category);
 	return (
 		<main className="min-h-screen bg-[#f8fafc] py-10">
