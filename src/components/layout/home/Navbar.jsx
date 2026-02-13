@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
+  const { data: session, status } = useSession();
   const { wishlist } = useWishlist();
   const { cart } = useCart();
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
@@ -154,9 +156,21 @@ export default function Navbar() {
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
-                <Link href="/account" aria-label="Account">
-                  <User className="h-6 w-6 text-[#1B4D3E]" />
-                </Link>
+                {session ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => signOut()}
+                      className="flex items-center justify-center h-10 w-10"
+                      title="Logout"
+                    >
+                      <User className="h-6 w-6 text-[#1B4D3E]" />
+                    </button>
+                  </div>
+                ) : (
+                  <Link href="/login" aria-label="Login">
+                    <User className="h-6 w-6 text-[#1B4D3E]" />
+                  </Link>
+                )}
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

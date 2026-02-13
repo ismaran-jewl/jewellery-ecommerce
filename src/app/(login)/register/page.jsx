@@ -1,31 +1,82 @@
-import { Button } from "@/components/ui/button";
+"use client";
 
-export default function Page() {
-	return (
-		<main className="min-h-screen flex items-center justify-center bg-[#fffaf6]">
-			<div className="bg-white rounded-xl border p-8 shadow-md max-w-sm w-full">
-				<h1 className="text-2xl font-bold mb-6 text-[#2d1a10]">Register</h1>
-				<form className="space-y-4">
-					<div>
-						<label className="block mb-1 font-medium">Name</label>
-						<input className="w-full border rounded px-3 py-2" type="text" placeholder="Enter your name" required />
-					</div>
-					<div>
-						<label className="block mb-1 font-medium">Email</label>
-						<input className="w-full border rounded px-3 py-2" type="email" placeholder="Enter your email" required />
-					</div>
-					<div>
-						<label className="block mb-1 font-medium">Password</label>
-						<input className="w-full border rounded px-3 py-2" type="password" placeholder="Create a password" required />
-					</div>
-					<Button className="w-full mt-2" variant="default" asChild>
-						<a href="/">Register</a>
-					</Button>
-				</form>
-				<div className="flex justify-between mt-4 text-sm">
-					<a href="/login" className="text-blue-600 underline">Login</a>
-				</div>
-			</div>
-		</main>
-	);
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "sonner";
+
+export default function RegisterPage() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const formData = new FormData(e.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        toast.success("Registration successful! Please log in.");
+        router.push("/login");
+      } else {
+        const error = await res.json();
+        toast.error(error.message || "Registration failed");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#FAF9F6] px-4">
+      <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-8 shadow-lg">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-[#2D2D2D]">Create Account</h2>
+          <p className="mt-2 text-gray-600">Join LuxeJewels today</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Full Name</label>
+              <input name="name" type="text" required className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Email address</label>
+              <input name="email" type="email" required className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Password</label>
+              <input name="password" type="password" required className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-black focus:outline-none focus:ring-1 focus:ring-black" />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-md bg-[#2D2D2D] px-4 py-2 text-white hover:bg-black focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 disabled:opacity-50"
+          >
+            {loading ? "Creating account..." : "Register"}
+          </button>
+        </form>
+
+        <p className="text-center text-sm text-gray-600">
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-black hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </div>
+    </div>
+  );
 }
