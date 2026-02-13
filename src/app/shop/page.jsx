@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { products } from "@/data/products";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,40 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 export default function Page() {
+	return (
+		<Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#f8fafc]">Loading...</div>}>
+			<ShopContent />
+		</Suspense>
+	);
+}
+
+function ShopContent() {
 	const { availableFilters, clearAllFilters } = useFilters();
 	const [localFilters, setLocalFilters] = useState({});
 	const [searchQuery, setSearchQuery] = useState("");
+	const searchParams = useSearchParams();
+
+	useEffect(() => {
+		const category = searchParams.get("category");
+		const search = searchParams.get("search");
+
+		if (category) {
+			setLocalFilters((prev) => ({ ...prev, category: [category] }));
+		} else {
+			// If no category param, ensure we don't have a stale category filter if navigating back to shop
+			setLocalFilters((prev) => {
+				const next = { ...prev };
+				delete next.category;
+				return next;
+			});
+		}
+
+		if (search) {
+			setSearchQuery(search);
+		} else {
+			setSearchQuery("");
+		}
+	}, [searchParams]);
 
 	const handleFilterChange = (filterType, filterValue, isChecked) => {
 		setLocalFilters((prev) => {
