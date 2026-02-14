@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { products } from "@/data/products";
+import { useState, useEffect } from "react";
+// import { products } from "@/data/products";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
@@ -18,9 +18,28 @@ export default function Page() {
 	const router = useRouter();
 	const [isProcessing, setIsProcessing] = useState(false);
 	const [paymentMethod, setPaymentMethod] = useState("card");
+	const [products, setProducts] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		const fetchProducts = async () => {
+			try {
+				const response = await fetch("/api/products");
+				if (response.ok) {
+					const data = await response.json();
+					setProducts(data);
+				}
+			} catch (error) {
+				console.error("Failed to fetch products:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+		fetchProducts();
+	}, []);
 
 	const cartItems = cart.map((item) => {
-		const product = products.find((p) => p.id === item.id);
+		const product = products.find((p) => (p._id || p.id) === item.id);
 		return product ? { ...product, qty: item.qty } : null;
 	}).filter(Boolean);
 
@@ -50,7 +69,7 @@ export default function Page() {
 		}, 1500);
 	};
 
-	if (!isLoaded) {
+	if (!isLoaded || loading) {
 		return <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] text-[#5c4632]">Loading checkout...</div>;
 	}
 
