@@ -7,7 +7,7 @@ import { useCart } from "@/hooks/useCart";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-
+import PersonalizedMessageButton from "@/components/cart/PersonalizedMessageButton";
 export default function Page() {
 	const { cart, updateQty, removeFromCart, addToCart, isLoaded } = useCart();
 	const [products, setProducts] = useState([]);
@@ -106,6 +106,24 @@ export default function Page() {
 											<Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => removeFromCart(item.id)}>
 												<Trash2 className="w-4 h-4" />
 											</Button>
+											<PersonalizedMessageButton
+												onMessageSaved={async (blob, type) => {
+													try {
+														const formData = new FormData();
+														formData.append('file', blob);
+														formData.append('type', type);
+														
+														const response = await fetch('/api/upload', {
+															method: 'POST',
+															body: formData
+														});
+														const data = await response.json();
+														console.log('Message uploaded, ID:', data.id);
+													} catch (error) {
+														console.error('Failed to upload message:', error);
+													}
+												}}
+											/>
 										</div>
 									</div>
 									<div className="text-right">
