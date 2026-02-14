@@ -105,7 +105,7 @@ npx shadcn@latest init -d
 npx shadcn@latest add button card input avatar dialog tooltip sonner
 npx shadcn@latest add dropdown-menu menubar navigation-menu
 npx shadcn@latest add select tabs badge separator
-
+npx shadcn@latest add label textarea 
 #################################################
 # FINAL MESSAGE
 #################################################

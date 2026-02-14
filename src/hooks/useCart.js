@@ -50,14 +50,14 @@ export function useCart() {
 	};
 
 	const addToCart = (product, quantity = 1) => {
-		const existingItem = cart.find((item) => item.id === product.id);
+		const existingItem = cart.find((item) => item.id === product._id);
 		let newCart;
 		if (existingItem) {
 			newCart = cart.map((item) =>
-				item.id === product.id ? { ...item, qty: item.qty + quantity } : item
+				item.id === product._id ? { ...item, qty: item.qty + quantity } : item
 			);
 		} else {
-			newCart = [...cart, { id: product.id, qty: quantity }];
+			newCart = [...cart, { id: product._id, qty: quantity }];
 		}
 		saveCart(newCart);
 		toast.success(`Added ${product.name} to cart`);

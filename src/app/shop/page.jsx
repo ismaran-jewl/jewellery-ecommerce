@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { products } from "@/data/products";
+// import { products } from "@/data/products";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ProductFilters from "@/components/product/ProductFilters";
@@ -25,9 +25,31 @@ function ShopContent() {
 	const { availableFilters, clearAllFilters } = useFilters();
 	const [localFilters, setLocalFilters] = useState({});
 	const [searchQuery, setSearchQuery] = useState("");
+	const [products, setProducts] = useState([]);
+	const [loading, setLoading] = useState(true);
 	const { cart, addToCart: addToCartHook, removeFromCart } = useCart();
 	const { isInWishlist, toggleWishlist: toggleWishlistHook } = useWishlist();
 	const searchParams = useSearchParams();
+
+	useEffect(() => {
+		const fetchProducts = async () => {
+			try {
+				const response = await fetch("/api/products");
+				if (response.ok) {
+					const data = await response.json();
+					setProducts(data);
+				} else {
+					console.error("Failed to fetch products");
+				}
+			} catch (error) {
+				console.error("Error fetching products:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchProducts();
+	}, []);
 
 	useEffect(() => {
 		const category = searchParams.get("category");
@@ -79,8 +101,8 @@ function ShopContent() {
 
 	const toggleCart = (e, product) => {
 		e.preventDefault();
-		if (cart.some((item) => item.id === product.id)) {
-			removeFromCart(product.id);
+		if (cart.some((item) => item.id === product._id)) {
+			removeFromCart(product._id);
 		} else {
 			addToCartHook(product, 1);
 		}
@@ -95,28 +117,28 @@ function ShopContent() {
 
 			// Category filter
 			if (localFilters.category && localFilters.category.length > 0) {
-				if (!localFilters.category.includes(product.category)) {
+				if (!localFilters.category.some((c) => c.toLowerCase() === product.category?.toLowerCase())) {
 					return false;
 				}
 			}
 
 			// Type filter
 			if (localFilters.type && localFilters.type.length > 0) {
-				if (!localFilters.type.includes(product.type)) {
+				if (!localFilters.type.some((t) => t.toLowerCase() === product.type?.toLowerCase())) {
 					return false;
 				}
 			}
 
 			// Material filter
 			if (localFilters.material && localFilters.material.length > 0) {
-				if (!localFilters.material.includes(product.material)) {
+				if (!localFilters.material.some((m) => m.toLowerCase() === product.material?.toLowerCase())) {
 					return false;
 				}
 			}
 
 			return true;
 		});
-	}, [localFilters, searchQuery]);
+	}, [products, localFilters, searchQuery]);
 
 	return (
 		<main className="min-h-screen bg-[#f8fafc] py-10">
@@ -144,46 +166,52 @@ function ShopContent() {
 
 					{/* Products Grid */}
 					<div className="flex-1">
-						<div className="mb-4 text-[#7c6a58]">
-							Showing {filteredProducts.length} of {products.length} products
-						</div>
-						{filteredProducts.length === 0 ? (
-							<div className="text-center text-[#7c6a58] py-12">
-								No products found matching your filters.
-							</div>
+						{loading ? (
+							<div className="text-center text-[#7c6a58] py-12">Loading products...</div>
 						) : (
-							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-								{filteredProducts.map((product) => {
-									const isCartItem = cart.some((item) => item.id === product.id);
-									const isWishlisted = isInWishlist(product.id);
-									return (
-										<Card key={product.id} className={`hover:shadow-lg transition-all duration-300 relative group ${isWishlisted ? "bg-[#fff0e5] border-[#ffdab9]" : ""}`}>
-											<button
-												className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 z-10"
-												onClick={(e) => { e.preventDefault(); toggleWishlistHook(product); }}
-											>
-												<Heart className={`w-5 h-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
-											</button>
-											<CardHeader>
-												<img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-lg mb-2 border" loading="lazy" />
-												<CardTitle>{product.name}</CardTitle>
-												<CardDescription className="capitalize text-xs text-[#a78b71]">{product.material} {product.type}</CardDescription>
-											</CardHeader>
-											<CardContent>
-												<div className="text-[#5c4632] font-medium mb-2">₹{product.price.toLocaleString()}</div>
-											</CardContent>
-											<CardFooter className="gap-2">
-												<Button className="flex-1" variant="default" asChild>
-													<Link href={`/product/${product.id}`}>View Details</Link>
-												</Button>
-												<Button variant="outline" size="icon" onClick={(e) => toggleCart(e, product)}>
-													<ShoppingCart className={`w-4 h-4 ${isCartItem ? "fill-current text-[#5c4632]" : ""}`} />
-												</Button>
-											</CardFooter>
-										</Card>
-									);
-								})}
-							</div>
+							<>
+								<div className="mb-4 text-[#7c6a58]">
+									Showing {filteredProducts.length} of {products.length} products
+								</div>
+								{filteredProducts.length === 0 ? (
+									<div className="text-center text-[#7c6a58] py-12">
+										No products found matching your filters.
+									</div>
+								) : (
+									<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+										{filteredProducts.map((product) => {
+											const isCartItem = cart.some((item) => item.id === product._id);
+											const isWishlisted = isInWishlist(product._id);
+											return (
+												<Card key={product._id} className={`hover:shadow-lg transition-all duration-300 relative group ${isWishlisted ? "bg-[#fff0e5] border-[#ffdab9]" : ""}`}>
+													<button
+														className="absolute top-4 right-4 p-2 rounded-full bg-white/80 hover:bg-white text-gray-600 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 z-10"
+														onClick={(e) => { e.preventDefault(); toggleWishlistHook(product); }}
+													>
+														<Heart className={`w-5 h-5 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
+													</button>
+													<CardHeader>
+														<img src={product.image} alt={product.name} className="w-full h-40 object-cover rounded-lg mb-2 border" loading="lazy" />
+														<CardTitle>{product.name}</CardTitle>
+														<CardDescription className="capitalize text-xs text-[#a78b71]">{product.material} {product.type}</CardDescription>
+													</CardHeader>
+													<CardContent>
+														<div className="text-[#5c4632] font-medium mb-2">₹{product.price.toLocaleString()}</div>
+													</CardContent>
+													<CardFooter className="gap-2">
+														<Button className="flex-1" variant="default" asChild>
+															<Link href={`/product/${product._id}`}>View Details</Link>
+														</Button>
+														<Button variant="outline" size="icon" onClick={(e) => toggleCart(e, product)}>
+															<ShoppingCart className={`w-4 h-4 ${isCartItem ? "fill-current text-[#5c4632]" : ""}`} />
+														</Button>
+													</CardFooter>
+												</Card>
+											);
+										})}
+									</div>
+								)}
+							</>
 						)}
 					</div>
 				</div>

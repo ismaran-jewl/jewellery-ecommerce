@@ -46,7 +46,7 @@ export function useWishlist() {
 	};
 
 	const addToWishlist = (product) => {
-		if (!wishlist.some((item) => item.id === product.id)) {
+		if (!wishlist.some((item) => item._id === product._id)) {
 			const newWishlist = [...wishlist, product];
 			saveWishlist(newWishlist);
 			toast.success("Added to wishlist");
@@ -54,21 +54,21 @@ export function useWishlist() {
 	};
 
 	const removeFromWishlist = (productId) => {
-		const newWishlist = wishlist.filter((item) => item.id !== productId);
+		const newWishlist = wishlist.filter((item) => item._id !== productId);
 		saveWishlist(newWishlist);
 		toast.success("Removed from wishlist");
 	};
 
 	const toggleWishlist = (product) => {
-		if (wishlist.some((item) => item.id === product.id)) {
-			removeFromWishlist(product.id);
+		if (wishlist.some((item) => item._id === product._id)) {
+			removeFromWishlist(product._id);
 		} else {
 			addToWishlist(product);
 		}
 	};
 
 	const isInWishlist = (productId) => {
-		return wishlist.some((item) => item.id === productId);
+		return wishlist.some((item) => item._id === productId);
 	};
 
 	return { wishlist, addToWishlist, removeFromWishlist, toggleWishlist, isInWishlist, isLoaded };

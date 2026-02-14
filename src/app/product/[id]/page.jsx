@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, use } from "react";
-import { products } from "@/data/products";
+import { useState, use, useEffect } from "react";
+// import { products } from "@/data/products";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,12 +14,62 @@ import { useWishlist } from "@/hooks/useWishlist";
 
 export default function Page({ params }) {
 	const resolvedParams = use(params);
-	const id = Number(resolvedParams?.id);
-	const product = products.find((p) => p.id === id);
+	const id = resolvedParams?.id;
+	const [product, setProduct] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [relatedProducts, setRelatedProducts] = useState([]);
 	const [quantity, setQuantity] = useState(1);
 	const { addToCart: addToCartHook } = useCart();
 	const { isInWishlist, toggleWishlist } = useWishlist();
 	const isWishlisted = isInWishlist(id);
+
+	useEffect(() => {
+		const fetchProduct = async () => {
+			try {
+				const response = await fetch(`/api/products/${id}`);
+				if (response.ok) {
+					const data = await response.json();
+					setProduct(data);
+				} else {
+					console.error("Product not found");
+				}
+			} catch (error) {
+				console.error("Error fetching product:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		if (id) {
+			fetchProduct();
+		}
+	}, [id]);
+
+	useEffect(() => {
+		const fetchRelatedProducts = async () => {
+			if (product) {
+				try {
+					const response = await fetch(`/api/products?category=${product.category}`);
+					if (response.ok) {
+						const data = await response.json();
+						setRelatedProducts(data.filter(p => p._id !== product._id).slice(0, 4));
+					}
+				} catch (error) {
+					console.error("Error fetching related products:", error);
+				}
+			}
+		};
+
+		fetchRelatedProducts();
+	}, [product]);
+
+	if (loading) {
+		return (
+			<main className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+				<div className="text-center">Loading product...</div>
+			</main>
+		);
+	}
 
 	if (!product) {
 		return (
@@ -31,10 +81,6 @@ export default function Page({ params }) {
 			</main>
 		);
 	}
-
-	const relatedProducts = products
-		.filter((p) => p.category === product.category && p.id !== product.id)
-		.slice(0, 4);
 
 	const addToCart = () => {
 		addToCartHook(product, quantity);
@@ -136,7 +182,7 @@ export default function Page({ params }) {
 						</div>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 							{relatedProducts.map((rp) => (
-								<Card key={rp.id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-none shadow-md">
+								<Card key={rp._id} className="group cursor-pointer hover:shadow-xl transition-all duration-300 border-none shadow-md">
 									<CardHeader className="p-0">
 										<div className="aspect-[4/5] overflow-hidden rounded-t-xl bg-gray-100">
 											<img src={rp.image} alt={rp.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
@@ -148,7 +194,7 @@ export default function Page({ params }) {
 									</CardContent>
 									<CardFooter className="p-5 pt-0">
 										<Button variant="outline" className="w-full hover:bg-[#C59D5F] hover:text-white transition-colors" asChild>
-											<Link href={`/product/${rp.id}`}>View Details</Link>
+											<Link href={`/product/${rp._id}`}>View Details</Link>
 										</Button>
 									</CardFooter>
 								</Card>
