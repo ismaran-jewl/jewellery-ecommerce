@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, use, useEffect } from "react";
-// import { products } from "@/data/products";
+//   
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

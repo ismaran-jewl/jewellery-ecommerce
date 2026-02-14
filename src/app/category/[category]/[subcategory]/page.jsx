@@ -1,4 +1,4 @@
-import { products } from "@/data/products";
+// import { products } from "@/data/products";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
