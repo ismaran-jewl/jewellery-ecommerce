@@ -5,6 +5,27 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription }
 import { Button } from "@/components/ui/button";
 
 export default function Page() {
+	const [products, setProducts] = useState([]);
+	const [loading, setLoading] = useState(true);
+
+	// Fetch products on component mount
+	useState(() => {
+		const fetchProducts = async () => {
+			try {
+				const response = await fetch("/api/products");
+				if (response.ok) {
+					const data = await response.json();
+					setProducts(data);
+				}
+			} catch (error) {
+				console.error("Failed to fetch products:", error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchProducts();
+	}, []);
 	const [query, setQuery] = useState("");
 	const filtered = products.filter((p) =>
 		p.name.toLowerCase().includes(query.toLowerCase()) ||

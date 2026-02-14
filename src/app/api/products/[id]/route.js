@@ -1,28 +1,19 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/providers/database/Product";
-
 export async function GET(request, { params }) {
+  await dbConnect();
+
+  // FIX: Await params before destructuring id
+  const { id } = await params;
+
   try {
-    await dbConnect();
-
-    const { id } = params;
-
     const product = await Product.findById(id);
-
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false }, { status: 404 });
     }
-
-    return NextResponse.json(product);
+    return NextResponse.json(product );
   } catch (error) {
-    console.error("Error fetching product:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch product" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 400 });
   }
 }

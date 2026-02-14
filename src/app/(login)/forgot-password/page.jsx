@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Page() {
 	return (
-		<main className="min-h-screen flex items-center justify-center bg-[#f8fafc]">
+		<main className="flex items-center justify-center">
 			<div className="bg-white rounded-xl border p-8 shadow-md max-w-sm w-full">
 				<h1 className="text-2xl font-bold mb-6 text-[#2d1a10]">Forgot Password</h1>
 				<form className="space-y-4">

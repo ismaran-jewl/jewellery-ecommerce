@@ -1,9 +1,8 @@
-import HomeLayout from "@/components/layout/home/layout";
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "@/components/providers/auth-provider";
-
+import "@/app/globals.css";
 export const metadata = {
-  title: "LuxeJewels",
+  title: "ISMARN",
   description: "Premium Jewellery Collection",
 };
 
@@ -12,10 +11,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="bg-[#FAF9F6] text-[#2D2D2D]">
         <AuthProvider>
-          <HomeLayout>
             <Toaster />
             {children}
-          </HomeLayout>
         </AuthProvider>
       </body>
     </html>

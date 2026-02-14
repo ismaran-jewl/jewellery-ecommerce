@@ -35,7 +35,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="sticky top-0 z-50 flex flex-col w-full">
       {/* Top Promotional Banner */}
       <div className="bg-[#D1F2EB] text-[#1B4D3E] text-sm py-2.5 text-center tracking-wide font-medium overflow-hidden">
         <motion.div

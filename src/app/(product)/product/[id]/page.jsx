@@ -121,7 +121,7 @@ export default function Page({ params }) {
 						</div>
 
 						<div className="text-3xl font-medium text-[#5c4632]">
-							₹{product.price.toLocaleString()}
+							₹{product.price}
 						</div>
 
 						<p className="text-[#7c6a58] leading-relaxed text-lg">

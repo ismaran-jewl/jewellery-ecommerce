@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="w-full border-t bg-white/80 mt-12">
+    <footer className="w-full border-t bg-white/80">
       <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between text-[#7c6a58] text-sm">
         <div>
           &copy; {new Date().getFullYear()} LuxeJewels. All rights reserved.
