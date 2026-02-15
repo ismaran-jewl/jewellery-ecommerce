@@ -1,9 +1,11 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
+import { Button } from "@/components/ui/button"; // Standard shadcn component
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 const slides = [
   { type: "video", src: "/videos/hero.mp4" },
   { type: "video", src: "/videos/pero.mp4" },
@@ -11,19 +13,17 @@ const slides = [
   { type: "image", src: "/images/hero.jpg" },
 ];
 
-// Premium Bezier Curve for Luxury feel
 const transitionSettings = {
-  duration: 1.5,
+  duration: 1.2,
   ease: [0.76, 0, 0.24, 1],
 };
 
 export default function HeroSection() {
+  // Array state: [currentIndex, direction]
   const [[current, direction], setCurrent] = useState([0, 0]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      paginate(1);
-    }, 6000);
+    const interval = setInterval(() => paginate(1), 6000);
     return () => clearInterval(interval);
   }, [current]);
 
@@ -37,27 +37,27 @@ export default function HeroSection() {
   const variants = {
     enter: (direction) => ({
       x: direction > 0 ? "100%" : "-100%",
-      scale: 1.1,
       opacity: 0,
+      scale: 1.05,
     }),
     center: {
       zIndex: 1,
       x: 0,
-      scale: 1,
       opacity: 1,
+      scale: 1,
     },
     exit: (direction) => ({
       zIndex: 0,
-      x: direction < 0 ? "50%" : "-50%",
+      x: direction < 0 ? "30%" : "-30%",
       opacity: 0,
-      transition: { ...transitionSettings, opacity: { duration: 0.6 } },
+      transition: { ...transitionSettings, opacity: { duration: 0.4 } },
     }),
   };
 
   return (
-    <section className="relative h-[0.1vh] md:h-[55vh] flex items-center justify-center overflow-hidden bg-black">
-      
-      {/* SLIDER BACKGROUND */}
+    <section className="relative h-[80svh] md:h-screen w-full flex items-center justify-center overflow-hidden bg-black">
+
+      {/* BACKGROUND SLIDER */}
       <div className="absolute inset-0 z-0">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
@@ -70,6 +70,9 @@ export default function HeroSection() {
             transition={transitionSettings}
             className="absolute inset-0 w-full h-full"
           >
+            {/* Dark Overlay for better text contrast */}
+            <div className="absolute inset-0 bg-black/40 z-10" />
+
             {slides[current].type === "video" ? (
               <video
                 className="w-full h-full object-cover"
@@ -90,59 +93,78 @@ export default function HeroSection() {
         </AnimatePresence>
       </div>
 
-      {/* NAVIGATION CONTROLS */}
-      <button
-        onClick={() => paginate(-1)}
-        className="absolute left-6 z-30 p-3 rounded-full border border-white/20 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all duration-500"
-      >
-        <ChevronLeft size={20} />
-      </button>
+      {/* NAVIGATION - Hidden on mobile, visible on tablet/desktop */}
+      <div className="absolute inset-0 z-30 flex items-center justify-between px-6 pointer-events-none">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => paginate(-1)}
+          className="hidden md:flex h-12 w-12 rounded-full border-white/20 bg-black/10 text-white backdrop-blur-md hover:bg-white hover:text-black pointer-events-auto transition-all"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => paginate(1)}
+          className="hidden md:flex h-12 w-12 rounded-full border-white/20 bg-black/10 text-white backdrop-blur-md hover:bg-white hover:text-black pointer-events-auto transition-all"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </Button>
+      </div>
 
-      <button
-        onClick={() => paginate(1)}
-        className="absolute right-6 z-30 p-3 rounded-full border border-white/20 backdrop-blur-md text-white hover:bg-white hover:text-black transition-all duration-500"
-      >
-        <ChevronRight size={20} />
-      </button>
-
-      {/* CONTENT */}
+      {/* CENTER CONTENT */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6, duration: 1 }}
-        className="relative z-20 text-center px-6 text-white max-w-3xl mx-auto"
+        transition={{ delay: 0.5, duration: 0.8 }}
+        className="relative z-20 text-center px-6 text-white max-w-4xl"
       >
-        {/* Tagline */}
-        <span className="block mb-6 uppercase tracking-[0.5em] text-[11px] md:text-xs text-white/60 font-light">
+        <span className="block mb-4 uppercase tracking-[0.4em] text-[10px] md:text-xs text-white/70 font-light">
           Exquisite Craftsmanship
         </span>
 
-        {/* Heading */}
-        <h1 className="text-4xl md:text-6xl font-serif font-medium leading-tight mb-6">
-          Memories Moulded <br className="hidden md:block" />
+        <h1 className="text-4xl md:text-7xl font-serif font-medium leading-[1.1] mb-6">
+          Memories Moulded <br />
           <span className="italic text-[#E6C27A]">In Jewel</span>
         </h1>
 
-        {/* Description */}
-        <p className="text-sm md:text-base max-w-2xl mx-auto text-white/75 mb-10 font-light leading-relaxed">
-          Discover fine jewellery crafted for weddings, milestones,
+        <p className="text-sm md:text-lg max-w-xl mx-auto text-white/80 mb-10 font-light leading-relaxed">
+          Fine jewellery crafted for weddings, milestones,
           and moments that deserve to shine forever.
         </p>
 
-        {/* Buttons */}
-        <div className="flex gap-6 justify-center items-center">
-          {/* Primary Button */}
-          <button className="px-10 py-3 rounded-full bg-[#C59D5F] text-black text-[11px] tracking-[0.25em] uppercase font-medium hover:bg-[#b88c4d] transition-all duration-500 shadow-lg shadow-[#C59D5F]/30">
-            Shop Now
-          </button>
+        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
+          <Link href="/shop">
+            <Button
+              className="w-full sm:w-auto px-12 py-7 rounded-full bg-[#C59D5F] text-black hover:bg-[#b88c4d] text-[11px] tracking-[0.2em] uppercase font-bold shadow-xl shadow-black/20 transition-transform active:scale-95"
+            >
+              Shop Now
+            </Button>
+          </Link>
 
-          {/* Secondary Button */}
-          <button className="text-[11px] tracking-[0.35em] uppercase text-white/80 hover:text-[#E6C27A] transition-all duration-500 relative group">
+          <Button
+            variant="link"
+            className="text-white hover:text-[#E6C27A] uppercase tracking-[0.25em] text-[10px] md:text-[11px] decoration-white/30"
+          >
             Our Story
-            <span className="absolute left-0 -bottom-1 h-px w-full bg-white/30 group-hover:bg-[#E6C27A] transition-all duration-500" />
-          </button>
+          </Button>
         </div>
       </motion.div>
+
+      {/* MOBILE-SPECIFIC PAGINATION DOTS */}
+      <div className="absolute bottom-10 z-30 flex gap-3">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrent([index, index > current ? 1 : -1])}
+            className={cn(
+              "h-1.5 transition-all duration-500 rounded-full",
+              current === index ? "w-10 bg-[#E6C27A]" : "w-3 bg-white/40"
+            )}
+          />
+        ))}
+      </div>
     </section>
   );
 }

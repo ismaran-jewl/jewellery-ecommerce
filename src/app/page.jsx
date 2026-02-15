@@ -13,15 +13,13 @@ export default function HomePage() {
   return (
     <>
       <Navbar />
-      <main className="bg-[#FAF9F6] text-[#2D2D2D] selection:bg-[#C59D5F] selection:text-white">
-        <HeroSection />
-        <SeasonalOffers />
-        <FeaturedProducts />
-        <CollectionsGrid />
-        <VoiceGiftSection />
-        <ShareYourStory></ShareYourStory>
-        <TrustStrip />
-      </main>
+      <HeroSection />
+      <SeasonalOffers />
+      <FeaturedProducts />
+      <CollectionsGrid />
+      <VoiceGiftSection />
+      <ShareYourStory />
+      <TrustStrip />
       <Footer />
     </>
   );
