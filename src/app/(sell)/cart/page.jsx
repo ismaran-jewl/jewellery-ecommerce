@@ -8,10 +8,14 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, ShoppingCart } from "luci
 import Link from "next/link";
 import { motion } from "framer-motion";
 import PersonalizedMessageButton from "@/components/cart/PersonalizedMessageButton";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+
 export default function Page() {
 	const { cart, updateQty, removeFromCart, addToCart, isLoaded, updateItem } = useCart();
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
+	const { data: session } = useSession();
 
 	useEffect(() => {
 		const fetchProducts = async () => {
@@ -198,7 +202,13 @@ export default function Page() {
 										<Button variant="outline" className="flex-1 hover:bg-[#C59D5F] hover:text-white transition-colors" asChild>
 											<Link href={`/product/${product._id}`}>View</Link>
 										</Button>
-										<Button size="icon" className="bg-[#2d1a10] hover:bg-[#4a2c1d]" onClick={() => addToCart(product, 1)}>
+										<Button size="icon" className="bg-[#2d1a10] hover:bg-[#4a2c1d]" onClick={() => {
+											if (!session) {
+												toast.error("Please log in to add items to cart");
+												return;
+											}
+											addToCart(product, 1);
+										}}>
 											<ShoppingCart className="w-4 h-4" />
 										</Button>
 									</CardFooter>

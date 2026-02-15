@@ -8,6 +8,8 @@ import { Heart, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 /**
  * 1. THE PAGE COMPONENT
@@ -40,6 +42,7 @@ function ShopContent() {
     const [loading, setLoading] = useState(true);
     const { cart, addToCart: addToCartHook, removeFromCart } = useCart();
     const { isInWishlist, toggleWishlist: toggleWishlistHook } = useWishlist();
+    const { data: session } = useSession();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -107,7 +110,13 @@ function ShopContent() {
                                     <button
                                         type="button"
                                         className="absolute top-3 right-3 p-2 rounded-full bg-white/90 shadow-sm hover:text-red-500"
-                                        onClick={() => toggleWishlistHook(product)}
+                                        onClick={() => {
+                                            if (!session) {
+                                                toast.error("Please log in to use wishlist");
+                                                return;
+                                            }
+                                            toggleWishlistHook(product);
+                                        }}
                                     >
                                         <Heart className={`w-4 h-4 ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
                                     </button>
@@ -128,7 +137,17 @@ function ShopContent() {
                                     <Button 
                                         variant="outline" 
                                         size="icon" 
-                                        onClick={() => isCartItem ? removeFromCart(product._id) : addToCartHook(product, 1)}
+                                        onClick={() => {
+                                            if (isCartItem) {
+                                                removeFromCart(product._id);
+                                            } else {
+                                                if (!session) {
+                                                    toast.error("Please log in to add items to cart");
+                                                    return;
+                                                }
+                                                addToCartHook(product, 1);
+                                            }
+                                        }}
                                     >
                                         <ShoppingCart className={`w-4 h-4 ${isCartItem ? "fill-current text-[#1B4D3E]" : ""}`} />
                                     </Button>
