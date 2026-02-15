@@ -12,7 +12,16 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
-import { Search, ShoppingBag, Heart, User, X } from "lucide-react";
+// Import Dropdown Components
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Search, ShoppingBag, Heart, User, X, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -22,7 +31,7 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { wishlist } = useWishlist();
   const { cart } = useCart();
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
@@ -47,12 +56,13 @@ export default function Navbar() {
 
       <nav className="w-full border-b bg-[#FFDAB9]/95 sticky top-0 z-50 backdrop-blur transition-colors duration-300">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
+          
           {/* Logo */}
           <Link href="/" className={`text-3xl font-serif font-bold tracking-tight text-[#1B4D3E] hover:text-[#2d1a10] transition-colors ${isSearchOpen ? 'hidden md:block' : ''}`}>
             ISMARN
           </Link>
 
-          {/* Center Navigation */}
+          {/* Search Bar Logic (Same as before) */}
           {isSearchOpen ? (
             <div className="flex-1 mx-4 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="relative max-w-2xl mx-auto">
@@ -72,8 +82,9 @@ export default function Navbar() {
               </div>
             </div>
           ) : (
-          <div className="hidden md:flex items-center gap-8">
-            <NavigationMenu>
+            /* Desktop Nav Links */
+            <div className="hidden md:flex items-center gap-8">
+               <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
@@ -120,19 +131,23 @@ export default function Navbar() {
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-          </div>
+            </div>
           )}
 
           {/* Right Actions */}
           <div className={`flex items-center gap-3 ${isSearchOpen ? 'hidden' : ''}`}>
+            
+            {/* Search Toggle */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <Button variant="ghost" size="icon" onClick={() => setIsSearchOpen(true)} className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
                   <Search className="h-6 w-6 text-[#1B4D3E]" />
               </Button>
             </motion.div>
+
+            {/* Wishlist */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10 relative">
-                <Link href="/wishlist" aria-label="Wishlist">
+                <Link href="/wishlist">
                   <Heart className="h-6 w-6 text-[#1B4D3E]" />
                   {wishlist.length > 0 && (
                     <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
@@ -142,9 +157,11 @@ export default function Navbar() {
                 </Link>
               </Button>
             </motion.div>
+
+            {/* Cart */}
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
               <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10 relative">
-                <Link href="/cart" aria-label="Cart">
+                <Link href="/cart">
                   <ShoppingBag className="h-6 w-6 text-[#1B4D3E]" />
                   {cartCount > 0 && (
                     <span className="absolute top-0 right-0 bg-[#1B4D3E] text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center border border-white">
@@ -154,27 +171,61 @@ export default function Navbar() {
                 </Link>
               </Button>
             </motion.div>
-            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
-                {session ? (
-                  <div className="relative">
-                    <button
+
+            {/* Profile Dropdown Logic */}
+            <div className="flex items-center">
+              {session ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                      <Button variant="ghost" size="icon" className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10 rounded-full">
+                        <User className="h-6 w-6 text-[#1B4D3E]" />
+                      </Button>
+                    </motion.div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-2">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{session.user?.name || "User"}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{session.user?.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard" className="cursor-pointer flex items-center">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/shop" className="cursor-pointer flex items-center">
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        <span>Shop</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem 
+                      className="text-red-600 cursor-pointer focus:bg-red-50 focus:text-red-600" 
                       onClick={() => signOut()}
-                      className="flex items-center justify-center h-10 w-10"
-                      title="Logout"
                     >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                  <Button variant="ghost" size="icon" asChild className="hover:text-[#1B4D3E] hover:bg-white/20 h-10 w-10">
+                    <Link href="/login">
                       <User className="h-6 w-6 text-[#1B4D3E]" />
-                    </button>
-                  </div>
-                ) : (
-                  <Link href="/login" aria-label="Login">
-                    <User className="h-6 w-6 text-[#1B4D3E]" />
-                  </Link>
-                )}
-              </Button>
-            </motion.div>
+                    </Link>
+                  </Button>
+                </motion.div>
+              )}
+            </div>
+
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button variant="ghost" asChild className="text-base font-medium text-[#1B4D3E] hover:text-[#1B4D3E] hover:bg-white/20 px-4">
+              <Button variant="ghost" asChild className="text-base font-medium text-[#1B4D3E] hover:text-[#1B4D3E] hover:bg-white/20 px-4 hidden lg:flex">
                 <Link href="/about">About</Link>
               </Button>
             </motion.div>
