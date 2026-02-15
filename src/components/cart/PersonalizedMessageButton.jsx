@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Mic, Video, Upload, X, Square, Save, Trash2, MessageSquarePlus, FileAudio, Check, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const PersonalizedMessageButton = ({ onMessageSaved }) => {
+const PersonalizedMessageButton = ({ onMessageSaved, initialMessage }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [step, setStep] = useState('initial'); // initial, record-select, recording, uploading, preview
   const [mediaType, setMediaType] = useState(null); // 'audio' or 'video'
   const [isRecording, setIsRecording] = useState(false);
   const [mediaBlob, setMediaBlob] = useState(null);
   const [mediaUrl, setMediaUrl] = useState(null);
-  const [savedMedia, setSavedMedia] = useState(null);
+  const [savedMedia, setSavedMedia] = useState(initialMessage || null);
   
   const mediaRecorderRef = useRef(null);
   const videoRef = useRef(null);
@@ -23,6 +23,10 @@ const PersonalizedMessageButton = ({ onMessageSaved }) => {
       cleanupStream();
     };
   }, []);
+
+  useEffect(() => {
+    setSavedMedia(initialMessage || null);
+  }, [initialMessage]);
 
   const cleanupStream = () => {
     if (streamRef.current) {

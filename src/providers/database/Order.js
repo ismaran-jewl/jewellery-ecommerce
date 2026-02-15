@@ -18,6 +18,11 @@ const orderSchema = new mongoose.Schema(
           ref: "Product",
           required: true,
         },
+        message: {
+          id: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
+          type: { type: String, enum: ['audio', 'video'] },
+          url: String,
+        },
       },
     ],
     shippingAddress: {

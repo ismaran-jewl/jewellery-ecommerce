@@ -9,7 +9,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import PersonalizedMessageButton from "@/components/cart/PersonalizedMessageButton";
 export default function Page() {
-	const { cart, updateQty, removeFromCart, addToCart, isLoaded } = useCart();
+	const { cart, updateQty, removeFromCart, addToCart, isLoaded, updateItem } = useCart();
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
 
@@ -34,7 +34,7 @@ export default function Page() {
 	const cartItems = cart.map((item) => {
 		// Match product by _id (MongoDB) or id (string)
 		const product = products?.find((p) => (p._id || p.id) === item.id);
-		return product ? { ...product, qty: item.qty } : null;
+		return product ? { ...product, qty: item.qty, message: item.message } : null;
 	}).filter(Boolean);
 
 	const total = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -107,6 +107,7 @@ export default function Page() {
 												<Trash2 className="w-4 h-4" />
 											</Button>
 											<PersonalizedMessageButton
+												initialMessage={item.message}
 												onMessageSaved={async (blob, type) => {
 													try {
 														const formData = new FormData();
@@ -117,8 +118,23 @@ export default function Page() {
 															method: 'POST',
 															body: formData
 														});
+
+														if (!response.ok) {
+															throw new Error('Upload failed');
+														}
+
 														const data = await response.json();
 														console.log('Message uploaded, ID:', data.id);
+
+														if (updateItem) {
+															updateItem(item.id, {
+																message: {
+																	id: data.id,
+																	type: type,
+																	url: `/api/message/${data.id}`
+																}
+															});
+														}
 													} catch (error) {
 														console.error('Failed to upload message:', error);
 													}

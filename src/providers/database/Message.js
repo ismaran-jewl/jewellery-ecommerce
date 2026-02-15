@@ -1,6 +1,12 @@
 import mongoose from 'mongoose';
 
 const MessageSchema = new mongoose.Schema({
+  // New field to link the user
+  sender: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // This must match the name of your User model
+    required: true,
+  },
   content: {
     type: Buffer,
     required: true,

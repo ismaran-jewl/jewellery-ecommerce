@@ -21,6 +21,11 @@ const cartSchema = new mongoose.Schema(
           default: 1,
           min: 1,
         },
+        message: {
+          id: { type: mongoose.Schema.Types.ObjectId, ref: 'Message' },
+          type: { type: String, enum: ['audio', 'video'] },
+          url: String,
+        },
       },
     ],
   },

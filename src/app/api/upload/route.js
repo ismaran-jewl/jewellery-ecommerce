@@ -1,16 +1,20 @@
 import { NextResponse } from 'next/server';
-import mongoose from 'mongoose';
-import Message from '@/models/Message';
-
-// Ensure DB connection
-const connectDB = async () => {
-  if (mongoose.connections[0].readyState) return;
-  await mongoose.connect(process.env.MONGODB_URI);
-};
+import { auth } from "@/lib/auth"; // Using your reference
+import dbConnect from '@/lib/mongodb';
+import Message from '@/providers/database/Message';
 
 export async function POST(request) {
   try {
-    await connectDB();
+    // 1. Get session using your reference style
+    const session = await auth();
+    
+    // 2. Validate session (No role check needed unless messages are user-specific)
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    await dbConnect();
+
     const formData = await request.formData();
     const file = formData.get('file');
     const type = formData.get('type');
@@ -21,7 +25,9 @@ export async function POST(request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     
+    // 3. Create message with session.user.id
     const newMessage = await Message.create({
+      sender: session.user.id, // Linking the user ID here
       content: buffer,
       contentType: file.type || (type === 'video' ? 'video/webm' : 'audio/webm'),
     });
