@@ -3,9 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion"; 
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingCart, ArrowRight, Star, Check } from "lucide-react";
+import { Loader2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 
 
@@ -52,120 +51,139 @@ export default function FeaturedProducts() {
 
   if (loading) {
     return (
-      <section className="h-[60vh] flex items-center justify-center bg-[#FCFBFA]">
+      <section className="py-24 flex items-center justify-center bg-[#fffcf8]">
         <Loader2 className="h-10 w-10 animate-spin text-amber-600" />
       </section>
     );
   }
 
   return (
-    <section className="relative py-20 md:py-32 overflow-hidden bg-[#FCFBFA]">
-      {/* Background Ambience */}
+    <section className="relative py-10 overflow-hidden bg-[#fffcf8]">
+      {/* Subtle Texture & Ambience */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-[-10%] w-[40%] h-[40%] bg-amber-50 rounded-full blur-[120px] opacity-60" />
-        <div className="absolute bottom-0 right-[-10%] w-[40%] h-[40%] bg-rose-50 rounded-full blur-[120px] opacity-60" />
+        <div className="absolute top-0 left-[-10%] w-[50%] h-[50%] bg-amber-100/40 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-[-10%] w-[50%] h-[50%] bg-rose-100/40 rounded-full blur-[120px]" />
       </div>
 
-      <div className="container mx-auto px-6 relative z-10">
-        
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 md:mb-20 gap-6">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <span className="w-10 h-[1px] bg-amber-300"></span>
-              <span className="text-amber-800 text-[10px] font-black uppercase tracking-[0.4em]">The Signature Collection</span>
-            </div>
-            <h2 className="text-5xl md:text-7xl font-serif text-slate-900 leading-[1]">
-              The <span className="italic font-light text-slate-400">Ojas</span> Edit
-            </h2>
-          </div>
-          <Link href="/shop" className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-500 hover:text-amber-900 transition-colors">
-            View All Pieces <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" />
+        <div className="text-center max-w-3xl mx-auto mb-6 md:mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-center gap-4 mb-4"
+          >
+            <span className="h-px w-8 bg-amber-800/30" />
+            <span className="text-amber-900/80 text-[10px] font-bold uppercase tracking-[0.3em]">The Signature Collection</span>
+            <span className="h-px w-8 bg-amber-800/30" />
+          </motion.div>
+          
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl md:text-5xl lg:text-6xl font-serif text-slate-900 mb-4"
+          >
+            The <span className="italic font-light text-amber-700">Royal</span> Edit
+          </motion.h2>
+          
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-slate-500 text-sm md:text-base max-w-lg mx-auto leading-relaxed"
+          >
+            Discover our most coveted pieces, where timeless elegance meets contemporary artistry.
+          </motion.p>
+        </div>
+
+        {/* Products Grid */}
+        <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-12 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-8 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none">
+          {products.map((product, idx) => (
+            <motion.div 
+              key={product._id || product.id} 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: idx * 0.15, duration: 0.8, ease: "easeOut" }}
+              className="group min-w-[65vw] sm:min-w-[40vw] md:min-w-0 snap-center"
+            >
+              {/* Image Card */}
+              <div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-stone-100 mb-4 shadow-xl shadow-stone-200/40 group-hover:shadow-2xl group-hover:shadow-stone-200/60 transition-all duration-500">
+                <Link href={`/product/${product._id || product.id}`}>
+                  <img
+                    src={product.image || product.images?.[0] || product.imageUrl}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-1000 ease-in-out group-hover:scale-110"
+                  />
+                </Link>
+                
+                {/* Badge */}
+                <div className="absolute top-4 left-4">
+                  <span className="bg-white/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm text-slate-800 border border-white/50">
+                    Best Seller
+                  </span>
+                </div>
+
+                {/* Desktop Hover Action */}
+                <div className="absolute inset-x-4 bottom-4 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 ease-out hidden md:block z-10">
+                  <Button 
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-white/95 backdrop-blur-md text-slate-900 hover:bg-amber-50 hover:text-amber-900 rounded-xl h-12 shadow-lg border border-white/50 transition-all font-medium tracking-wide"
+                    disabled={addingProductId === (product._id || product.id)}
+                  >
+                    {addingProductId === (product._id || product.id) ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : addedProductId === (product._id || product.id) ? (
+                      <Check className="h-4 w-4 text-green-600 mr-2" />
+                    ) : (
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                    )}
+                    {addingProductId === (product._id || product.id) ? "Adding..." : addedProductId === (product._id || product.id) ? "Added" : "Add to Cart"}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Product Info */}
+              <div className="text-center space-y-2">
+                <Link href={`/product/${product._id || product.id}`}>
+                  <h3 className="text-2xl font-serif text-slate-900 group-hover:text-amber-800 transition-colors cursor-pointer">
+                    {product.name}
+                  </h3>
+                </Link>
+                <p className="text-amber-700 font-medium tracking-wide text-lg">₹{product.price}</p>
+                
+                {/* Mobile Action Button */}
+                <div className="md:hidden mt-3">
+                  <Button 
+                    onClick={() => handleAddToCart(product)}
+                    variant="outline"
+                    className="w-full rounded-xl border-amber-200 text-amber-900 hover:bg-amber-50 h-10 text-xs uppercase tracking-widest"
+                    disabled={addingProductId === (product._id || product.id)}
+                  >
+                    {addingProductId === (product._id || product.id) ? "Adding..." : addedProductId === (product._id || product.id) ? "Added" : "Add to Cart"}
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Footer Link */}
+        <div className="mt-8 text-center">
+          <Link href="/shop" className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-amber-900 transition-colors">
+            View All Collections <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
-
-        {/* Responsive Grid/Scroll Wrapper */}
-        <div className="relative">
-          <div 
-            className="flex md:grid md:grid-cols-3 gap-6 md:gap-10 overflow-x-auto md:overflow-visible snap-x snap-mandatory no-scrollbar pb-8 md:pb-0"
-          >
-            {products.map((product, idx) => (
-              <motion.div 
-                key={product._id || product.id} 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1, duration: 0.8 }}
-                className="min-w-[85vw] md:min-w-0 snap-center"
-              >
-                <Card className="h-full border-none shadow-none bg-transparent group">
-                  {/* Image Container */}
-                  <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem] bg-slate-100 shadow-sm">
-                    <img
-                      src={product.image || product.images?.[0] || product.imageUrl}
-                      alt={product.name}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    {/* Badge */}
-                    <div className="absolute top-6 left-6">
-                      <div className="bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-sm border border-white/20">
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-900 flex items-center gap-1.5">
-                          <Star className="w-3 h-3 fill-amber-500 text-amber-500" /> Featured
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Info Section */}
-                  <CardContent className="px-1 pt-8">
-                    <div className="flex flex-col gap-6">
-                      <div className="space-y-1">
-                        <h3 className="text-2xl md:text-3xl font-serif text-slate-950 group-hover:text-amber-800 transition-colors">
-                          {product.name}
-                        </h3>
-                        <p className="text-xl font-medium text-amber-900">₹{product.price}</p>
-                      </div>
-
-                      <div className="flex items-center gap-3">
-                        <Link href={`/product/${product._id || product.id}`} className="flex-[3]">
-                          {/* FIXED: High contrast background and white text */}
-                          <Button className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-black text-white font-bold tracking-wide transition-all active:scale-95 shadow-lg">
-                            View Details
-                          </Button>
-                        </Link>
-                        <Button 
-                          variant="outline" 
-                          className="h-14 flex-1 rounded-2xl border-slate-200 hover:border-amber-600 hover:bg-amber-50 transition-colors"
-                          onClick={() => handleAddToCart(product)}
-                          disabled={addingProductId === (product._id || product.id)}
-                        >
-                          {addingProductId === (product._id || product.id) ? (
-                            <Loader2 className="h-5 w-5 animate-spin" />
-                          ) : addedProductId === (product._id || product.id) ? (
-                            <Check className="h-5 w-5 text-green-500" />
-                          ) : (
-                            <ShoppingCart className="h-5 w-5 text-slate-700" />
-                          )}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
       </div>
-
       <style jsx global>{`
-        /* Hide scrollbar for Chrome, Safari and Opera */
-        .no-scrollbar::-webkit-scrollbar {
+        .scrollbar-none::-webkit-scrollbar {
           display: none;
         }
-        /* Hide scrollbar for IE, Edge and Firefox */
-        .no-scrollbar {
-          -ms-overflow-style: none;  /* IE and Edge */
-          scrollbar-width: none;  /* Firefox */
+        .scrollbar-none {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </section>

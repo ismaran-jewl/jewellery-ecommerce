@@ -18,7 +18,7 @@ import { toast } from "sonner";
  */
 export default function Page() {
     return (
-        <div className="space-y-6">
+        <div className="container mx-auto min-h-screen space-y-8 px-4 pt-36 pb-40">
             <div className="flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-bold text-[#2d1a10]">Our Collection</h1>

@@ -373,7 +373,7 @@ export default function SeasonalOffers() {
   }, []);
 
   return (
-    <section className="relative py-12 md:py-20 px-0 md:px-6 bg-[#FFF9F6] min-h-[70vh] md:min-h-[80vh] flex items-center justify-center overflow-x-hidden">
+    <section className="relative py-12 md:py-20 px-0 md:px-6 bg-[#FFF9F6] min-h-[70vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden">
       {/* Desktop: Floating Products Background */}
       {!isMobile && (
         <div className="absolute inset-0 pointer-events-none z-0">
@@ -426,15 +426,15 @@ export default function SeasonalOffers() {
       )}
 
       {/* Main Content Container */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-center overflow-x-hidden">
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-center">
         <div className="flex flex-col items-center">
           {/* Hero Content - Compact on Mobile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full bg-white/30 backdrop-blur-xl p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/50 text-center shadow-2xl mb-6 md:mb-10 mx-4 md:mx-0"
+            className="w-full max-w-2xl bg-white/30 backdrop-blur-xl p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-white/50 text-center shadow-2xl mb-6 md:mb-8 mx-4 md:mx-0"
           >
-            <h2 className="text-2xl md:text-5xl font-serif text-[#4A4A4A] mb-2 md:mb-3 leading-tight">
+            <h2 className="text-2xl md:text-4xl font-serif text-[#4A4A4A] mb-2 md:mb-3 leading-tight">
               The <span className="text-[#B76E79] italic">Seasonal</span>
               <br className="hidden md:block" /> Edit
             </h2>
@@ -471,7 +471,7 @@ export default function SeasonalOffers() {
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
-          className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-20 bg-white/40 backdrop-blur-xl px-8 lg:px-10 py-6 lg:py-8 rounded-[2.5rem] border border-white/60 shadow-2xl text-center"
+          className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-20 bg-white/40 backdrop-blur-xl px-6 lg:px-8 py-4 lg:py-6 rounded-[2rem] border border-white/60 shadow-2xl text-center"
         >
           <div className="flex items-center justify-center gap-2 mb-4 text-[#B76E79]">
             <Clock className="w-5 h-5" />
@@ -480,14 +480,14 @@ export default function SeasonalOffers() {
             </span>
           </div>
 
-          <div className="flex gap-4 lg:gap-6 text-[#4A4A4A]">
+          <div className="flex gap-3 lg:gap-4 text-[#4A4A4A]">
             {[
               { label: "H", value: timeLeft.hours },
               { label: "M", value: timeLeft.minutes },
               { label: "S", value: timeLeft.seconds },
             ].map((item, i) => (
               <div key={i} className="flex flex-col items-center">
-                <span className="text-3xl lg:text-4xl font-light tabular-nums">
+                <span className="text-2xl lg:text-3xl font-light tabular-nums">
                   {String(item.value).padStart(2, "0")}
                 </span>
                 <span className="text-xs tracking-widest text-gray-500 mt-1">
