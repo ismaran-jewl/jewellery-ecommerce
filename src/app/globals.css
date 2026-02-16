@@ -120,7 +120,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html,
   body {
     @apply bg-background text-foreground;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  /* Allow horizontal scroll only in specific containers */
+  .horizontal-scroll-container {
+    overflow-x: auto !important;
   }
 }

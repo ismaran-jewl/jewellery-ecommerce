@@ -27,7 +27,7 @@ const HorizontalScroll = ({ items, onItemClick }) => {
     const handleScroll = () => {
       const scrollLeft = container.scrollLeft;
       const scrollWidth = container.scrollWidth - container.clientWidth;
-      const progress = scrollLeft / scrollWidth;
+      const progress = scrollWidth > 0 ? scrollLeft / scrollWidth : 0;
       setScrollProgress(progress);
     };
 
@@ -36,19 +36,21 @@ const HorizontalScroll = ({ items, onItemClick }) => {
   }, []);
 
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full">
       {/* Scroll Container */}
       <div
         ref={scrollContainerRef}
-        className="flex gap-4 overflow-x-scroll pb-4 px-4 snap-x snap-mandatory hide-scrollbar"
+        className="horizontal-scroll-container flex gap-4 overflow-x-auto pb-4 px-4 snap-x snap-proximity hide-scrollbar"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch',
+          touchAction: 'pan-y pan-x',
+          scrollBehavior: 'smooth',
         }}
       >
         {items.map((item, index) => {
-          const offset = index / (items.length - 1);
+          const offset = items.length > 1 ? index / (items.length - 1) : 0;
           const distance = Math.abs(scrollProgress - offset);
           const scale = 1 - Math.min(distance * 0.3, 0.1);
           const rotate = (scrollProgress - offset) * 5;
@@ -57,7 +59,7 @@ const HorizontalScroll = ({ items, onItemClick }) => {
           return (
             <motion.div
               key={item.id}
-              className="flex-shrink-0 w-[240px] snap-center"
+              className="flex-shrink-0 w-[220px] snap-center"
               onClick={() => onItemClick(item)}
             >
               <motion.div
@@ -69,12 +71,13 @@ const HorizontalScroll = ({ items, onItemClick }) => {
                 }}
                 transition={{ 
                   type: "spring", 
-                  stiffness: 300, 
-                  damping: 25,
+                  stiffness: 150, 
+                  damping: 20,
+                  mass: 0.8,
                 }}
                 className="relative rounded-2xl overflow-hidden shadow-xl border border-white/40 cursor-pointer bg-gray-100"
                 style={{ 
-                  height: '300px',
+                  height: '280px',
                   transformStyle: 'preserve-3d',
                 }}
               >
@@ -132,6 +135,10 @@ const HorizontalScroll = ({ items, onItemClick }) => {
                     x: `${(1 - distance * 2) * 100}%`,
                     opacity: Math.max(0, 1 - distance * 4),
                   }}
+                  transition={{
+                    duration: 0.5,
+                    ease: "easeOut",
+                  }}
                 />
 
                 {/* Glow effect on center */}
@@ -139,6 +146,10 @@ const HorizontalScroll = ({ items, onItemClick }) => {
                   className="absolute inset-0 bg-[#B76E79]/20 pointer-events-none"
                   animate={{
                     opacity: Math.max(0, 1 - distance * 3),
+                  }}
+                  transition={{
+                    duration: 0.5,
+                    ease: "easeOut",
                   }}
                 />
               </motion.div>
@@ -148,7 +159,7 @@ const HorizontalScroll = ({ items, onItemClick }) => {
       </div>
 
       {/* Progress Bar */}
-      <div className="mt-4 h-1 bg-gray-200/50 rounded-full overflow-hidden px-4">
+      <div className="mt-4 mx-4 h-1 bg-gray-200/50 rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-[#B76E79] to-pink-400 rounded-full"
           style={{
@@ -353,16 +364,16 @@ export default function SeasonalOffers() {
       items.map((item, i) => ({
         ...item,
         id: i,
-        top: i < 4 ? 5 + Math.random() * 20 : 65 + Math.random() * 20,
+        top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,
         left: (i % 4) * 25 + Math.random() * 5,
-        size: 260 + Math.random() * 80,
+        size: 220 + Math.random() * 60,
         rotate: -8 + Math.random() * 16,
       }))
     );
   }, []);
 
   return (
-    <section className="relative py-8 md:py-32 px-4 md:px-6 bg-[#FFF9F6] overflow-hidden min-h-[100vh] flex items-center justify-center">
+    <section className="relative py-12 md:py-20 px-0 md:px-6 bg-[#FFF9F6] min-h-[70vh] md:min-h-[80vh] flex items-center justify-center overflow-x-hidden">
       {/* Desktop: Floating Products Background */}
       {!isMobile && (
         <div className="absolute inset-0 pointer-events-none z-0">
@@ -415,29 +426,27 @@ export default function SeasonalOffers() {
       )}
 
       {/* Main Content Container */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-center min-h-[90vh] md:min-h-auto">
+      <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col justify-center overflow-x-hidden">
         <div className="flex flex-col items-center">
           {/* Hero Content - Compact on Mobile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full bg-white/30 backdrop-blur-xl p-5 md:p-12 rounded-2xl md:rounded-[3rem] border border-white/50 text-center shadow-2xl mb-6 md:mb-12"
+            className="w-full bg-white/30 backdrop-blur-xl p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/50 text-center shadow-2xl mb-6 md:mb-10 mx-4 md:mx-0"
           >
-            <h2 className="text-3xl md:text-7xl font-serif text-[#4A4A4A] mb-2 md:mb-4 leading-tight">
+            <h2 className="text-2xl md:text-5xl font-serif text-[#4A4A4A] mb-2 md:mb-3 leading-tight">
               The <span className="text-[#B76E79] italic">Seasonal</span>
               <br className="hidden md:block" /> Edit
             </h2>
-            <p className="text-gray-500 text-xs md:text-lg mb-4 md:mb-8">
+            <p className="text-gray-500 text-xs md:text-base mb-4 md:mb-6">
               {isMobile
                 ? "Scroll to explore our collection"
                 : "Click any piece to explore the details"}
             </p>
 
-            
-
             <Button
               size="lg"
-              className="rounded-full bg-[#4A4A4A] hover:bg-[#3a3a3a] px-6 md:px-10 py-5 md:py-7 text-sm md:text-lg w-full sm:w-auto"
+              className="rounded-full bg-[#4A4A4A] hover:bg-[#3a3a3a] px-6 md:px-8 py-4 md:py-5 text-sm md:text-base w-full sm:w-auto"
             >
               Explore All
               <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
@@ -446,7 +455,7 @@ export default function SeasonalOffers() {
 
           {/* Mobile: Horizontal Scroll */}
           {isMobile && (
-            <div className="w-full">
+            <div className="w-full overflow-x-hidden">
               <HorizontalScroll
                 items={mediaItems}
                 onItemClick={setActiveProduct}
