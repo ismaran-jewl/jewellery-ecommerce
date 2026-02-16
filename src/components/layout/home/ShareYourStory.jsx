@@ -1,83 +1,200 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import { motion, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Heart, ArrowRight, Quote } from "lucide-react";
+import { ArrowRight, Sparkles, Camera } from "lucide-react";
 
-const fadeIn = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } },
-};
+const stories = [
+  { 
+    id: 1, 
+    img: "https://images.unsplash.com/photo-1617113937231-794337380896?q=80&w=400&auto=format&fit=crop", 
+    name: "Sarah & James", 
+    text: "“We'll never forget the day he proposed. This ring is a symbol of our beginning.”", 
+    x: "5%", 
+    y: "20%", 
+    rotate: -6,
+    delay: 0
+  },
+  { 
+    id: 2, 
+    img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop", 
+    name: "Elena's 30th", 
+    text: "“My friends gifted me this necklace for my birthday. It shines as bright as our memories together.”", 
+    x: "75%", 
+    y: "15%", 
+    rotate: 6,
+    delay: 0.1
+  },
+  { 
+    id: 3, 
+    img: "https://images.unsplash.com/photo-1544168190-79c11e66b380?q=80&w=400&auto=format&fit=crop", 
+    name: "The Graduation", 
+    text: "“A gift from my parents to celebrate a new chapter. It reminds me how far I've come.”", 
+    x: "10%", 
+    y: "65%", 
+    rotate: 4,
+    delay: 0.2
+  },
+  { 
+    id: 4, 
+    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400&auto=format&fit=crop", 
+    name: "Anniversary", 
+    text: "“Ten years of love, captured in one timeless piece. It's more than a jewel, it's our story.”", 
+    x: "80%", 
+    y: "60%", 
+    rotate: -4,
+    delay: 0.3
+  },
+];
+
+function FloatingImage({ story, mouseX, mouseY }) {
+  // Parallax effect based on mouse position
+  // We use different ranges for x/y to create non-uniform movement (more organic)
+  const xRange = [50 * (story.id % 2 === 0 ? 1 : -1), -50 * (story.id % 2 === 0 ? 1 : -1)];
+  const yRange = [50 * (story.id % 2 === 0 ? -1 : 1), -50 * (story.id % 2 === 0 ? -1 : 1)];
+  
+  const x = useTransform(mouseX, [0, 1], xRange);
+  const y = useTransform(mouseY, [0, 1], yRange);
+  
+  const xSpring = useSpring(x, { stiffness: 40, damping: 20 });
+  const ySpring = useSpring(y, { stiffness: 40, damping: 20 });
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.8 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.8, delay: story.delay }}
+      style={{ left: story.x, top: story.y, x: xSpring, y: ySpring, rotate: story.rotate }}
+      className="absolute hidden lg:block w-56 aspect-[3/4] bg-white p-2 shadow-2xl rounded-lg z-10 hover:z-30 transition-all duration-500 group cursor-pointer"
+      whileHover={{ scale: 1.1, rotate: 0, transition: { duration: 0.3 } }}
+    >
+      <div className="relative w-full h-full overflow-hidden bg-neutral-100 rounded-md">
+        <img src={story.img} alt={story.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+        
+        {/* Overlay Content */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end text-left p-4">
+          <p className="text-[#C59D5F] font-serif text-lg mb-1 italic">{story.name}</p>
+          <p className="text-white/90 text-xs font-light leading-snug">{story.text}</p>
+        </div>
+      </div>
+      
+      {/* Pin/Tape effect (Visual flair) */}
+      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/10 backdrop-blur-sm rounded-sm opacity-80 -rotate-6" />
+    </motion.div>
+  );
+}
 
 export default function ShareYourStory() {
+  const containerRef = useRef(null);
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  const handleMouseMove = (e) => {
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
   return (
-    <section className="relative py-32 bg-[#1A1A1A] text-white overflow-hidden">
-      {/* 1. LAYERED BACKGROUND EFFECTS */}
-      {/* Animated Gold Grain/Noise Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="relative py-32 min-h-[850px] bg-[#0A0A0A] text-white overflow-hidden flex items-center justify-center"
+    >
+      {/* 1. BACKGROUND LAYERS */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#0a0a0a] to-black" />
+      <div className="absolute inset-0 opacity-[0.2] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
       
-      {/* Dynamic Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C59D5F] opacity-[0.15] blur-[120px] rounded-full" />
-      <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-[#C59D5F] opacity-[0.05] blur-[100px] rounded-full" />
+      {/* Animated Glow Orbs */}
+      <motion.div 
+        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#C59D5F] rounded-full blur-[150px] opacity-10 pointer-events-none"
+      />
+      <motion.div 
+        animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.15, 0.05] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#2D5A40] rounded-full blur-[150px] opacity-10 pointer-events-none"
+      />
 
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeIn}
-        className="relative max-w-5xl mx-auto px-6 text-center"
-      >
-        {/* 2. ICON DESIGN */}
-        <div className="relative inline-block mb-10">
-          <Heart className="w-12 h-12 text-[#C59D5F] relative z-10" strokeWidth={1.2} />
+      {/* 2. FLOATING IMAGES (Desktop Only) */}
+      {stories.map((story) => (
+        <FloatingImage key={story.id} story={story} mouseX={mouseX} mouseY={mouseY} />
+      ))}
+
+      {/* 3. MAIN CONTENT */}
+      <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          {/* Badge */}
           <motion.div 
-            animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0, 0.3] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="absolute inset-0 bg-[#C59D5F] rounded-full blur-xl"
-          />
-        </div>
-
-        {/* 3. TYPOGRAPHY */}
-        <h3 className="text-4xl md:text-6xl font-serif mb-8 tracking-tight italic">
-          Every Piece <span className="text-[#C59D5F]">Tells a Story</span>
-        </h3>
-
-        <div className="relative max-w-2xl mx-auto">
-          <Quote className="absolute -top-6 -left-8 w-12 h-12 text-[#C59D5F]/10 rotate-180" />
-          <p className="text-neutral-400 text-lg md:text-xl font-light leading-relaxed mb-12 italic">
-            "From the nervous whisper of a proposal to the radiant glow of a wedding day, 
-            Ismaran is honored to be part of your most cherished milestones."
-          </p>
-          <Quote className="absolute -bottom-10 -right-8 w-12 h-12 text-[#C59D5F]/10" />
-        </div>
-
-        {/* 4. PREMIUM BUTTON */}
-        <div className="flex flex-col items-center gap-6">
-          <Button
-            size="lg"
-            className="relative overflow-hidden bg-transparent border border-[#C59D5F] text-[#C59D5F] hover:text-black px-12 py-8 rounded-none tracking-[0.2em] text-[10px] md:text-xs group transition-all duration-500"
+            whileHover={{ scale: 1.05 }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#C59D5F]/30 bg-[#C59D5F]/5 text-[#C59D5F] text-xs tracking-[0.2em] uppercase mb-10 backdrop-blur-md cursor-default"
           >
-            {/* Hover Slide Effect */}
-            <span className="absolute inset-0 bg-[#C59D5F] translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
-            
-            <span className="relative z-10 flex items-center">
-              SHARE YOUR MOMENT
-              <ArrowRight className="ml-3 w-4 h-4 transition-transform duration-500 group-hover:translate-x-2" />
-            </span>
-          </Button>
+            <Sparkles size={14} />
+            <span>Ismaran Community</span>
+          </motion.div>
           
-          <p className="text-[10px] uppercase tracking-[0.3em] text-neutral-500 font-medium">
-            Join our community of memories
-          </p>
-        </div>
+          {/* Heading */}
+          <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif mb-8 leading-[0.9] tracking-tight">
+            Your Story, <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F0E68C] via-[#C59D5F] to-[#B8860B] italic relative">
+              Our Legacy
+              <motion.svg 
+                className="absolute w-full h-3 -bottom-1 left-0 text-[#C59D5F]" 
+                viewBox="0 0 100 10" 
+                preserveAspectRatio="none"
+                initial={{ pathLength: 0, opacity: 0 }}
+                whileInView={{ pathLength: 1, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 1 }}
+              >
+                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
+              </motion.svg>
+            </span>
+          </h2>
 
-        {/* 5. LUXURY DIVIDER */}
-        <div className="mt-20 flex items-center justify-center gap-4">
-          <div className="h-[1px] w-12 bg-gradient-to-r from-transparent to-[#C59D5F]/40" />
-          <div className="w-1.5 h-1.5 rounded-full bg-[#C59D5F]/40 rotate-45" />
-          <div className="h-[1px] w-12 bg-gradient-to-l from-transparent to-[#C59D5F]/40" />
+          {/* Description */}
+          <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+            More than just jewellery, each piece is a silent storyteller. Your moments give it a voice, your memories make it a treasure. 
+            Share your story and become part of the Ismaran legacy.
+          </p>
+
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <Button 
+              className="group h-14 px-10 bg-[#C59D5F] text-[#0A0A0A] hover:bg-[#D4AF37] rounded-full text-sm tracking-[0.15em] uppercase font-bold transition-all hover:scale-105 shadow-[0_0_40px_-10px_rgba(197,157,95,0.4)]"
+            >
+              <Camera className="mr-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
+              Upload Photo
+            </Button>
+            <Button 
+              variant="outline"
+              className="group h-14 px-10 border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-[#C59D5F] hover:border-[#C59D5F]/50 rounded-full text-sm tracking-[0.15em] uppercase font-bold backdrop-blur-sm transition-all"
+            >
+              View Gallery
+              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+      
+      {/* 4. MOBILE IMAGE STRIP (Visible only on mobile) */}
+      <div className="lg:hidden absolute bottom-0 left-0 w-full h-32 opacity-30 pointer-events-none overflow-hidden">
+        <div className="flex gap-4 animate-marquee whitespace-nowrap">
+           {/* Simple marquee effect for mobile background */}
+           {[...stories, ...stories].map((s, i) => (
+             <img key={i} src={s.img} className="h-full w-24 object-cover rounded-md opacity-50 grayscale" alt="" />
+           ))}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
