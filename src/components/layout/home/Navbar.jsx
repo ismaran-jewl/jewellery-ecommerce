@@ -21,13 +21,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ShoppingBag, Heart, User, X, LayoutDashboard, LogOut, ShoppingCart } from "lucide-react";
+import { Search, ShoppingBag, Heart, User, X, LayoutDashboard, LogOut, ShoppingCart, Menu } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
@@ -57,6 +57,14 @@ export default function Navbar() {
       <nav className="w-full border-b bg-[#FFDAB9]/95 sticky top-0 z-50 backdrop-blur transition-colors duration-300">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           
+          {/* Mobile Menu Button */}
+          <button 
+            className={`md:hidden mr-2 text-[#1B4D3E] ${isSearchOpen ? 'hidden' : ''}`}
+            onClick={onMenuClick}
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+
           {/* Logo */}
           <Link href="/" className={`text-3xl font-serif font-bold tracking-tight text-[#1B4D3E] hover:text-[#2d1a10] transition-colors ${isSearchOpen ? 'hidden md:block' : ''}`}>
             ISMARN
