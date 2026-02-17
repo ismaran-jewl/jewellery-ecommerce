@@ -11,8 +11,7 @@ const sidebarItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 w-64 -translate-x-full border-r bg-white/80 backdrop-blur-md transition-transform md:translate-x-0">
-      <div className="flex flex-col overflow-y-auto px-4 py-6">
+    <div className="flex h-full flex-col overflow-y-auto bg-white/80 px-4 py-6 backdrop-blur-md">
         <div className="mb-8 flex items-center px-2">
           <span className="text-2xl font-bold text-gray-900">ISMARN</span>
         </div>
@@ -34,7 +33,6 @@ export default function Sidebar() {
             <span className="font-medium">Sign Out</span>
           </button>
         </div>
-      </div>
-    </aside>
+    </div>
   );
 }
