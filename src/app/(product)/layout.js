@@ -10,7 +10,8 @@ export default function ClientWrapper({ children }) {
     const pathname = usePathname();
 
     return (
-        <div className="flex flex-col h-screen overflow-hidden bg-[#FFDAB9]/20">
+        <>
+        <div className="flex flex-col overflow-hidden bg-[#FFDAB9]/20">
 
             <Navbar />
 
@@ -30,7 +31,8 @@ export default function ClientWrapper({ children }) {
                 </main>
             </div>
 
-            <Footer />
         </div>
+            <Footer />
+        </>
     );
 }

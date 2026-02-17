@@ -10,7 +10,7 @@ export default function ClientWrapper({ children }) {
 
   return (
     // 1. Main wrapper: fills screen, prevents outside scroll
-    <div className="flex flex-col h-screen overflow-hidden bg-[#FFDAB9]/20">
+    <div className="flex flex-col overflow-hidden bg-[#FFDAB9]/20">
       
       {/* 2. Fixed Top Navbar */}
       <header className="flex-none z-50">

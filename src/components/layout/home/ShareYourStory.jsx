@@ -103,7 +103,7 @@ export default function ShareYourStory() {
     <section 
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative py-32 min-h-[850px] bg-[#0A0A0A] text-white overflow-hidden flex items-center justify-center"
+      className="relative py-20 lg:py-32 min-h-[auto] lg:min-h-[850px] bg-[#0A0A0A] text-white overflow-hidden flex flex-col items-center justify-center"
     >
       {/* 1. BACKGROUND LAYERS */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#0a0a0a] to-black" />
@@ -144,7 +144,7 @@ export default function ShareYourStory() {
           </motion.div>
           
           {/* Heading */}
-          <h2 className="text-5xl md:text-7xl lg:text-8xl font-serif mb-8 leading-[0.9] tracking-tight">
+          <h2 className="text-4xl md:text-7xl lg:text-8xl font-serif mb-8 leading-[0.9] tracking-tight">
             Your Story, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F0E68C] via-[#C59D5F] to-[#B8860B] italic relative">
               Our Legacy
@@ -162,7 +162,7 @@ export default function ShareYourStory() {
           </h2>
 
           {/* Description */}
-          <p className="text-neutral-400 text-lg md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed">
+          <p className="text-neutral-400 text-base md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed">
             More than just jewellery, each piece is a silent storyteller. Your moments give it a voice, your memories make it a treasure. 
             Share your story and become part of the Ismaran legacy.
           </p>
@@ -186,13 +186,27 @@ export default function ShareYourStory() {
         </motion.div>
       </div>
       
-      {/* 4. MOBILE IMAGE STRIP (Visible only on mobile) */}
-      <div className="lg:hidden absolute bottom-0 left-0 w-full h-32 opacity-30 pointer-events-none overflow-hidden">
-        <div className="flex gap-4 animate-marquee whitespace-nowrap">
-           {/* Simple marquee effect for mobile background */}
-           {[...stories, ...stories].map((s, i) => (
-             <img key={i} src={s.img} className="h-full w-24 object-cover rounded-md opacity-50 grayscale" alt="" />
-           ))}
+      {/* 4. MOBILE STORIES SLIDER (Visible only on mobile) */}
+      <div className="lg:hidden w-full mt-16 overflow-x-auto pb-8 px-6 z-20 snap-x snap-mandatory">
+        <div className="flex gap-4 w-max">
+          {stories.map((story, i) => (
+            <motion.div 
+              key={story.id}
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="w-64 aspect-[3/4] bg-white p-2 rounded-lg shadow-xl snap-center shrink-0"
+            >
+              <div className="relative w-full h-full overflow-hidden bg-neutral-100 rounded-md">
+                <img src={story.img} alt={story.name} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end text-left p-4">
+                  <p className="text-[#C59D5F] font-serif text-lg mb-1 italic">{story.name}</p>
+                  <p className="text-white/90 text-xs font-light leading-snug line-clamp-3">{story.text}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "@/components/providers/auth-provider";
 import "@/app/globals.css";
+
 export const metadata = {
   title: "ISMARN",
   description: "Premium Jewellery Collection",
@@ -9,10 +10,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#FAF9F6] text-[#2D2D2D]">
+      <body className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#2D2D2D]">
         <AuthProvider>
-            <Toaster />
+          <Toaster />
+          <main className="flex-1">
             {children}
+          </main>
         </AuthProvider>
       </body>
     </html>

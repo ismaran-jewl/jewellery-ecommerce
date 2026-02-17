@@ -120,13 +120,17 @@
   * {
     @apply border-border outline-ring/50;
   }
-  html,
-  body {
-    @apply bg-background text-foreground;
-    overflow-x: hidden;
+  html {
+    overflow-x: hidden; /* ✅ Safe here — does NOT break scroll context */
     width: 100%;
   }
-  
+  body {
+    @apply bg-background text-foreground;
+    width: 100%;
+    /* ❌ Removed overflow-x: hidden from body — it was creating a broken scroll
+       context that clipped page height and caused the footer to stick/overlap */
+  }
+
   /* Allow horizontal scroll only in specific containers */
   .horizontal-scroll-container {
     overflow-x: auto !important;
