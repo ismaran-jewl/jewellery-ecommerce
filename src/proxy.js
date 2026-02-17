@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = ["/dashboard", "/admin"];
+const protectedRoutes = ["/dashboard", "/admin","/wishlist","/cart"];
 const adminRoutes = ["/admin"];
 
 export async function proxy(req) {
@@ -34,5 +34,5 @@ export async function proxy(req) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*","/wishlist","/cart"],
 };
