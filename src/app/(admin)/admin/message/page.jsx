@@ -1,56 +1,103 @@
 "use client";
 
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const IconMic = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-    <line x1="12" y1="19" x2="12" y2="23"/>
-    <line x1="8" y1="23" x2="16" y2="23"/>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+    <line x1="12" y1="19" x2="12" y2="23" />
+    <line x1="8" y1="23" x2="16" y2="23" />
   </svg>
 );
 
 const IconVideo = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="23 7 16 12 23 17 23 7"/>
-    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polygon points="23 7 16 12 23 17 23 7" />
+    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
   </svg>
 );
 
 const IconPlay = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-    <polygon points="5 3 19 12 5 21 5 3"/>
+    <polygon points="5 3 19 12 5 21 5 3" />
   </svg>
 );
 
 const IconTrash = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="3 6 5 6 21 6"/>
-    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-    <path d="M10 11v6M14 11v6"/>
-    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="3 6 5 6 21 6" />
+    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+    <path d="M10 11v6M14 11v6" />
+    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
   </svg>
 );
 
 const IconX = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="18" y1="6" x2="6" y2="18"/>
-    <line x1="6" y1="6" x2="18" y2="18"/>
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <line x1="18" y1="6" x2="6" y2="18" />
+    <line x1="6" y1="6" x2="18" y2="18" />
   </svg>
 );
 
 const IconStop = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <rect x="3" y="3" width="18" height="18" rx="2" />
   </svg>
 );
 
 const IconRefresh = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="23 4 23 10 17 10"/>
-    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="23 4 23 10 17 10" />
+    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
   </svg>
 );
 
@@ -92,7 +139,7 @@ function RecordingModal({ mode, onClose, onSave }) {
     chunksRef.current = [];
     try {
       const stream = await navigator.mediaDevices.getUserMedia(
-        isVideo ? { video: true, audio: true } : { audio: true }
+        isVideo ? { video: true, audio: true } : { audio: true },
       );
       streamRef.current = stream;
 
@@ -124,7 +171,11 @@ function RecordingModal({ mode, onClose, onSave }) {
       setSeconds(0);
       timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
     } catch (err) {
-      setError("Could not access " + (isVideo ? "camera/microphone" : "microphone") + ". Check permissions.");
+      setError(
+        "Could not access " +
+          (isVideo ? "camera/microphone" : "microphone") +
+          ". Check permissions.",
+      );
     }
   };
 
@@ -148,20 +199,31 @@ function RecordingModal({ mode, onClose, onSave }) {
     if (blob) onSave(blob, blob.type);
   };
 
-  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  const fmt = (s) =>
+    `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
   return (
-    <div style={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      style={styles.overlay}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div style={styles.modal}>
         {/* Header */}
         <div style={styles.modalHeader}>
           <div style={styles.modalTitle}>
-            <span style={{ ...styles.modeBadge, background: isVideo ? "#3b82f6" : "#8b5cf6" }}>
+            <span
+              style={{
+                ...styles.modeBadge,
+                background: isVideo ? "#3b82f6" : "#8b5cf6",
+              }}
+            >
               {isVideo ? <IconVideo /> : <IconMic />}
             </span>
             <span>{isVideo ? "Video Message" : "Voice Message"}</span>
           </div>
-          <button style={styles.closeBtn} onClick={onClose}><IconX /></button>
+          <button style={styles.closeBtn} onClick={onClose}>
+            <IconX />
+          </button>
         </div>
 
         {/* Body */}
@@ -180,28 +242,39 @@ function RecordingModal({ mode, onClose, onSave }) {
           )}
 
           {/* Preview after recording */}
-          {status === "preview" && (
-            isVideo
-              ? <video ref={previewRef} controls style={styles.videoEl} />
-              : <audio ref={previewRef} controls style={styles.audioEl} />
-          )}
+          {status === "preview" &&
+            (isVideo ? (
+              <video ref={previewRef} controls style={styles.videoEl} />
+            ) : (
+              <audio ref={previewRef} controls style={styles.audioEl} />
+            ))}
 
           {/* Idle placeholder */}
           {status === "idle" && !isVideo && (
             <div style={styles.audioPlaceholder}>
               <div style={styles.waveIcon}>
                 {[...Array(9)].map((_, i) => (
-                  <div key={i} style={{ ...styles.waveBar, height: `${12 + Math.sin(i) * 10}px` }} />
+                  <div
+                    key={i}
+                    style={{
+                      ...styles.waveBar,
+                      height: `${12 + Math.sin(i) * 10}px`,
+                    }}
+                  />
                 ))}
               </div>
-              <p style={styles.placeholderText}>Ready to record your voice message</p>
+              <p style={styles.placeholderText}>
+                Ready to record your voice message
+              </p>
             </div>
           )}
 
           {status === "idle" && isVideo && (
             <div style={styles.videoPlaceholder}>
               <IconVideo />
-              <p style={styles.placeholderText}>Camera will activate when you start recording</p>
+              <p style={styles.placeholderText}>
+                Camera will activate when you start recording
+              </p>
             </div>
           )}
 
@@ -218,24 +291,36 @@ function RecordingModal({ mode, onClose, onSave }) {
         {/* Footer actions */}
         <div style={styles.modalFooter}>
           {status === "idle" && (
-            <button style={{ ...styles.btn, ...styles.btnPrimary }} onClick={startRecording}>
+            <button
+              style={{ ...styles.btn, ...styles.btnPrimary }}
+              onClick={startRecording}
+            >
               {isVideo ? <IconVideo /> : <IconMic />}
               Start Recording
             </button>
           )}
           {status === "recording" && (
-            <button style={{ ...styles.btn, ...styles.btnDanger }} onClick={stopRecording}>
+            <button
+              style={{ ...styles.btn, ...styles.btnDanger }}
+              onClick={stopRecording}
+            >
               <IconStop />
               Stop
             </button>
           )}
           {status === "preview" && (
             <>
-              <button style={{ ...styles.btn, ...styles.btnGhost }} onClick={resetRecording}>
+              <button
+                style={{ ...styles.btn, ...styles.btnGhost }}
+                onClick={resetRecording}
+              >
                 <IconRefresh />
                 Re-record
               </button>
-              <button style={{ ...styles.btn, ...styles.btnSuccess }} onClick={handleSave}>
+              <button
+                style={{ ...styles.btn, ...styles.btnSuccess }}
+                onClick={handleSave}
+              >
                 Save Message
               </button>
             </>
@@ -252,11 +337,19 @@ function PlaybackModal({ message, onClose }) {
   const src = `data:${message.contentType};base64,${message.contentBase64}`;
 
   return (
-    <div style={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div
+      style={styles.overlay}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
       <div style={{ ...styles.modal, maxWidth: 600 }}>
         <div style={styles.modalHeader}>
           <div style={styles.modalTitle}>
-            <span style={{ ...styles.modeBadge, background: isVideo ? "#3b82f6" : "#8b5cf6" }}>
+            <span
+              style={{
+                ...styles.modeBadge,
+                background: isVideo ? "#3b82f6" : "#8b5cf6",
+              }}
+            >
               {isVideo ? <IconVideo /> : <IconMic />}
             </span>
             <div>
@@ -266,13 +359,16 @@ function PlaybackModal({ message, onClose }) {
               </div>
             </div>
           </div>
-          <button style={styles.closeBtn} onClick={onClose}><IconX /></button>
+          <button style={styles.closeBtn} onClick={onClose}>
+            <IconX />
+          </button>
         </div>
         <div style={styles.modalBody}>
-          {isVideo
-            ? <video src={src} controls autoPlay style={styles.videoEl} />
-            : <audio src={src} controls autoPlay style={styles.audioEl} />
-          }
+          {isVideo ? (
+            <video src={src} controls autoPlay style={styles.videoEl} />
+          ) : (
+            <audio src={src} controls autoPlay style={styles.audioEl} />
+          )}
         </div>
       </div>
     </div>
@@ -281,6 +377,25 @@ function PlaybackModal({ message, onClose }) {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function AdminMessagesPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (!session || session.user.role !== "admin") {
+      router.replace("/login");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (!session || session.user.role !== "admin") {
+    return null; // prevent flash
+  }
+
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [recordMode, setRecordMode] = useState(null); // null | 'audio' | 'video'
@@ -307,7 +422,9 @@ export default function AdminMessagesPage() {
     }
   }, []);
 
-  useEffect(() => { fetchMessages(); }, [fetchMessages]);
+  useEffect(() => {
+    fetchMessages();
+  }, [fetchMessages]);
 
   const handleSave = async (blob, contentType) => {
     setSaving(true);
@@ -315,7 +432,10 @@ export default function AdminMessagesPage() {
     try {
       const formData = new FormData();
       formData.append("media", blob, `recording.${contentType.split("/")[1]}`);
-      const res = await fetch("/api/admin/message", { method: "POST", body: formData });
+      const res = await fetch("/api/admin/message", {
+        method: "POST",
+        body: formData,
+      });
       if (!res.ok) throw new Error("Failed");
       showToast("Message saved successfully");
       await fetchMessages();
@@ -329,7 +449,9 @@ export default function AdminMessagesPage() {
   const handleDelete = async (id) => {
     if (!confirm("Delete this message?")) return;
     try {
-      const res = await fetch(`/api/admin/message?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/message?id=${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) throw new Error("Failed");
       showToast("Message deleted");
       setMessages((prev) => prev.filter((m) => m._id !== id));
@@ -340,15 +462,27 @@ export default function AdminMessagesPage() {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-      + " " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    return (
+      d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }) +
+      " " +
+      d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    );
   };
 
   return (
     <div style={styles.page}>
       {/* Toast */}
       {toast && (
-        <div style={{ ...styles.toast, background: toast.type === "error" ? "#ef4444" : "#22c55e" }}>
+        <div
+          style={{
+            ...styles.toast,
+            background: toast.type === "error" ? "#ef4444" : "#22c55e",
+          }}
+        >
           {toast.msg}
         </div>
       )}
@@ -362,10 +496,7 @@ export default function AdminMessagesPage() {
         />
       )}
       {playback && (
-        <PlaybackModal
-          message={playback}
-          onClose={() => setPlayback(null)}
-        />
+        <PlaybackModal message={playback} onClose={() => setPlayback(null)} />
       )}
 
       {/* Page header */}
@@ -398,8 +529,16 @@ export default function AdminMessagesPage() {
       <div style={styles.statsRow}>
         {[
           { label: "Total Messages", value: messages.length },
-          { label: "Voice", value: messages.filter(m => m.contentType?.startsWith("audio")).length },
-          { label: "Video", value: messages.filter(m => m.contentType?.startsWith("video")).length },
+          {
+            label: "Voice",
+            value: messages.filter((m) => m.contentType?.startsWith("audio"))
+              .length,
+          },
+          {
+            label: "Video",
+            value: messages.filter((m) => m.contentType?.startsWith("video"))
+              .length,
+          },
         ].map((s) => (
           <div key={s.label} style={styles.statCard}>
             <div style={styles.statValue}>{s.value}</div>
@@ -412,7 +551,11 @@ export default function AdminMessagesPage() {
       <div style={styles.tableCard}>
         <div style={styles.tableHeader}>
           <span style={styles.tableTitle}>All Messages</span>
-          <button style={styles.refreshBtn} onClick={fetchMessages} disabled={loading}>
+          <button
+            style={styles.refreshBtn}
+            onClick={fetchMessages}
+            disabled={loading}
+          >
             <IconRefresh /> Refresh
           </button>
         </div>
@@ -424,18 +567,26 @@ export default function AdminMessagesPage() {
           </div>
         ) : messages.length === 0 ? (
           <div style={styles.emptyState}>
-            <div style={styles.emptyIcon}><IconMic /></div>
+            <div style={styles.emptyIcon}>
+              <IconMic />
+            </div>
             <p style={styles.emptyText}>No messages yet</p>
-            <p style={styles.emptyHint}>Use the buttons above to record a message</p>
+            <p style={styles.emptyHint}>
+              Use the buttons above to record a message
+            </p>
           </div>
         ) : (
           <div style={styles.tableWrap}>
             <table style={styles.table}>
               <thead>
                 <tr>
-                  {["#", "Sender", "Type", "Date & Time", "Actions"].map((h) => (
-                    <th key={h} style={styles.th}>{h}</th>
-                  ))}
+                  {["#", "Sender", "Type", "Date & Time", "Actions"].map(
+                    (h) => (
+                      <th key={h} style={styles.th}>
+                        {h}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -449,29 +600,46 @@ export default function AdminMessagesPage() {
                       <td style={styles.td}>
                         <div style={styles.senderCell}>
                           <div style={styles.avatar}>
-                            {msg.sender?.image
-                              ? <img src={msg.sender.image} alt="" style={styles.avatarImg} />
-                              : <span>{(msg.sender?.name || msg.sender?.email || "?")[0].toUpperCase()}</span>
-                            }
+                            {msg.sender?.image ? (
+                              <img
+                                src={msg.sender.image}
+                                alt=""
+                                style={styles.avatarImg}
+                              />
+                            ) : (
+                              <span>
+                                {(msg.sender?.name ||
+                                  msg.sender?.email ||
+                                  "?")[0].toUpperCase()}
+                              </span>
+                            )}
                           </div>
                           <div>
-                            <div style={styles.senderName}>{msg.sender?.name || "—"}</div>
-                            <div style={styles.senderEmail}>{msg.sender?.email || "—"}</div>
+                            <div style={styles.senderName}>
+                              {msg.sender?.name || "—"}
+                            </div>
+                            <div style={styles.senderEmail}>
+                              {msg.sender?.email || "—"}
+                            </div>
                           </div>
                         </div>
                       </td>
                       <td style={styles.td}>
-                        <span style={{
-                          ...styles.typeBadge,
-                          background: isVideo ? "#dbeafe" : "#f3e8ff",
-                          color: isVideo ? "#1d4ed8" : "#7c3aed",
-                        }}>
+                        <span
+                          style={{
+                            ...styles.typeBadge,
+                            background: isVideo ? "#dbeafe" : "#f3e8ff",
+                            color: isVideo ? "#1d4ed8" : "#7c3aed",
+                          }}
+                        >
                           {isVideo ? <IconVideo /> : <IconMic />}
                           {isVideo ? "Video" : "Voice"}
                         </span>
                       </td>
                       <td style={styles.td}>
-                        <span style={styles.dateText}>{formatDate(msg.createdAt)}</span>
+                        <span style={styles.dateText}>
+                          {formatDate(msg.createdAt)}
+                        </span>
                       </td>
                       <td style={styles.td}>
                         <div style={styles.actionBtns}>
@@ -911,9 +1079,13 @@ const styles = {
     transition: "opacity 0.15s, transform 0.1s",
   },
   btnPrimary: { background: "#6366f1", color: "#fff" },
-  btnDanger:  { background: "#ef4444", color: "#fff" },
+  btnDanger: { background: "#ef4444", color: "#fff" },
   btnSuccess: { background: "#22c55e", color: "#fff" },
-  btnGhost:   { background: "#1e1e2e", color: "#94a3b8", border: "1px solid #2d2d3d" },
-  btnAudio:   { background: "#5b21b6", color: "#fff" },
-  btnVideo:   { background: "#1d4ed8", color: "#fff" },
+  btnGhost: {
+    background: "#1e1e2e",
+    color: "#94a3b8",
+    border: "1px solid #2d2d3d",
+  },
+  btnAudio: { background: "#5b21b6", color: "#fff" },
+  btnVideo: { background: "#1d4ed8", color: "#fff" },
 };
