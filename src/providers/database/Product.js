@@ -27,6 +27,12 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // NEW: gender field — store exactly "Women", "Men", or "Unisex"
+    gender: {
+      type: String,
+      enum: ["Women", "Men", "Unisex"],
+      default: "Women",
+    },
     image: {
       type: String,
       required: true,

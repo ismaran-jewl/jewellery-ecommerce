@@ -40,7 +40,7 @@ const SOCIAL_LINKS = [
   },
   {
     label: "YouTube",
-    href: "https://youtube.com/@YOUR_CHANNEL",    // ← replace
+    href: "https://www.youtube.com/channel/UC_chCgchWVkX8fk8egjdRdQ",    // ← replace
     icon: Youtube,
     color: peach,
   },
