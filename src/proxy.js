@@ -1,38 +1,31 @@
+// src/middleware.js
+import { auth } from "@/lib/auth"; // Update this path to where your NextAuth config is
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = ["/dashboard", "/admin","/wishlist","/cart"];
-const adminRoutes = ["/admin"];
-
-export async function proxy(req) {
+export default auth((req) => {
   const { pathname } = req.nextUrl;
+  const isLoggedIn = !!req.auth;
+  const userRole = req.auth?.user?.role;
 
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET,
-  });
+  const protectedRoutes = ["/dashboard", "/admin", "/wishlist", "/cart"];
+  const adminRoutes = ["/admin"];
 
-  const isProtected = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  const isAdminRoute = adminRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+  const isProtected = protectedRoutes.some((route) => pathname.startsWith(route));
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
 
   // 🔐 Not logged in
-  if (isProtected && !token) {
+  if (isProtected && !isLoggedIn) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
   // 👑 Not admin
-  if (isAdminRoute && token?.role !== "admin") {
+  if (isAdminRoute && userRole !== "admin") {
     return NextResponse.redirect(new URL("/", req.url));
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*","/wishlist","/cart"],
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/wishlist", "/cart"],
 };
