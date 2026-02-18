@@ -27,6 +27,25 @@ import { motion } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
 
+const menuVariants = {
+  open: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut",
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+    },
+  },
+  closed: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+};
+
+const itemVariants = {
+  open: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
+  closed: { opacity: 0, y: -10 },
+};
+
 export default function Navbar({ onMenuClick }) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -91,9 +110,9 @@ export default function Navbar({ onMenuClick }) {
             </div>
           ) : (
             /* Desktop Nav Links */
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-6">
                <NavigationMenu>
-              <NavigationMenuList>
+              <NavigationMenuList className="gap-1">
                 <NavigationMenuItem>
                   <NavigationMenuLink asChild>
                     <Link href="/" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium transition-colors hover:bg-white/20 hover:text-[#1B4D3E] focus:bg-white/20 focus:text-[#1B4D3E] text-[#1B4D3E]">
@@ -105,28 +124,108 @@ export default function Navbar({ onMenuClick }) {
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent text-base text-[#1B4D3E] hover:text-[#1B4D3E] hover:bg-white/20 data-[state=open]:bg-white/20 focus:bg-white/20">Shop</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid w-[300px] gap-3 p-4 md:w-[400px] md:grid-cols-2 bg-white">
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/shop?category=women" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#D1F2EB]/50 hover:text-[#1B4D3E] focus:bg-[#D1F2EB]/50 focus:text-[#1B4D3E]">
-                            <div className="text-base font-medium leading-none text-[#1B4D3E]">Women</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-[#1B4D3E]/70">
-                              Elegant pieces for her.
+                    <motion.div
+                      className="grid w-[600px] gap-5 p-6 md:w-[700px] lg:w-[800px] lg:grid-cols-[1fr_1fr_1fr] bg-white rounded-xl shadow-xl"
+                      initial="closed"
+                      animate="open"
+                      variants={menuVariants}
+                    >
+                      <motion.div variants={itemVariants} className="space-y-3">
+                        <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">By Category</h4>
+                        <ul className="space-y-1">
+                          {['Rings', 'Necklaces', 'Earrings', 'Bracelets'].map((item) => (
+                            <li key={item}>
+                              <NavigationMenuLink asChild>
+                                <Link href={`/shop?category=${item.toLowerCase()}`} className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">
+                                  {item}
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          ))}
+                          <li>
+                            <NavigationMenuLink asChild>
+                              <Link href="/shop" className="block p-2 text-sm font-semibold text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors mt-2">
+                                View All Jewellery →
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        </ul>
+                      </motion.div>
+
+                      <motion.div variants={itemVariants} className="space-y-3">
+                        <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">Collections</h4>
+                        <ul className="space-y-1">
+                          <li><NavigationMenuLink asChild><Link href="/shop?sort=newest" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">New Arrivals</Link></NavigationMenuLink></li>
+                          <li><NavigationMenuLink asChild><Link href="/shop?type=wedding" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Wedding & Bridal</Link></NavigationMenuLink></li>
+                          <li><NavigationMenuLink asChild><Link href="/shop?material=gold" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Gold Essentials</Link></NavigationMenuLink></li>
+                          <li><NavigationMenuLink asChild><Link href="/shop?material=diamond" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Diamond Sparkle</Link></NavigationMenuLink></li>
+                          <li><NavigationMenuLink asChild><Link href="/shop?material=gemstone" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Gemstone Vibrant</Link></NavigationMenuLink></li>
+                        </ul>
+                      </motion.div>
+
+                      <motion.div variants={itemVariants} className="flex flex-col justify-end rounded-lg bg-gradient-to-b from-[#FFDAB9]/30 to-[#D1F2EB]/30 p-5 no-underline outline-none focus:shadow-md relative overflow-hidden group">
+                          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                          <div className="relative z-10">
+                            <div className="mb-2 mt-4 text-lg font-medium text-[#1B4D3E]">
+                              Best Sellers
+                            </div>
+                            <p className="text-sm leading-tight text-[#1B4D3E]/80 mb-4">
+                              Discover the pieces everyone is talking about.
                             </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                      <li>
-                        <NavigationMenuLink asChild>
-                          <Link href="/shop?category=men" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-[#D1F2EB]/50 hover:text-[#1B4D3E] focus:bg-[#D1F2EB]/50 focus:text-[#1B4D3E]">
-                            <div className="text-base font-medium leading-none text-[#1B4D3E]">Men</div>
-                            <p className="line-clamp-2 text-sm leading-snug text-[#1B4D3E]/70">
-                              Sophisticated styles for him.
+                            <NavigationMenuLink asChild>
+                              <Link href="/shop?sort=default" className="inline-block px-4 py-2 bg-[#1B4D3E] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#143a2f] transition-colors">
+                                Shop Best Sellers
+                              </Link>
+                            </NavigationMenuLink>
+                          </div>
+                      </motion.div>
+                    </motion.div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent text-base text-[#1B4D3E] hover:text-[#1B4D3E] hover:bg-white/20 data-[state=open]:bg-white/20 focus:bg-white/20">Gifts</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <motion.div
+                      className="grid w-[550px] grid-cols-2 gap-5 p-6 bg-white rounded-xl shadow-xl"
+                      initial="closed"
+                      animate="open"
+                      variants={menuVariants}
+                    >
+                      <motion.div variants={itemVariants} className="flex flex-col space-y-5">
+                        <div>
+                          <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">By Occasion</h4>
+                          <ul className="space-y-1 mt-2">
+                            <li><NavigationMenuLink asChild><Link href="/shop?type=birthday" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Birthday Gifts</Link></NavigationMenuLink></li>
+                            <li><NavigationMenuLink asChild><Link href="/shop?type=anniversary" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Anniversary Gifts</Link></NavigationMenuLink></li>
+                            <li><NavigationMenuLink asChild><Link href="/shop?type=wedding" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Wedding Gifts</Link></NavigationMenuLink></li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">For Someone</h4>
+                          <ul className="space-y-1 mt-2">
+                            <li><NavigationMenuLink asChild><Link href="/shop?gender=women" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">For Her</Link></NavigationMenuLink></li>
+                            <li><NavigationMenuLink asChild><Link href="/shop?gender=men" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">For Him</Link></NavigationMenuLink></li>
+                          </ul>
+                        </div>
+                      </motion.div>
+                      <motion.div variants={itemVariants} className="flex flex-col justify-end rounded-lg bg-gradient-to-b from-[#FFDAB9]/30 to-[#D1F2EB]/30 p-5 no-underline outline-none focus:shadow-md relative overflow-hidden group">
+                          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611652022417-a55339f9b169?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                          <div className="relative z-10">
+                            <div className="mb-2 mt-4 text-lg font-medium text-[#1B4D3E]">
+                              Personalized Gifts
+                            </div>
+                            <p className="text-sm leading-tight text-[#1B4D3E]/80 mb-4">
+                              Add a special touch with our voice-note engraving service.
                             </p>
-                          </Link>
-                        </NavigationMenuLink>
-                      </li>
-                    </ul>
+                            <NavigationMenuLink asChild>
+                              <Link href="/voice-gift/create" className="inline-block px-4 py-2 bg-[#1B4D3E] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#143a2f] transition-colors">
+                                Create Now
+                              </Link>
+                            </NavigationMenuLink>
+                          </div>
+                      </motion.div>
+                    </motion.div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
@@ -134,6 +233,14 @@ export default function Navbar({ onMenuClick }) {
                   <NavigationMenuLink asChild>
                     <Link href="/offers" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium transition-colors hover:bg-white/20 hover:text-[#1B4D3E] focus:bg-white/20 focus:text-[#1B4D3E] text-[#1B4D3E]">
                       Offers
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link href="/contact" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium transition-colors hover:bg-white/20 hover:text-[#1B4D3E] focus:bg-white/20 focus:text-[#1B4D3E] text-[#1B4D3E]">
+                      Contact
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

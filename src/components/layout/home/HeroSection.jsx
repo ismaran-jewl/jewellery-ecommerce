@@ -124,8 +124,8 @@ export default function HeroSection() {
         </span>
 
         <h1 className="text-2xl md:text-4xl font-serif font-medium leading-[1.15] mb-4">
-          Memories Moulded <br />
-          <span className="italic text-[#E6C27A]">In Jewel</span>
+          Jewellery that <br />
+          <span className="italic text-[#E6C27A]">Speaks</span>
         </h1>
 
         <p className="text-xs md:text-sm max-w-md mx-auto text-white/80 mb-6 font-light leading-relaxed">

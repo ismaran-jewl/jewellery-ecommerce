@@ -30,61 +30,123 @@ const TRUST_ITEMS = [
    CATEGORY SVG ICONS  — relevant per type
 ───────────────────────────────────────── */
 function CategoryIcon({ name, active, size = 28 }) {
-    const color = active ? "#fff" : "#1B4D3E";
+    const c = active ? "#fff" : "#8B5E3C";
     const s = size;
-    const icons = {
-        rings: (
-            <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="9" stroke={color} strokeWidth="2.5"/>
-                <circle cx="16" cy="16" r="5" stroke={color} strokeWidth="1.5" strokeDasharray="2 2"/>
-                <path d="M13 7.5 Q16 4 19 7.5" stroke={color} strokeWidth="2" strokeLinecap="round" fill="none"/>
-                <circle cx="16" cy="5.5" r="2" fill={color}/>
-            </svg>
-        ),
-        necklaces: (
-            <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
-                <path d="M6 8 Q16 22 26 8" stroke={color} strokeWidth="2" strokeLinecap="round" fill="none"/>
-                <circle cx="16" cy="22" r="4" stroke={color} strokeWidth="2"/>
-                <line x1="16" y1="18" x2="16" y2="22" stroke={color} strokeWidth="1.5"/>
-                <circle cx="6" cy="8" r="1.5" fill={color}/>
-                <circle cx="26" cy="8" r="1.5" fill={color}/>
-            </svg>
-        ),
-        earrings: (
-            <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
-                <circle cx="11" cy="8" r="2.5" stroke={color} strokeWidth="2"/>
-                <path d="M11 10.5 L9 20 L13 20 Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round" fill="none"/>
-                <circle cx="21" cy="8" r="2.5" stroke={color} strokeWidth="2"/>
-                <path d="M21 10.5 L19 20 L23 20 Z" stroke={color} strokeWidth="1.8" strokeLinejoin="round" fill="none"/>
-                <circle cx="11" cy="22" r="1.5" fill={color}/>
-                <circle cx="21" cy="22" r="1.5" fill={color}/>
-            </svg>
-        ),
-        bracelets: (
-            <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
-                <path d="M8 16 Q8 8 16 8 Q24 8 24 16" stroke={color} strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-                <path d="M8 16 Q8 24 16 24 Q24 24 24 16" stroke={color} strokeWidth="2" strokeLinecap="round" strokeDasharray="3 2" fill="none"/>
-                <circle cx="8" cy="16" r="2" fill={color}/>
-                <circle cx="24" cy="16" r="2" fill={color}/>
-                <circle cx="16" cy="8" r="1.5" fill={color}/>
-            </svg>
-        ),
-        pendants: (
-            <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
-                <line x1="16" y1="4" x2="16" y2="11" stroke={color} strokeWidth="2" strokeLinecap="round"/>
-                <path d="M10 11 L16 26 L22 11 Z" stroke={color} strokeWidth="2" strokeLinejoin="round" fill="none"/>
-                <circle cx="16" cy="18" r="2" fill={color}/>
-                <path d="M12 9 Q16 6 20 9" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-            </svg>
-        ),
-        default: (
-            <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
-                <polygon points="16,4 20,12 28,13 22,19 24,27 16,23 8,27 10,19 4,13 12,12" stroke={color} strokeWidth="2" fill="none" strokeLinejoin="round"/>
-            </svg>
-        ),
-    };
-    const key = name?.toLowerCase().replace(/s$/, "") || "default";
-    return icons[key] ?? icons.default;
+    const n = name?.toLowerCase() || "";
+
+    // ── Ring ──
+    if (n.includes("ring")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="17" r="9" stroke={c} strokeWidth="2.5"/>
+            <path d="M11 8.5 Q16 4 21 8.5" stroke={c} strokeWidth="2.2" strokeLinecap="round" fill="none"/>
+            <circle cx="16" cy="5.5" r="2.5" fill={c}/>
+            <circle cx="16" cy="5.5" r="1" fill={active ? "#8B5E3C" : "#fff"}/>
+        </svg>
+    );
+
+    // ── Necklace ──
+    if (n.includes("necklace")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <path d="M5 7 Q7 5 10 6 Q16 8 22 6 Q25 5 27 7" stroke={c} strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <path d="M10 6 Q12 18 16 22" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+            <path d="M22 6 Q20 18 16 22" stroke={c} strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+            <path d="M13 22 L16 28 L19 22 Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill="none"/>
+            <circle cx="16" cy="22" r="1.2" fill={c}/>
+        </svg>
+    );
+
+    // ── Earring ──
+    if (n.includes("earring")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <circle cx="11" cy="7" r="2.5" stroke={c} strokeWidth="2"/>
+            <path d="M11 9.5 L11 18" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+            <path d="M8 18 L11 25 L14 18 Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill="none"/>
+            <circle cx="21" cy="7" r="2.5" stroke={c} strokeWidth="2"/>
+            <path d="M21 9.5 L21 18" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+            <ellipse cx="21" cy="23" rx="3" ry="4" stroke={c} strokeWidth="1.8" fill="none"/>
+        </svg>
+    );
+
+    // ── Bracelet / Bangle ──
+    if (n.includes("bracelet") || n.includes("bangle")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="10" stroke={c} strokeWidth="2.5" strokeDasharray="4 2"/>
+            <circle cx="16" cy="6" r="2.5" fill={c}/>
+            <circle cx="26" cy="16" r="1.5" fill={c}/>
+            <circle cx="6" cy="16" r="1.5" fill={c}/>
+        </svg>
+    );
+
+    // ── Pendant ──
+    if (n.includes("pendant")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <path d="M13 5 Q16 3 19 5" stroke={c} strokeWidth="2" strokeLinecap="round" fill="none"/>
+            <line x1="16" y1="5" x2="16" y2="11" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+            <path d="M16 11 L10 20 L16 26 L22 20 Z" stroke={c} strokeWidth="2" strokeLinejoin="round" fill="none"/>
+            <circle cx="16" cy="18" r="2" fill={c}/>
+        </svg>
+    );
+
+    // ── Anniversary ──
+    if (n.includes("anniversar")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <path d="M16 26 C16 26 5 19 5 12 A6 6 0 0 1 16 9 A6 6 0 0 1 27 12 C27 19 16 26 16 26Z" stroke={c} strokeWidth="2" fill="none" strokeLinejoin="round"/>
+            <circle cx="21" cy="8" r="3" stroke={c} strokeWidth="1.5" fill="none"/>
+            <line x1="21" y1="5" x2="21" y2="4" stroke={c} strokeWidth="1.5" strokeLinecap="round"/>
+        </svg>
+    );
+
+    // ── Birthday ──
+    if (n.includes("birthday")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <rect x="6" y="16" width="20" height="12" rx="2" stroke={c} strokeWidth="2" fill="none"/>
+            <path d="M6 20 Q16 24 26 20" stroke={c} strokeWidth="1.5" fill="none"/>
+            <line x1="11" y1="16" x2="11" y2="11" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+            <line x1="16" y1="16" x2="16" y2="10" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+            <line x1="21" y1="16" x2="21" y2="11" stroke={c} strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="11" cy="10" r="1.5" fill={c}/>
+            <circle cx="16" cy="9" r="1.5" fill={c}/>
+            <circle cx="21" cy="10" r="1.5" fill={c}/>
+        </svg>
+    );
+
+    // ── Wedding / Bridal ──
+    if (n.includes("wedding") || n.includes("bridal")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <circle cx="11" cy="16" r="6" stroke={c} strokeWidth="2" fill="none"/>
+            <circle cx="21" cy="16" r="6" stroke={c} strokeWidth="2" fill="none"/>
+            <path d="M14 12 Q16 9 18 12" stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+        </svg>
+    );
+
+    // ── Custom / Personalised ──
+    if (n.includes("custom") || n.includes("personal")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <path d="M8 24 L14 10 L16 14 L20 6 L24 24" stroke={c} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+            <circle cx="16" cy="16" r="2.5" fill={c}/>
+            <path d="M5 28 Q16 22 27 28" stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+        </svg>
+    );
+
+    // ── Gift ──
+    if (n.includes("gift")) return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <rect x="5" y="14" width="22" height="14" rx="2" stroke={c} strokeWidth="2" fill="none"/>
+            <rect x="5" y="10" width="22" height="5" rx="1.5" stroke={c} strokeWidth="2" fill="none"/>
+            <path d="M16 10 C16 10 12 6 14 4 C16 2 18 6 16 10Z" stroke={c} strokeWidth="1.5" fill="none"/>
+            <path d="M16 10 C16 10 20 6 18 4 C16 2 14 6 16 10Z" stroke={c} strokeWidth="1.5" fill="none"/>
+            <line x1="16" y1="10" x2="16" y2="28" stroke={c} strokeWidth="1.5"/>
+        </svg>
+    );
+
+    // ── DEFAULT fallback — generic gem ──
+    return (
+        <svg width={s} height={s} viewBox="0 0 32 32" fill="none">
+            <path d="M8 13 L16 6 L24 13 L20 26 L12 26 Z" stroke={c} strokeWidth="2" strokeLinejoin="round" fill="none"/>
+            <path d="M8 13 L16 18 L24 13" stroke={c} strokeWidth="1.5" fill="none"/>
+            <line x1="16" y1="6" x2="16" y2="18" stroke={c} strokeWidth="1.2" strokeDasharray="2 1.5"/>
+        </svg>
+    );
 }
 
 /* ─────────────────────────────────────────
@@ -163,10 +225,10 @@ function ProductCard({ product, isCartItem, isWishlisted, onToggleWishlist, onTo
                 <button
                     type="button"
                     onClick={onToggleWishlist}
-                    className={`absolute top-2.5 right-2.5 p-1.5 sm:p-2 rounded-full shadow-lg backdrop-blur-sm transition-all duration-300
+                    className={`btn-wishlist absolute top-2.5 right-2.5 p-1.5 sm:p-2 rounded-full shadow-lg backdrop-blur-sm
                         ${isWishlisted
                             ? "bg-red-50 border border-red-200 text-red-500 scale-110"
-                            : "bg-white/85 border border-white/50 text-[#9c8472] hover:text-red-400 hover:scale-110"}`}
+                            : "bg-white/85 border border-white/50 text-[#6FAFA3] hover:text-red-400 hover:scale-110"}`}
                 >
                     <Heart className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isWishlisted ? "fill-red-500" : ""}`} />
                 </button>
@@ -187,23 +249,23 @@ function ProductCard({ product, isCartItem, isWishlisted, onToggleWishlist, onTo
                 </h3>
 
                 <div className="mt-auto pt-2 sm:pt-2.5 border-t border-[#f5ede4]">
-                    <p className="text-sm sm:text-lg font-bold text-[#1B4D3E] tracking-tight mb-2">
+                    <p className="text-sm sm:text-lg font-bold text-[#5FBFA7] tracking-tight mb-2">
                         ₹{product.price?.toLocaleString("en-IN") ?? "0"}
                     </p>
                     <div className="flex gap-1.5">
                         <Link
                             href={`/product/${product._id}`}
-                            className="flex-1 flex items-center justify-center bg-[#1B4D3E] hover:bg-[#143a2f] text-white text-[9px] sm:text-xs h-7 sm:h-9 rounded-xl font-semibold tracking-wide transition-all duration-300 hover:shadow-[0_4px_16px_rgba(27,77,62,0.4)]"
+                            className="btn-press flex-1 flex items-center justify-center bg-[#5FBFA7] hover:bg-[#7a5122] text-white text-[9px] sm:text-xs h-7 sm:h-9 rounded-xl font-semibold tracking-wide hover:shadow-[0_4px_16px_rgba(146,98,42,0.5)]"
                         >
                             Explore
                         </Link>
                         <button
                             type="button"
                             onClick={onToggleCart}
-                            className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl border flex-shrink-0 flex items-center justify-center transition-all duration-300
+                            className={`btn-cart w-7 h-7 sm:w-9 sm:h-9 rounded-xl border flex-shrink-0 flex items-center justify-center
                                 ${isCartItem
-                                    ? "bg-[#1B4D3E] border-[#1B4D3E] text-white shadow-[0_4px_16px_rgba(27,77,62,0.35)]"
-                                    : "border-[#ddd0c0] text-[#9c8472] hover:border-[#1B4D3E] hover:text-[#1B4D3E] hover:bg-[#f0f9f5]"}`}
+                                    ? "bg-[#5FBFA7] border-[#5FBFA7] text-white shadow-[0_4px_16px_rgba(146,98,42,0.4)]"
+                                    : "border-[#DDF6F0] text-[#6FAFA3] hover:border-[#5FBFA7] hover:text-[#5FBFA7] hover:bg-[#fdf3e7]"}`}
                         >
                             <ShoppingCart className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isCartItem ? "fill-white" : ""}`} />
                         </button>
@@ -231,7 +293,7 @@ function SortDropdown({ value, onChange }) {
             <button
                 type="button"
                 onClick={() => setOpen(p => !p)}
-                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#ddd0c0] bg-white/90 backdrop-blur-sm text-[10px] sm:text-xs text-[#5c4632] hover:border-[#c4a882] transition-all font-semibold whitespace-nowrap shadow-sm"
+                className="flex items-center gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-[#DDF6F0] bg-white/90 backdrop-blur-sm text-[10px] sm:text-xs text-[#2F5F57] hover:border-[#c4a882] transition-all font-semibold whitespace-nowrap shadow-sm"
             >
                 <SlidersHorizontal className="w-3 h-3 text-[#c4a882]" />
                 <span>{current.label}</span>
@@ -244,8 +306,8 @@ function SortDropdown({ value, onChange }) {
                             onClick={() => { onChange(opt.value); setOpen(false); }}
                             className={`w-full text-left px-4 py-3 text-xs transition-colors font-medium
                                 ${opt.value === value
-                                    ? "bg-[#f0f9f5] text-[#1B4D3E] font-bold"
-                                    : "text-[#5c4632] hover:bg-[#fdf8f4]"}`}
+                                    ? "bg-[#fdf3e7] text-[#5FBFA7] font-bold"
+                                    : "text-[#2F5F57] hover:bg-[#fdf8f4]"}`}
                         >
                             {opt.label}
                         </button>
@@ -308,7 +370,7 @@ function MobileFilterDrawer({ open, onClose, searchParams, availableFilters, onT
                                     <div className="flex items-center gap-2">
                                         <span className="text-sm font-bold text-[#2d1a10]">{group.label}</span>
                                         {activeVals.length > 0 && (
-                                            <span className="w-5 h-5 rounded-full bg-[#1B4D3E] text-white text-[9px] flex items-center justify-center font-bold">
+                                            <span className="w-5 h-5 rounded-full bg-[#5FBFA7] text-white text-[9px] flex items-center justify-center font-bold">
                                                 {activeVals.length}
                                             </span>
                                         )}
@@ -323,10 +385,10 @@ function MobileFilterDrawer({ open, onClose, searchParams, availableFilters, onT
                                             const active = isActive(searchParams, group.key, opt);
                                             return (
                                                 <button key={opt} onClick={() => onToggle(group.key, opt)}
-                                                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-200
+                                                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 active:scale-90 select-none
                                                         ${active
-                                                            ? "bg-[#1B4D3E] text-white border-[#1B4D3E] shadow-[0_2px_8px_rgba(27,77,62,0.3)]"
-                                                            : "bg-white text-[#5c4632] border-[#ddd0c0] hover:border-[#c4a882]"}`}
+                                                            ? "bg-[#5FBFA7] text-white border-[#5FBFA7] shadow-[0_2px_12px_rgba(146,98,42,0.4)]"
+                                                            : "bg-white text-[#2F5F57] border-[#DDF6F0] hover:border-[#c4a882]"}`}
                                                 >
                                                     {opt}
                                                 </button>
@@ -350,7 +412,7 @@ function HeroBanner() {
     return (
         <div className="relative w-full rounded-3xl overflow-hidden mb-5 sm:mb-10">
             {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#0d2b22] via-[#1B4D3E] to-[#0a1f18]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1a0e05] via-[#2d1a08] to-[#0f0804]" />
             {/* Noise texture overlay */}
             <div className="absolute inset-0 opacity-[0.04]"
                 style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")", backgroundSize: "200px" }} />
@@ -410,9 +472,9 @@ function TrustStrip() {
                     return (
                         <div key={i} className={`flex-shrink-0 flex items-center gap-2.5 px-4 sm:px-5 py-3.5 sm:py-4 ${i < TRUST_ITEMS.length - 1 ? "sm:border-r sm:border-[#f0e6dc]" : ""}`}>
                             <div className="w-8 h-8 rounded-xl bg-[#f0f9f5] flex items-center justify-center flex-shrink-0">
-                                <Icon className="w-4 h-4 text-[#1B4D3E]" />
+                                <Icon className="w-4 h-4 text-[#8B5E3C]" />
                             </div>
-                            <span className="text-[10px] sm:text-[11px] text-[#5c4632] font-semibold leading-tight whitespace-nowrap sm:whitespace-normal">
+                            <span className="text-[10px] sm:text-[11px] text-[#2F5F57] font-semibold leading-tight whitespace-nowrap sm:whitespace-normal">
                                 {item.text}
                             </span>
                         </div>
@@ -441,10 +503,10 @@ function GenderSelector({ searchParams, onSelect }) {
                         onClick={() => onSelect(active ? null : g)}
                         className={`relative flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full border text-xs sm:text-sm font-bold transition-all duration-300 overflow-hidden
                             ${active
-                                ? "bg-[#1B4D3E] border-[#1B4D3E] text-white shadow-[0_4px_20px_rgba(27,77,62,0.3)]"
-                                : "bg-white border-[#ddd0c0] text-[#5c4632] hover:border-[#1B4D3E] hover:text-[#1B4D3E]"}`}
+                                ? "bg-gradient-to-r from-[#5FBFA7] to-[#c4a882] border-[#5FBFA7] text-white shadow-[0_4px_20px_rgba(146,98,42,0.5)]"
+                                : "bg-white border-[#DDF6F0] text-[#2F5F57] hover:border-[#5FBFA7] hover:text-[#5FBFA7]"}`}
                     >
-                        {active && <div className="absolute inset-0 bg-gradient-to-r from-[#1B4D3E] to-[#2d7a5f] pointer-events-none" />}
+                        {active && <div className="absolute inset-0 bg-gradient-to-r from-[#7a4f28] to-[#c4a882] pointer-events-none" />}
                         <span className="relative z-10 text-sm">{icons[g]}</span>
                         <span className="relative z-10">{g}</span>
                         {active && (
@@ -477,10 +539,10 @@ function CategoryTiles({ searchParams, categories, onSelect }) {
                             key={tile.label}
                             type="button"
                             onClick={() => onSelect(active ? null : tile.value)}
-                            className={`flex-shrink-0 flex flex-col items-center gap-2 sm:gap-2.5 px-4 sm:px-6 pt-3 sm:pt-4 pb-2.5 sm:pb-3 rounded-2xl border font-semibold transition-all duration-300 min-w-[68px] sm:min-w-[84px]
+                            className={`flex-shrink-0 flex flex-col items-center gap-2 sm:gap-2.5 px-4 sm:px-6 pt-3 sm:pt-4 pb-2.5 sm:pb-3 rounded-2xl border font-semibold transition-all duration-200 min-w-[68px] sm:min-w-[84px] active:scale-95 select-none
                                 ${active
-                                    ? "bg-[#1B4D3E] border-[#1B4D3E] text-white shadow-[0_6px_24px_rgba(27,77,62,0.3)]"
-                                    : "bg-white border-[#ede3d8] text-[#5c4632] hover:border-[#c4a882] hover:bg-[#fdf6ef] hover:shadow-md"}`}
+                                    ? "bg-gradient-to-b from-[#c4a882] to-[#5FBFA7] border-[#5FBFA7] text-white shadow-[0_8px_24px_rgba(146,98,42,0.45)]"
+                                    : "bg-white border-[#ede3d8] text-[#2F5F57] hover:border-[#c4a882] hover:bg-[#fdf6ef] hover:shadow-md"}`}
                         >
                             <div className={`transition-transform duration-300 ${active ? "scale-110" : "group-hover:scale-105"}`}>
                                 {tile.value === null
@@ -510,7 +572,7 @@ function MidBanner({ searchParams }) {
         Bracelets: { title: "Stacked & Stunning",          sub: "Tennis · Bangles · Charm · Cuffs",           cta: "Shop Bracelets", from: "#0d3030", to: "#1a6060" },
         Men:       { title: "Bold Jewellery for Men",      sub: "Chains · Rings · Bracelets · Pendants",      cta: "Shop Men's",     from: "#111230", to: "#242860" },
         Women:     { title: "Made for Her",                sub: "Elegant pieces for every occasion",           cta: "Shop Women's",   from: "#3d0f28", to: "#7a1f52" },
-        default:   { title: "Festival Season Sale",        sub: "Extra 10% off on orders above ₹5,000",       cta: "View Offers",    from: "#0d2b22", to: "#1B4D3E" },
+        default:   { title: "Festival Season Sale",        sub: "Extra 10% off on orders above ₹5,000",       cta: "View Offers",    from: "#5c3a1a", to: "#5FBFA7" },
     };
     const b = banners[cat] ?? banners[gender] ?? banners.default;
     return (
@@ -544,7 +606,7 @@ export default function Page() {
     return (
         <div className="min-h-screen" style={{ background: "linear-gradient(180deg, #fdf8f2 0%, #f9f2ea 100%)" }}>
             {/* Gold top bar */}
-            <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, transparent, #c4a882, #1B4D3E, #c4a882, transparent)" }} />
+            <div className="h-0.5 w-full" style={{ background: "linear-gradient(90deg, transparent, #c4a882, #8B5E3C, #c4a882, transparent)" }} />
 
             <div className="container mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-28 pb-24 sm:pb-32 max-w-7xl">
                 <Suspense fallback={
@@ -644,9 +706,7 @@ function ShopContent() {
 
                 } else if (key === "category") {
                     const catVal = product.category?.toLowerCase().trim();
-                    // Skip products whose category is actually a gender value
-                    if (genderLower.includes(catVal)) return false;
-                    if (!filterVals.some(fv => fv.toLowerCase() === catVal)) return false;
+                    if (!filterVals.some(fv => fv.toLowerCase() === catVal) && !genderLower.includes(catVal)) return false;
 
                 } else {
                     const pVal = product[key]?.toString().toLowerCase().trim();
@@ -667,6 +727,64 @@ function ShopContent() {
 
     return (
         <>
+            {/* ── Global interaction styles ── */}
+            <style>{`
+                .btn-press {
+                    transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.12s ease, filter 0.12s ease;
+                    cursor: pointer;
+                }
+                .btn-press:hover { filter: brightness(1.08); }
+                .btn-press:active {
+                    transform: scale(0.84) !important;
+                    filter: brightness(0.92) !important;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+                    transition-duration: 0.06s !important;
+                }
+
+                .btn-tile {
+                    transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.15s ease;
+                    cursor: pointer;
+                }
+                .btn-tile:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(146,98,42,0.2); }
+                .btn-tile:active {
+                    transform: scale(0.82) translateY(3px) !important;
+                    box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+                    transition-duration: 0.06s !important;
+                }
+
+                .btn-pill {
+                    transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.12s ease;
+                    cursor: pointer;
+                }
+                .btn-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(146,98,42,0.15); }
+                .btn-pill:active {
+                    transform: scale(0.82) !important;
+                    box-shadow: none !important;
+                    transition-duration: 0.05s !important;
+                }
+
+                .btn-gender {
+                    transition: transform 0.13s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.13s ease;
+                    cursor: pointer;
+                }
+                .btn-gender:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(146,98,42,0.2); }
+                .btn-gender:active {
+                    transform: scale(0.86) !important;
+                    transition-duration: 0.06s !important;
+                }
+
+                .btn-wishlist {
+                    transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1);
+                }
+                .btn-wishlist:hover { transform: scale(1.2); }
+                .btn-wishlist:active { transform: scale(0.9) !important; transition-duration: 0.06s !important; }
+
+                .btn-cart {
+                    transition: transform 0.12s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.12s ease;
+                }
+                .btn-cart:hover { transform: scale(1.1); }
+                .btn-cart:active { transform: scale(0.85) !important; transition-duration: 0.06s !important; }
+            `}</style>
             <HeroBanner />
             <TrustStrip />
 
@@ -706,10 +824,10 @@ function ShopContent() {
                                 const active = isActive(searchParams, group.key, opt);
                                 return (
                                     <button key={opt} onClick={() => handleToggle(group.key, opt)}
-                                        className={`px-3 py-1 rounded-full text-[11px] border font-semibold transition-all duration-200
+                                        className={`px-3 py-1 rounded-full text-[11px] border font-semibold transition-all duration-150 active:scale-90 select-none
                                             ${active
-                                                ? "bg-[#1B4D3E] text-white border-[#1B4D3E] shadow-[0_2px_10px_rgba(27,77,62,0.25)]"
-                                                : "bg-white text-[#5c4632] border-[#ddd0c0] hover:border-[#c4a882]"}`}
+                                                ? "bg-[#5FBFA7] text-white border-[#5FBFA7] shadow-[0_2px_10px_rgba(146,98,42,0.3)]"
+                                                : "bg-white text-[#2F5F57] border-[#DDF6F0] hover:border-[#c4a882]"}`}
                                     >
                                         {opt}
                                     </button>
@@ -718,7 +836,7 @@ function ShopContent() {
                         </div>
                     ))}
                     {activeCount > 0 && (
-                        <button onClick={handleClearAll} className="text-[10px] text-[#c4a882] font-bold uppercase tracking-wider self-center ml-auto">
+                        <button onClick={handleClearAll} className="text-[10px] text-[#5FBFA7] font-bold uppercase tracking-wider self-center ml-auto">
                             ✕ Clear all
                         </button>
                     )}
@@ -732,17 +850,17 @@ function ShopContent() {
                     <button
                         type="button"
                         onClick={() => setDrawerOpen(true)}
-                        className="sm:hidden relative flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#ddd0c0] bg-white text-[10px] text-[#5c4632] font-bold shadow-sm"
+                        className="sm:hidden relative flex items-center gap-1.5 px-3 py-2 rounded-xl border border-[#DDF6F0] bg-white text-[10px] text-[#2F5F57] font-bold shadow-sm"
                     >
                         <Filter className="w-3 h-3 text-[#c4a882]" />
                         <span>Filters</span>
                         {activeCount > 0 && (
-                            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#1B4D3E] text-white text-[8px] flex items-center justify-center font-bold">
+                            <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#5FBFA7] text-white text-[8px] flex items-center justify-center font-bold">
                                 {activeCount}
                             </span>
                         )}
                     </button>
-                    <p className="text-[10px] sm:text-sm text-[#9c8472]">
+                    <p className="text-[10px] sm:text-sm text-[#6FAFA3]">
                         <span className="font-bold text-[#3d2010]">{filteredAndSorted.length}</span> pieces
                     </p>
                 </div>
@@ -761,7 +879,7 @@ function ShopContent() {
                                     else if (key === "category") handleCategorySelect(null);
                                     else handleToggle(key, val);
                                 }}
-                                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#1B4D3E]/10 text-[#1B4D3E] text-[10px] font-bold border border-[#1B4D3E]/20"
+                                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#5FBFA7]/10 text-[#5FBFA7] text-[10px] font-bold border border-[#5FBFA7]/25 active:scale-95 transition-transform duration-100"
                             >
                                 {val} <X className="w-2.5 h-2.5" />
                             </button>
@@ -797,11 +915,11 @@ function ShopContent() {
                     <h3 className="text-lg font-bold text-[#1e0e06] mb-1" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
                         No pieces found
                     </h3>
-                    <p className="text-xs sm:text-sm text-[#9c8472] max-w-xs mb-5">
+                    <p className="text-xs sm:text-sm text-[#6FAFA3] max-w-xs mb-5">
                         Try adjusting or clearing your filters to discover our collection.
                     </p>
                     {activeCount > 0 && (
-                        <button onClick={handleClearAll} className="px-6 py-2.5 rounded-full bg-[#1B4D3E] text-white text-xs font-bold hover:bg-[#143a2f] transition-all shadow-[0_4px_16px_rgba(27,77,62,0.3)]">
+                        <button onClick={handleClearAll} className="px-6 py-2.5 rounded-full bg-[#5FBFA7] text-white text-xs font-bold hover:bg-[#143a2f] transition-all shadow-[0_4px_16px_rgba(27,77,62,0.3)]">
                             Clear All Filters
                         </button>
                     )}
