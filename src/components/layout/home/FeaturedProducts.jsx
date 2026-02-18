@@ -58,134 +58,160 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="relative py-10 overflow-hidden bg-[#fffcf8]">
-      {/* Subtle Texture & Ambience */}
+    <section className="relative py-10 md:py-32 overflow-hidden bg-[#fffcf8]">
+      {/* Ambient Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-[-10%] w-[50%] h-[50%] bg-amber-100/40 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-[-10%] w-[50%] h-[50%] bg-rose-100/40 rounded-full blur-[120px]" />
+        <div className="absolute top-1/4 left-0 w-[600px] h-[600px] bg-amber-100/30 rounded-full blur-[120px] -translate-x-1/2" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-rose-100/30 rounded-full blur-[100px] translate-x-1/3" />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-6 md:mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="flex items-center justify-center gap-4 mb-4"
-          >
-            <span className="h-px w-8 bg-amber-800/30" />
-            <span className="text-amber-900/80 text-[10px] font-bold uppercase tracking-[0.3em]">The Signature Collection</span>
-            <span className="h-px w-8 bg-amber-800/30" />
-          </motion.div>
-          
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-serif text-slate-900 mb-4"
-          >
-            The <span className="italic font-light text-amber-700">Royal</span> Edit
-          </motion.h2>
-          
-          <motion.p 
+        {/* Magazine Header */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-4 md:mb-16 gap-4 md:gap-6">
+          <div className="max-w-2xl">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="flex items-center gap-3 mb-2 md:mb-4"
+            >
+              <motion.span 
+                variants={{ hidden: { scaleX: 0, originX: 0 }, visible: { scaleX: 1, transition: { duration: 0.8, ease: "circOut" } } }}
+                className="h-px w-8 bg-amber-900/40" 
+              />
+              <motion.div 
+                variants={{ visible: { transition: { staggerChildren: 0.05 } } }}
+                className="flex overflow-hidden"
+              >
+                {["Editor's", "Choice"].map((word, i) => (
+                  <span key={i} className="inline-block overflow-hidden">
+                    <motion.span
+                      variants={{
+                        hidden: { y: "100%" },
+                        visible: { y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+                      }}
+                      className="text-amber-900/80 text-xs font-bold uppercase tracking-[0.3em] inline-block mr-2"
+                    >
+                      {word}
+                    </motion.span>
+                  </span>
+                ))}
+              </motion.div>
+            </motion.div>
+            <motion.h2 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                visible: { transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
+              }}
+              className="text-3xl md:text-6xl lg:text-7xl font-serif text-slate-900 leading-[0.9]"
+            >
+              <span className="inline-block overflow-hidden"><motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="inline-block">The</motion.span></span> <span className="inline-block overflow-hidden"><motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="italic font-light text-amber-800 inline-block">Signature</motion.span></span> <br /> <span className="inline-block overflow-hidden"><motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="inline-block">Collection</motion.span></span>
+            </motion.h2>
+          </div>
+          <motion.div 
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-500 text-sm md:text-base max-w-lg mx-auto leading-relaxed"
+            className="md:max-w-xs"
           >
-            Discover our most coveted pieces, where timeless elegance meets contemporary artistry.
-          </motion.p>
+            <p className="text-slate-500 text-xs md:text-sm leading-relaxed border-l-2 border-amber-900/10 pl-4">
+              A curation of our most exquisite pieces, designed to define moments and transcend trends.
+            </p>
+          </motion.div>
         </div>
 
-        {/* Products Grid */}
-        <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-12 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-8 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none">
-          {products.map((product, idx) => (
-            <motion.div 
-              key={product._id || product.id} 
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: idx * 0.15, duration: 0.8, ease: "easeOut" }}
-              className="group min-w-[65vw] sm:min-w-[40vw] md:min-w-0 snap-center"
-            >
-              {/* Image Card */}
-              <div className="relative aspect-[3/4] overflow-hidden rounded-[2rem] bg-stone-100 mb-4 shadow-xl shadow-stone-200/40 group-hover:shadow-2xl group-hover:shadow-stone-200/60 transition-all duration-500">
-                <Link href={`/product/${product._id || product.id}`}>
-                  <img
-                    src={product.image || product.images?.[0] || product.imageUrl}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-1000 ease-in-out group-hover:scale-110"
-                  />
-                </Link>
-                
-                {/* Badge */}
-                <div className="absolute top-4 left-4">
-                  <span className="bg-white/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full shadow-sm text-slate-800 border border-white/50">
-                    Best Seller
-                  </span>
+        {/* Magazine Grid Layout */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6 auto-rows-[180px] md:auto-rows-[300px]">
+          {products.map((product, idx) => {
+            const isFeatured = idx === 0;
+            // First item spans 2x2 on desktop
+            const gridClasses = isFeatured 
+              ? "col-span-2 md:col-span-2 md:row-span-2" 
+              : "col-span-1 md:col-span-1 md:row-span-1";
+
+            return (
+              <motion.div 
+                key={product._id || product.id} 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.15, duration: 0.8 }}
+                className={`group relative rounded-[2rem] overflow-hidden ${gridClasses}`}
+              >
+                {/* Image Layer */}
+                <div className="absolute inset-0 bg-stone-200">
+                   <Link href={`/product/${product._id || product.id}`} className="block w-full h-full">
+                    <img
+                        src={product.image || product.images?.[0] || product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+                    />
+                   </Link>
                 </div>
 
-                {/* Desktop Hover Action */}
-                <div className="absolute inset-x-4 bottom-4 translate-y-[120%] group-hover:translate-y-0 transition-transform duration-500 ease-out hidden md:block z-10">
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full bg-white/95 backdrop-blur-md text-slate-900 hover:bg-amber-50 hover:text-amber-900 rounded-xl h-12 shadow-lg border border-white/50 transition-all font-medium tracking-wide"
-                    disabled={addingProductId === (product._id || product.id)}
-                  >
-                    {addingProductId === (product._id || product.id) ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : addedProductId === (product._id || product.id) ? (
-                      <Check className="h-4 w-4 text-green-600 mr-2" />
-                    ) : (
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                    )}
-                    {addingProductId === (product._id || product.id) ? "Adding..." : addedProductId === (product._id || product.id) ? "Added" : "Add to Cart"}
-                  </Button>
-                </div>
-              </div>
+                {/* Glass Card Overlay */}
+                <div className="absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
+                    <div className="relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-5 md:p-6 text-white shadow-lg">
+                        {/* Noise Texture for Glass Realism */}
+                        <div className="absolute inset-0 opacity-[0.08] bg-[url('https://www.transparenttextures.com/patterns/noise.png')] pointer-events-none" />
+                        
+                        {/* Shine Effect */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 pointer-events-none" />
 
-              {/* Product Info */}
-              <div className="text-center space-y-2">
-                <Link href={`/product/${product._id || product.id}`}>
-                  <h3 className="text-2xl font-serif text-slate-900 group-hover:text-amber-800 transition-colors cursor-pointer">
-                    {product.name}
-                  </h3>
-                </Link>
-                <p className="text-amber-700 font-medium tracking-wide text-lg">₹{product.price}</p>
-                
-                {/* Mobile Action Button */}
-                <div className="md:hidden mt-3">
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    variant="outline"
-                    className="w-full rounded-xl border-amber-200 text-amber-900 hover:bg-amber-50 h-10 text-xs uppercase tracking-widest"
-                    disabled={addingProductId === (product._id || product.id)}
-                  >
-                    {addingProductId === (product._id || product.id) ? "Adding..." : addedProductId === (product._id || product.id) ? "Added" : "Add to Cart"}
-                  </Button>
+                        <div className="relative z-10 flex justify-between items-end gap-4">
+                            <div className="flex-1 min-w-0">
+                                {isFeatured && (
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-amber-100">Featured</span>
+                                    </div>
+                                )}
+                                <Link href={`/product/${product._id || product.id}`}>
+                                    <h3 className={`font-serif ${isFeatured ? 'text-2xl md:text-4xl' : 'text-xl md:text-2xl'} leading-none mb-1 truncate hover:text-amber-200 transition-colors`}>
+                                        {product.name}
+                                    </h3>
+                                </Link>
+                                <p className="text-white/80 font-medium text-sm md:text-base">₹{product.price}</p>
+                            </div>
+
+                            <Button 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddToCart(product);
+                                }}
+                                size="icon"
+                                className={`rounded-full shrink-0 transition-all duration-300 ${isFeatured ? 'h-12 w-12' : 'h-10 w-10'} bg-white text-slate-900 hover:bg-amber-100 border-0`}
+                                disabled={addingProductId === (product._id || product.id)}
+                            >
+                                {addingProductId === (product._id || product.id) ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : addedProductId === (product._id || product.id) ? (
+                                    <Check className="h-4 w-4 text-green-600" />
+                                ) : (
+                                    <ShoppingCart className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* Footer Link */}
-        <div className="mt-8 text-center">
-          <Link href="/shop" className="group inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-amber-900 transition-colors">
-            View All Collections <ArrowRight className="h-4 w-4 group-hover:translate-x-2 transition-transform" />
+        {/* Footer Action */}
+        <div className="mt-8 md:mt-12 flex justify-center">
+          <Link href="/shop">
+            <Button variant="ghost" className="group text-slate-600 hover:text-amber-900 hover:bg-transparent">
+                <span className="text-xs font-bold uppercase tracking-[0.25em] border-b border-transparent group-hover:border-amber-900/50 pb-1 transition-all">View Full Collection</span>
+                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </Link>
         </div>
       </div>
-      <style jsx global>{`
-        .scrollbar-none::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-none {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </section>
   );
 }
