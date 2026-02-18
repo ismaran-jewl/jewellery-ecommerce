@@ -18,9 +18,8 @@ export default function Sidebar() {
   // Only render filters if we are on the shop page
   if (pathname !== "/shop") {
     return (
-      <div className="p-6 text-sm text-[#a78b71]">
-        Navigate to the Shop to see product filters.
-      </div>
+      <>
+      </>
     );
   }
 

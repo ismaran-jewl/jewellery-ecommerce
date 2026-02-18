@@ -1,5 +1,10 @@
+"use client";
+
 import Link from "next/link";
-import { LayoutDashboard, ShoppingBag, Settings, User, Heart, LogOut } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
+import { X, LayoutDashboard, ShoppingBag, Settings, User, Heart, LogOut } from "lucide-react";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
@@ -9,30 +14,67 @@ const sidebarItems = [
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
-export default function Sidebar() {
+
+export default function Sidebar({ onClose }) {
+  const pathname = usePathname();
+
   return (
-    <div className="flex h-full flex-col overflow-y-auto bg-white/80 px-4 py-6 backdrop-blur-md">
-        <div className="mb-8 flex items-center px-2">
-          <span className="text-2xl font-bold text-gray-900">ISMARN</span>
-        </div>
-        <nav className="flex-1 space-y-1">
-          {sidebarItems.map((item) => (
+    <div className="flex h-full w-full flex-col border-r bg-white px-3 py-4 shadow-sm">
+      {/* Header with Logo and Mobile Close Button */}
+      <div className="mb-8 flex items-center justify-between px-4">
+        <span className="text-2xl font-black tracking-tighter text-[#1B4D3E]">ISMARN</span>
+        
+        {/* Only visible on mobile (when onClose is passed) */}
+        {onClose && (
+          <button 
+            onClick={onClose}
+            className="rounded-full p-2 hover:bg-yellow-100 md:hidden transition-colors"
+          >
+            <X className="h-6 w-6 text-gray-500" />
+          </button>
+        )}
+      </div>
+
+      {/* Navigation Links */}
+      <nav className="flex-1 space-y-2">
+        {sidebarItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center rounded-lg px-4 py-3 text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
+              onClick={onClose} // Close sidebar on mobile when link is clicked
+              className={cn(
+                "group flex items-center rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-300",
+                isActive 
+                  ? "bg-[#FEF08A] text-[#1B4D3E] shadow-sm" // Lemon Yellow Active State
+                  : "text-gray-500 hover:bg-yellow-50 hover:text-[#1B4D3E]"
+              )}
             >
-              <item.icon className="mr-3 h-5 w-5" />
-              <span className="font-medium">{item.label}</span>
+              <item.icon 
+                className={cn(
+                  "mr-3 h-5 w-5 transition-transform duration-300 group-hover:rotate-12",
+                  isActive ? "text-[#1B4D3E]" : "text-gray-400"
+                )} 
+              />
+              {item.label}
             </Link>
-          ))}
-        </nav>
-        <div className="border-t pt-4">
-          <button className="flex w-full items-center rounded-lg px-4 py-3 text-gray-700 transition-colors hover:bg-red-50 hover:text-red-600">
-            <LogOut className="mr-3 h-5 w-5" />
-            <span className="font-medium">Sign Out</span>
-          </button>
-        </div>
+          );
+        })}
+      </nav>
+
+      {/* Logout Section */}
+      <div className="mt-auto border-t border-gray-100 pt-4">
+        <button 
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "w-full justify-start rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all"
+          )}
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          <span className="font-bold">Sign Out</span>
+        </button>
+      </div>
     </div>
   );
 }

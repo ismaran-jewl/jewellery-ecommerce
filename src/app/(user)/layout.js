@@ -4,41 +4,47 @@ import { useState } from "react";
 import Sidebar from "@/components/layout/user/Sidebar";
 import Navbar from "@/components/layout/home/Navbar";
 import Footer from "@/components/layout/home/Footer";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"; // Shadcn component
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"; // For accessibility
 
 export default function ClientWrapper({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FFDAB9]/20">
-      <header className="sticky top-0 z-50">
-        <Navbar onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)} />
+    <div className="flex min-h-screen flex-col bg-[#FFDAB9]/10">
+      {/* Sticky Navbar */}
+      <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-md">
+        <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
       </header>
 
-      <div className="flex flex-1 relative">
-        <aside className="hidden md:block w-[15%] border-r border-[#1B4D3E]/10 sticky top-0 h-screen z-40">
-          <Sidebar />
+      <div className="flex flex-1">
+        {/* Desktop Sidebar (Fixed Width) */}
+        <aside className="hidden w-64 flex-col border-r border-[#1B4D3E]/10 bg-white md:flex">
+          <div className="sticky top-[65px] h-[calc(100vh-65px)] overflow-y-auto">
+            <Sidebar />
+          </div>
         </aside>
 
-        {/* Mobile Sidebar Drawer */}
-        {isSidebarOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
-            <div 
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <aside className="absolute left-0 top-0 h-full w-64 bg-white shadow-xl">
-              <Sidebar />
-            </aside>
-          </div>
-        )}
+        {/* Mobile Sidebar (Shadcn Sheet) */}
+        <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+          <SheetContent side="left" className="p-0 w-72">
+             <VisuallyHidden>
+                <SheetTitle>Navigation Menu</SheetTitle>
+             </VisuallyHidden>
+            <Sidebar />
+          </SheetContent>
+        </Sheet>
 
-        <main className="flex-1 w-full md:w-[80%] flex flex-col">
-          <div className="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
-            {children}
+        {/* Main Content Area */}
+        <main className="flex flex-1 flex-col">
+          <div className="mx-auto w-full max-w-7xl flex-1 p-4 md:p-8">
+            <div className="min-h-[calc(100vh-200px)] animate-in fade-in duration-500">
+              {children}
+            </div>
           </div>
+          <Footer />
         </main>
       </div>
-      <Footer />
     </div>
   );
 }
