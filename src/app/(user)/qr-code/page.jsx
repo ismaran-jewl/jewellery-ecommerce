@@ -4,8 +4,7 @@ import { Link as LinkIcon, Sparkles, QrCode, Download } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { useMemo, Suspense, useState, useEffect } from "react";
 
-const HARDCODED_URL =
-  "https://drive.google.com/file/d/17XRHW4lUHpfk2DaIpK5LiJEUjKKsthak/view?usp=drivesdk";
+const HARDCODED_URL = "https://drive.google.com/file/d/17XRHW4lUHpfk2DaIpK5LiJEUjKKsthak/view?usp=drivesdk";
 const HARDCODED_TYPE = "video";
 
 function QRCodeContent() {
@@ -22,164 +21,112 @@ function QRCodeContent() {
   }, [mounted]);
 
   const handleDownload = () => {
-    const canvas = document.getElementById("qr-canvas");
-    if (!canvas) return;
+    const qrCanvas = document.getElementById("qr-canvas");
+    if (!qrCanvas) return;
 
-    const padding = 48;
-    const brandingHeight = 72;
-    const size = canvas.width;
+    const scale = 4; 
+    const imgW = 460 * scale;
+    const imgH = 680 * scale;
+    const centerX = imgW / 2;
 
     const exportCanvas = document.createElement("canvas");
-    exportCanvas.width = size + padding * 2;
-    exportCanvas.height = size + padding * 2 + brandingHeight;
-
+    exportCanvas.width = imgW;
+    exportCanvas.height = imgH;
     const ctx = exportCanvas.getContext("2d");
     if (!ctx) return;
 
+    // 1. Background
     ctx.fillStyle = "#FFFFFF";
-    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    ctx.fillRect(0, 0, imgW, imgH);
+
+    // 2. Green Header
+    const headerH = 240 * scale;
+    ctx.fillStyle = "#1B4D3E";
+    ctx.fillRect(0, 0, imgW, headerH);
+
     const logoImg = new Image();
     logoImg.src = "/images/logo.jpg";
-    ctx.globalAlpha = 0.30; 
-    ctx.drawImage(logoImg, padding, padding, size, size);
-    ctx.globalAlpha = 1.0;
-    ctx.drawImage(canvas, padding, padding, size, size);
+    logoImg.onload = () => {
+      // 3. FIX: Draw Logo Watermark in Header with 1:1 Ratio (No Stretching)
+      const logoSize = headerH * 0.8; // Make logo 80% of header height
+      const logoX = (imgW - logoSize) / 2;
+      const logoY = (headerH - logoSize) / 2;
+      
+      ctx.globalAlpha = 0.10;
+      // Drawing it square (logoSize for both width and height)
+      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+      ctx.globalAlpha = 1.0;
 
-    ctx.fillStyle = "#1B4D3E";
-    ctx.font = "bold 60px Georgia, serif";
-    ctx.textAlign = "center";
-    ctx.fillText("ISMARN JEWELLERY", exportCanvas.width / 2, size + padding * 2 + 24);
-    ctx.fillStyle = "#9CA3AF";
-    ctx.font = "20px sans-serif";
-    ctx.fillText("Scan to view your memory", exportCanvas.width / 2, size + padding * 2 + 48);
+      // 4. Header Labels (Centered)
+      ctx.fillStyle = "#FEF08A";
+      ctx.font = `bold ${10 * scale}px sans-serif`;
+      ctx.textAlign = "center";
+      ctx.fillText("ISMARN JEWELLERY", centerX, 50 * scale);
 
-    const link = document.createElement("a");
-    link.download = "ismarn-qrcode.png";
-    link.href = exportCanvas.toDataURL("image/png");
-    link.click();
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = `bold ${42 * scale}px Georgia, serif`;
+      ctx.fillText("Your Memory", centerX, 110 * scale);
+
+      ctx.fillStyle = "rgba(167, 243, 208, 0.6)";
+      ctx.font = `${11 * scale}px sans-serif`;
+      ctx.fillText("A PERSONALISED MESSAGE AWAITS", centerX, 145 * scale);
+
+      // 5. White QR Card
+      const cardW = 380 * scale;
+      const cardH = 380 * scale;
+      const cardX = (imgW - cardW) / 2;
+      const cardY = 185 * scale;
+
+      ctx.shadowColor = "rgba(0,0,0,0.15)";
+      ctx.shadowBlur = 40 * scale;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.roundRect(cardX, cardY, cardW, cardH, [25 * scale]);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // 6. QR Code
+      const qrSize = 320 * scale;
+      const qrX = (imgW - qrSize) / 2;
+      const qrY = cardY + (cardH - qrSize) / 2;
+      ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+
+      // 7. Footer
+      ctx.fillStyle = "#D1D5DB";
+      ctx.font = `bold ${9 * scale}px sans-serif`;
+      ctx.fillText("CRAFTED WITH LOVE • ISMARN JEWELLERY", centerX, imgH - (40 * scale));
+
+      const link = document.createElement("a");
+      link.download = "ismarn-memory-final.png";
+      link.href = exportCanvas.toDataURL("image/png", 1.0);
+      link.click();
+    };
   };
 
   return (
-    <div
-      className="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8"
-      style={{
-        background: "linear-gradient(145deg, #1B4D3E 0%, #0d2b1f 60%, #0a1f17 100%)",
-      }}
-    >
-      {/* ── CARD ── */}
-      <div
-        className="relative w-full rounded-3xl overflow-hidden"
-        style={{
-          maxWidth: 460,
-          background: "#ffffff",
-          boxShadow: "0 40px 100px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)",
-        }}
-      >
-
-        {/* ── CARD HEADER — dark green with logo watermark ── */}
-        <div
-          className="relative w-full flex flex-col items-center justify-center pt-8 pb-10 overflow-hidden"
-          style={{ background: "linear-gradient(160deg, #1B4D3E 0%, #0f2820 100%)" }}
-        >
-          {/* Logo watermark — 10% faded, fills header */}
-          <img
-            src="/images/logo.jpg"
-            alt=""
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ opacity: 0.10, objectFit: "cover" }}
-          />
-
-          {/* Brand badge */}
-          <div
-            className="relative z-10 inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-white/20"
-            style={{ background: "rgba(255,255,255,0.08)" }}
-          >
-            <Sparkles className="w-3 h-3 text-[#FEF08A]" />
-            <span className="text-white/90 text-[10px] font-bold tracking-[0.22em] uppercase">
-              ISMARN JEWELLERY
-            </span>
-          </div>
-
-          {/* Title */}
-          <h1
-            className="relative z-10 text-white text-center leading-tight mb-1"
-            style={{
-              fontFamily: "Georgia, 'Times New Roman', serif",
-              fontSize: "clamp(1.6rem, 5vw, 2.4rem)",
-              textShadow: "0 2px 16px rgba(0,0,0,0.3)",
-            }}
-          >
-            Your Memory
-          </h1>
-          <p className="relative z-10 text-emerald-200/60 text-[11px] tracking-[0.22em] uppercase">
-            A personalised message awaits
-          </p>
+    <div className="min-h-screen w-full flex flex-col items-center justify-center">
+      <div className="bg-white rounded-[2.5rem] overflow-hidden max-w-[420px] w-full shadow-2xl">
+        {/* UI Display */}
+        <div className="bg-[#1B4D3E] pt-10 pb-20 text-center relative flex flex-col items-center">
+           <img src="/images/logo.jpg" className="absolute opacity-10 h-full w-auto aspect-square object-contain" alt="" />
+           <div className="relative z-10 text-[#D4AF37] text-[10px] tracking-widest font-bold mb-2">ISMARN JEWELLERY</div>
+           <h1 className="relative z-10 text-white text-4xl font-serif">Your Memory</h1>
         </div>
 
-        {/* ── QR SECTION — overlaps header ── */}
-        <div className="px-5 pb-5 -mt-6 relative z-10 flex flex-col items-center">
-
-          {/* QR wrapper card */}
-          <div
-            className="w-full rounded-2xl overflow-hidden mb-4"
-            style={{
-              boxShadow: "0 8px 32px -8px rgba(27,77,62,0.25), 0 0 0 1px rgba(27,77,62,0.08)",
-            }}
-          >
-            {/* QR + bg logo stacked */}
-            <div
-              className="relative w-full p-4 rounded-2xl flex items-center justify-center"
-              style={{ aspectRatio: "1 / 1", background: "#fff" }}
-            >
-              {/* Faded logo — same size as QR */}
-              <img
-                src="/images/logo.jpg"
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full pointer-events-none"
-                style={{ opacity: 0.10, objectFit: "cover" }}
-              />
-
-              {/* QR Code */}
-              <QRCodeCanvas
-                id="qr-canvas"
-                value={qrValue}
-                size={800}
-                level="H"
-                fgColor="#1B4D3E"
-                bgColor="rgba(255,255,255,0)"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  display: "block",
-                  position: "relative",
-                  zIndex: 2,
-                }}
-                imageSettings={{
-                  src: "/images/logo.jpg",
-                  height: 175,
-                  width: 175,
-                  excavate: true,
-                }}
-              />
-            </div>
+        <div className="px-8 pb-10 -mt-12 relative z-10 w-full flex flex-col items-center">
+          <div className="bg-white p-6 rounded-[2rem] shadow-2xl w-full aspect-square border border-gray-50">
+            <QRCodeCanvas
+              id="qr-canvas"
+              value={qrValue}
+              size={1024}
+              level="H"
+              fgColor="#1B4D3E"
+              imageSettings={{ src: "/images/logo.jpg", height: 200, width: 200, excavate: true }}
+              style={{ width: "100%", height: "100%" }}
+            />
           </div>
-
-          {/* Scan hint */}
-          <div className="flex items-center gap-3 w-full mb-4">
-            <div className="flex-1 h-px bg-gray-100" />
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
-              <QrCode className="w-3 h-3 text-[#1B4D3E]" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                Scan to open
-              </span>
-            </div>
-            <div className="flex-1 h-px bg-gray-100" />
-          </div>
-
           {/* Buttons */}
-          <div className="w-full flex flex-col gap-3">
+          <div className="w-full flex flex-col gap-3 p-2">
             <a
               href={qrValue}
               target="_blank"
@@ -207,16 +154,7 @@ function QRCodeContent() {
               Download QR Code
             </button>
           </div>
-        </div>
 
-        {/* ── FOOTER ── */}
-        <div
-          className="w-full py-3.5 text-center"
-          style={{ background: "#f8faf8", borderTop: "1px solid #f0f0f0" }}
-        >
-          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-gray-300">
-            CRAFTED WITH LOVE • ISMARN JEWELLERY
-          </p>
         </div>
       </div>
     </div>
@@ -224,18 +162,16 @@ function QRCodeContent() {
 }
 
 export default function QRCodePage() {
-  return (
-    <Suspense
-      fallback={
-        <div
-          className="min-h-screen flex items-center justify-center"
-          style={{ background: "#0d2b1f" }}
-        >
-          <div className="w-8 h-8 rounded-full border-2 border-[#FEF08A] border-t-transparent animate-spin" />
-        </div>
-      }
-    >
-      <QRCodeContent />
-    </Suspense>
-  );
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <Sparkles className="w-12 h-12 text-gray-400 animate-pulse" />
+      </div>
+    )
+  }
+  return <Suspense><QRCodeContent loaded={mounted}/></Suspense>;
 }
