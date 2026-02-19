@@ -1,101 +1,222 @@
 "use client";
 
-import { Link as LinkIcon, Sparkles, QrCode } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { Link as LinkIcon, Sparkles, QrCode, Download } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
-import { useMemo, Suspense } from "react";
+import { useMemo, Suspense, useState, useEffect } from "react";
+
+const HARDCODED_URL =
+  "https://drive.google.com/file/d/17XRHW4lUHpfk2DaIpK5LiJEUjKKsthak/view?usp=drivesdk";
+const HARDCODED_TYPE = "video";
 
 function QRCodeContent() {
-  const searchParams = useSearchParams();
-  //implementing dynamic url and type later, for now hardcoding for testing
-  const url = "https://drive.google.com/file/d/17XRHW4lUHpfk2DaIpK5LiJEUjKKsthak/view?usp=drivesdk"; //hardcoded for now, can be dynamic based on user input or database later
-  const type = "video"; //hardcoded for now, can be dynamic based on user input or database later
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const qrValue = useMemo(() => {
-    if (!url || !type) return "";
+    if (!mounted) return "https://ismarn.com";
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/public-message?url=${encodeURIComponent(HARDCODED_URL)}&type=${HARDCODED_TYPE}`;
+  }, [mounted]);
 
-    const validTypes = ["video", "audio"];
-    if (!validTypes.includes(type)) return "";
+  const handleDownload = () => {
+    const canvas = document.getElementById("qr-canvas");
+    if (!canvas) return;
 
-    const baseUrl =
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "";
+    const padding = 48;
+    const brandingHeight = 72;
+    const size = canvas.width;
 
-    return `${baseUrl}/public-message?url=${encodeURIComponent(
-      url
-    )}&type=${type}`;
-  }, [url, type]);
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = size + padding * 2;
+    exportCanvas.height = size + padding * 2 + brandingHeight;
 
-  if (!qrValue) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-[#1B4D3E]">
-        <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100">
-          <p className="text-lg font-medium">Invalid QR Parameters</p>
-        </div>
-      </div>
-    );
-  }
+    const ctx = exportCanvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+    const logoImg = new Image();
+    logoImg.src = "/images/logo.jpg";
+    ctx.globalAlpha = 0.30; 
+    ctx.drawImage(logoImg, padding, padding, size, size);
+    ctx.globalAlpha = 1.0;
+    ctx.drawImage(canvas, padding, padding, size, size);
+
+    ctx.fillStyle = "#1B4D3E";
+    ctx.font = "bold 60px Georgia, serif";
+    ctx.textAlign = "center";
+    ctx.fillText("ISMARN JEWELLERY", exportCanvas.width / 2, size + padding * 2 + 24);
+    ctx.fillStyle = "#9CA3AF";
+    ctx.font = "20px sans-serif";
+    ctx.fillText("Scan to view your memory", exportCanvas.width / 2, size + padding * 2 + 48);
+
+    const link = document.createElement("a");
+    link.download = "ismarn-qrcode.png";
+    link.href = exportCanvas.toDataURL("image/png");
+    link.click();
+  };
 
   return (
-    <div className="min-h-screen w-full bg-[#F9FAFB] flex flex-col items-center justify-center p-4 md:p-8">
-      <div className="max-w-md w-full bg-white rounded-[2rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100">
-        
-        {/* Decorative Header */}
-        <div className="bg-[#1B4D3E] p-8 pb-12 text-center relative">
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20">
-            <div className="absolute -top-10 -right-10 w-40 h-40 bg-[#FEF08A] rounded-full blur-3xl"></div>
-            <div className="absolute top-10 -left-10 w-32 h-32 bg-[#FEF08A] rounded-full blur-3xl"></div>
+    <div
+      className="min-h-screen w-full flex flex-col items-center justify-center p-4 md:p-8"
+      style={{
+        background: "linear-gradient(145deg, #1B4D3E 0%, #0d2b1f 60%, #0a1f17 100%)",
+      }}
+    >
+      {/* ── CARD ── */}
+      <div
+        className="relative w-full rounded-3xl overflow-hidden"
+        style={{
+          maxWidth: 460,
+          background: "#ffffff",
+          boxShadow: "0 40px 100px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06)",
+        }}
+      >
+
+        {/* ── CARD HEADER — dark green with logo watermark ── */}
+        <div
+          className="relative w-full flex flex-col items-center justify-center pt-8 pb-10 overflow-hidden"
+          style={{ background: "linear-gradient(160deg, #1B4D3E 0%, #0f2820 100%)" }}
+        >
+          {/* Logo watermark — 10% faded, fills header */}
+          <img
+            src="/images/logo.jpg"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ opacity: 0.10, objectFit: "cover" }}
+          />
+
+          {/* Brand badge */}
+          <div
+            className="relative z-10 inline-flex items-center gap-2 mb-4 px-4 py-1.5 rounded-full border border-white/20"
+            style={{ background: "rgba(255,255,255,0.08)" }}
+          >
+            <Sparkles className="w-3 h-3 text-[#FEF08A]" />
+            <span className="text-white/90 text-[10px] font-bold tracking-[0.22em] uppercase">
+              ISMARN JEWELLERY
+            </span>
           </div>
-          
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm border border-white/20">
-              <Sparkles className="w-6 h-6 text-[#FEF08A]" />
+
+          {/* Title */}
+          <h1
+            className="relative z-10 text-white text-center leading-tight mb-1"
+            style={{
+              fontFamily: "Georgia, 'Times New Roman', serif",
+              fontSize: "clamp(1.6rem, 5vw, 2.4rem)",
+              textShadow: "0 2px 16px rgba(0,0,0,0.3)",
+            }}
+          >
+            Your Memory
+          </h1>
+          <p className="relative z-10 text-emerald-200/60 text-[11px] tracking-[0.22em] uppercase">
+            A personalised message awaits
+          </p>
+        </div>
+
+        {/* ── QR SECTION — overlaps header ── */}
+        <div className="px-5 pb-5 -mt-6 relative z-10 flex flex-col items-center">
+
+          {/* QR wrapper card */}
+          <div
+            className="w-full rounded-2xl overflow-hidden mb-4"
+            style={{
+              boxShadow: "0 8px 32px -8px rgba(27,77,62,0.25), 0 0 0 1px rgba(27,77,62,0.08)",
+            }}
+          >
+            {/* QR + bg logo stacked */}
+            <div
+              className="relative w-full p-4 rounded-2xl flex items-center justify-center"
+              style={{ aspectRatio: "1 / 1", background: "#fff" }}
+            >
+              {/* Faded logo — same size as QR */}
+              <img
+                src="/images/logo.jpg"
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                style={{ opacity: 0.10, objectFit: "cover" }}
+              />
+
+              {/* QR Code */}
+              <QRCodeCanvas
+                id="qr-canvas"
+                value={qrValue}
+                size={800}
+                level="H"
+                fgColor="#1B4D3E"
+                bgColor="rgba(255,255,255,0)"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "block",
+                  position: "relative",
+                  zIndex: 2,
+                }}
+                imageSettings={{
+                  src: "/images/logo.jpg",
+                  height: 175,
+                  width: 175,
+                  excavate: true,
+                }}
+              />
             </div>
-            <h1 className="text-2xl md:text-3xl font-serif text-white mb-2 tracking-wide">
-              Your Memory
-            </h1>
-            <p className="text-emerald-100/90 text-sm font-light">
-              Scan to view your personalized message
-            </p>
+          </div>
+
+          {/* Scan hint */}
+          <div className="flex items-center gap-3 w-full mb-4">
+            <div className="flex-1 h-px bg-gray-100" />
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
+              <QrCode className="w-3 h-3 text-[#1B4D3E]" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                Scan to open
+              </span>
+            </div>
+            <div className="flex-1 h-px bg-gray-100" />
+          </div>
+
+          {/* Buttons */}
+          <div className="w-full flex flex-col gap-3">
+            <a
+              href={qrValue}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-sm tracking-wide text-white transition-all duration-200 active:scale-95"
+              style={{
+                background: "#1B4D3E",
+                boxShadow: "0 6px 20px -4px rgba(27,77,62,0.5)",
+              }}
+            >
+              <LinkIcon className="w-4 h-4" />
+              Open Message
+            </a>
+
+            <button
+              onClick={handleDownload}
+              className="w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-sm tracking-wide transition-all duration-200 active:scale-95"
+              style={{
+                background: "#FEF08A",
+                color: "#1B4D3E",
+                boxShadow: "0 4px 16px -4px rgba(202,183,0,0.4)",
+              }}
+            >
+              <Download className="w-4 h-4" />
+              Download QR Code
+            </button>
           </div>
         </div>
 
-        {/* QR Content Card - Overlapping Header */}
-        <div className="px-8 pb-8 -mt-6 relative z-20">
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-50 flex flex-col items-center">
-            <div className="bg-white p-3 rounded-xl border border-[#FEF08A]/50 mb-6 shadow-sm">
-              <QRCodeCanvas
-                value={qrValue}
-                size={220}
-                level="H"
-                fgColor="#1B4D3E"
-                bgColor="#FFFFFF"
-                className="rounded-lg"
-              />
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wider font-medium mb-6 bg-gray-50 px-4 py-2 rounded-full">
-              <QrCode className="w-4 h-4" />
-              <span>Scan with your camera</span>
-            </div>
-
-            <a 
-              href={qrValue} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="w-full group flex items-center justify-center gap-2 bg-[#1B4D3E] hover:bg-[#153e32] text-white py-3.5 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-            >
-              <LinkIcon className="w-4 h-4 group-hover:rotate-45 transition-transform duration-300" />
-              <span className="font-medium tracking-wide">Open Message</span>
-            </a>
-          </div>
-          
-          <div className="mt-8 text-center">
-            <p className="text-[10px] text-gray-400 uppercase tracking-[0.2em] font-bold">
-              ISMARN JEWELLERY
-            </p>
-          </div>
+        {/* ── FOOTER ── */}
+        <div
+          className="w-full py-3.5 text-center"
+          style={{ background: "#f8faf8", borderTop: "1px solid #f0f0f0" }}
+        >
+          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-gray-300">
+            CRAFTED WITH LOVE • ISMARN JEWELLERY
+          </p>
         </div>
       </div>
     </div>
@@ -104,7 +225,16 @@ function QRCodeContent() {
 
 export default function QRCodePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]" />}>
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: "#0d2b1f" }}
+        >
+          <div className="w-8 h-8 rounded-full border-2 border-[#FEF08A] border-t-transparent animate-spin" />
+        </div>
+      }
+    >
       <QRCodeContent />
     </Suspense>
   );
