@@ -3,9 +3,9 @@
 import { Link as LinkIcon, Sparkles, QrCode } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { QRCodeCanvas } from "qrcode.react";
-import { useMemo } from "react";
+import { useMemo, Suspense } from "react";
 
-export default function QRCodePage() {
+function QRCodeContent() {
   const searchParams = useSearchParams();
   //implementing dynamic url and type later, for now hardcoding for testing
   const url = "https://drive.google.com/file/d/17XRHW4lUHpfk2DaIpK5LiJEUjKKsthak/view?usp=drivesdk"; //hardcoded for now, can be dynamic based on user input or database later
@@ -99,5 +99,13 @@ export default function QRCodePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function QRCodePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]" />}>
+      <QRCodeContent />
+    </Suspense>
   );
 }
