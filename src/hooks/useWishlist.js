@@ -1,75 +1,128 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export function useWishlist() {
-	const [wishlist, setWishlist] = useState([]);
-	const [isLoaded, setIsLoaded] = useState(false);
+  const { data: session, status } = useSession();
+  const [wishlist, setWishlist] = useState([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-	useEffect(() => {
-		const loadWishlist = () => {
-			const savedWishlist = localStorage.getItem("wishlist");
-			if (savedWishlist) {
-				try {
-					setWishlist(JSON.parse(savedWishlist));
-				} catch (error) {
-					console.error("Failed to parse wishlist", error);
-				}
-			}
-			setIsLoaded(true);
-		};
+  // =====================================
+  // 1️⃣ Load from localStorage ALWAYS
+  // =====================================
+  useEffect(() => {
+    const saved = localStorage.getItem("wishlist");
+    if (saved) {
+      try {
+        setWishlist(JSON.parse(saved));
+      } catch (err) {
+        console.error("Wishlist parse error", err);
+      }
+    }
+    setIsLoaded(true);
+  }, []);
 
-		loadWishlist();
+  // =====================================
+  // 2️⃣ If logged in → sync from DB
+  // =====================================
+  useEffect(() => {
+    if (status !== "authenticated") return;
 
-		const handleStorageChange = (e) => {
-			if (e.key === "wishlist") {
-				loadWishlist();
-			}
-		};
+    const fetchWishlist = async () => {
+      try {
+        const res = await fetch("/api/wishlist");
+        if (!res.ok) return;
 
-		const handleLocalUpdate = () => loadWishlist();
+        const data = await res.json();
+        const dbWishlist = data.wishlist.map((item) => item.product);
 
-		window.addEventListener("storage", handleStorageChange);
-		window.addEventListener("wishlist-local-update", handleLocalUpdate);
+        setWishlist(dbWishlist);
+        localStorage.setItem("wishlist", JSON.stringify(dbWishlist));
+      } catch (err) {
+        console.error("Wishlist fetch error", err);
+      }
+    };
 
-		return () => {
-			window.removeEventListener("storage", handleStorageChange);
-			window.removeEventListener("wishlist-local-update", handleLocalUpdate);
-		};
-	}, []);
+    fetchWishlist();
+  }, [status]);
 
-	const saveWishlist = (newWishlist) => {
-		localStorage.setItem("wishlist", JSON.stringify(newWishlist));
-		setWishlist(newWishlist);
-		window.dispatchEvent(new Event("wishlist-local-update"));
-	};
+  const saveLocal = (newWishlist) => {
+    localStorage.setItem("wishlist", JSON.stringify(newWishlist));
+    setWishlist(newWishlist);
+  };
 
-	const addToWishlist = (product) => {
-		if (!wishlist.some((item) => item._id === product._id)) {
-			const newWishlist = [...wishlist, product];
-			saveWishlist(newWishlist);
-			toast.success("Added to wishlist");
-		}
-	};
+  // =====================================
+  // 3️⃣ Add
+  // =====================================
+  const addToWishlist = useCallback(
+    async (product) => {
+      if (wishlist.some((item) => item._id === product._id)) return;
 
-	const removeFromWishlist = (productId) => {
-		const newWishlist = wishlist.filter((item) => item._id !== productId);
-		saveWishlist(newWishlist);
-		toast.success("Removed from wishlist");
-	};
+      const updated = [...wishlist, product];
+      saveLocal(updated);
+      toast.success("Added to wishlist");
 
-	const toggleWishlist = (product) => {
-		if (wishlist.some((item) => item._id === product._id)) {
-			removeFromWishlist(product._id);
-		} else {
-			addToWishlist(product);
-		}
-	};
+      // Call API ONLY if logged in
+      if (status === "authenticated") {
+        try {
+          await fetch("/api/wishlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId: product._id }),
+          });
+        } catch (err) {
+          console.error("DB add failed", err);
+        }
+      }
+    },
+    [wishlist, status]
+  );
 
-	const isInWishlist = (productId) => {
-		return wishlist.some((item) => item._id === productId);
-	};
+  // =====================================
+  // 4️⃣ Remove
+  // =====================================
+  const removeFromWishlist = useCallback(
+    async (productId) => {
+      const updated = wishlist.filter((item) => item._id !== productId);
+      saveLocal(updated);
+      toast.success("Removed from wishlist");
 
-	return { wishlist, addToWishlist, removeFromWishlist, toggleWishlist, isInWishlist, isLoaded };
+      // Call API ONLY if logged in
+      if (status === "authenticated") {
+        try {
+          await fetch("/api/wishlist", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ productId }),
+          });
+        } catch (err) {
+          console.error("DB remove failed", err);
+        }
+      }
+    },
+    [wishlist, status]
+  );
+
+  const toggleWishlist = (product) => {
+    if (wishlist.some((item) => item._id === product._id)) {
+      removeFromWishlist(product._id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
+  const isInWishlist = (productId) => {
+    return wishlist.some((item) => item._id === productId);
+  };
+
+  return {
+    wishlist,
+    addToWishlist,
+    removeFromWishlist,
+    toggleWishlist,
+    isInWishlist,
+    isLoaded,
+  };
 }
