@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { Card, CardHeader, CardTitle, CardContent, CardFooter, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
+import { apiUrl } from "@/lib/fetcher"
 export default function Page() {
 	const [products, setProducts] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -12,7 +12,7 @@ export default function Page() {
 	useState(() => {
 		const fetchProducts = async () => {
 			try {
-				const response = await fetch("/api/products");
+				const response = await fetch(apiUrl("/api/products"));
 				if (response.ok) {
 					const data = await response.json();
 					setProducts(data);

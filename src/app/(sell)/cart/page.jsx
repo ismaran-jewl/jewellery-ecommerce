@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import PersonalizedMessageButton from "@/components/cart/PersonalizedMessageButton";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-
+import { apiUrl } from "@/lib/fetcher"
 // ── Helpers ──────────────────────────────────────────────────
 const fmt = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 
@@ -49,7 +49,7 @@ export default function CartPage() {
 
   // ── Recommended — products NOT in cart ────────────────────
   useEffect(() => {
-    fetch("/api/products")
+    fetch(apiUrl("/api/products"))
       .then((r) => r.json())
       .then((all) => {
         const inCart = new Set(items.map((i) => i.id));

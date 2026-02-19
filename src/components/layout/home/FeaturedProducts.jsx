@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
-
+import { apiUrl } from "@/lib/fetcher"
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
@@ -19,7 +19,7 @@ export default function FeaturedProducts() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/products");
+        const response = await fetch(apiUrl("/api/products"));
         if (response.ok) {
           const data = await response.json();
           if (Array.isArray(data) && data.length > 0) {

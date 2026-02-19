@@ -12,7 +12,7 @@ import { useCart } from "@/hooks/useCart";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-
+import { apiUrl } from "@/lib/fetcher"
 /* ─────────────────────────────────────────
    CONSTANTS
 ───────────────────────────────────────── */
@@ -640,7 +640,7 @@ function ShopContent() {
     const { data: session } = useSession();
 
     useEffect(() => {
-        fetch("/api/products")
+        fetch(apiUrl("/api/products"))
             .then(r => r.ok ? r.json() : [])
             .then(setProducts)
             .catch(() => {})
