@@ -80,7 +80,9 @@ yarn add \
   class-variance-authority \
   clsx \
   tailwind-merge \
-  @fortawesome/fontawesome-free
+  @fortawesome/fontawesome-free \
+  qrcode.react
+
 
 #################################################
 # DEV DEPENDENCIES (NO @types)
