@@ -4,10 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package,
-  ChevronDown,
-  ChevronUp,
-  ShoppingBag,
-  ArrowRight,
+  ShoppingBasket,
   Clock,
   CheckCircle2,
   Truck,
@@ -101,12 +98,12 @@ function OrderCard({ order }) {
             </div>
 
             {/* Status Button Style */}
-            <div className={`w-full sm:w-fit p-2 rounded-xl text-xs font-bold flex sm:justify-start gap-2 transition-all ${STATUS[order.status]?.color || STATUS.Processing.color}`}>
+            <div
+              className={`w-full sm:w-fit p-2 rounded-xl text-xs font-bold flex sm:justify-start gap-2 transition-all ${STATUS[order.status]?.color || STATUS.Processing.color}`}
+            >
               <StatusPill status={order.status} />
             </div>
           </div>
-
-
         </div>
 
         {/* Price + Buttons */}
@@ -145,10 +142,7 @@ function OrderCard({ order }) {
           >
             <div className="border-t border-[#f0e8e0] px-4 py-4 space-y-3 bg-[#fdf8f4]/60">
               {order.orderItems?.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex gap-3 items-center w-full min-w-0"
-                >
+                <div key={i} className="flex gap-3 items-center w-full min-w-0">
                   <div className="w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-[#e8ddd4]">
                     <img
                       src={item.image}
@@ -192,21 +186,6 @@ export default function OrdersPage() {
       })
       .catch(() => setLoading(false));
   }, []);
-  if (loading) {
-    return (
-      <main className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-[#fdf8f4] to-[#f0ebe4] py-6 px-4">
-        <div className="max-w-2xl mx-auto w-full">
-          <h1 className="text-2xl font-serif font-bold text-[#2d1a10] mb-6">
-            My Orders
-          </h1>
-
-          <div className="space-y-4 w-full">
-            <p className="text-center text-[#a78b71]">Loading orders...</p>
-          </div>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-screen w-full overflow-x-hidden bg-gradient-to-br from-[#fdf8f4] to-[#f0ebe4] py-6 px-4">
@@ -215,11 +194,34 @@ export default function OrdersPage() {
           My Orders
         </h1>
 
-        <div className="space-y-4 w-full">
-          {orders.map((order) => (
-            <OrderCard key={order._id} order={order} />
-          ))}
-        </div>
+        {/* Loading State */}
+        {loading && (
+          <div className="flex justify-center items-center h-32">
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#C59D5F]" />
+          </div>
+        )}
+
+        {/* When Not Loading */}
+        {!loading && (
+          <div className="space-y-4 w-full">
+            {orders.length === 0 ? (
+              <div className="text-center py-10 flex flex-col items-center">
+                <ShoppingBasket className="h-14 w-14 text-[#C59D5F] mb-4" />
+
+                <p className="text-[#a78b71] text-lg mb-4">No orders found</p>
+
+                <a
+                  href="/shop"
+                  className="inline-block bg-[#C59D5F] text-white px-5 py-2 rounded-md font-medium hover:bg-[#b38750] transition"
+                >
+                  Shop Now
+                </a>
+              </div>
+            ) : (
+              orders.map((order) => <OrderCard key={order._id} order={order} />)
+            )}
+          </div>
+        )}
       </div>
     </main>
   );

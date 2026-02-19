@@ -11,6 +11,10 @@ const MessageSchema = new mongoose.Schema({
     type: Buffer,
     required: true,
   },
+  contentUrl:{
+    type:String,
+    default:""
+  },
   contentType: {
     type: String, // 'audio/webm' or 'video/webm'
     required: true,
