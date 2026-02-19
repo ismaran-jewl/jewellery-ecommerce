@@ -15,7 +15,7 @@ function MessageContent() {
     const url = searchParams.get("url");
     const type = searchParams.get("type");
 
-    if (url && (type === "video" || type === "audio")) {
+    if (url && (type?.includes("video") || type?.includes("audio"))) {
       // Basic transformation for Google Drive URL to make it embeddable
       // e.g., https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/file/d/FILE_ID/preview
       // Ensure we handle cases where /view might not be present or different params exist
