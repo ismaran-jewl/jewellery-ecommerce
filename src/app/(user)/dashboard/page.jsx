@@ -1,5 +1,7 @@
 "use client"
 
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
 import { motion } from "framer-motion"
 import {
   User,
@@ -18,6 +20,45 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
 export default function DashboardPage() {
+  const { data: session } = useSession()
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [userStats, setUserStats] = useState({
+    wishlistCount: 0,
+    rewardPoints: 0,
+    giftCards: 0
+  })
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [ordersRes, statsRes] = await Promise.allSettled([
+          fetch("/api/orders"),
+          fetch("/api/user/stats")
+        ])
+
+        if (ordersRes.status === "fulfilled" && ordersRes.value.ok) {
+          const data = await ordersRes.value.json()
+          setOrders(data.orders || [])
+        }
+
+        if (statsRes.status === "fulfilled" && statsRes.value.ok) {
+          const data = await statsRes.value.json()
+          setUserStats(data)
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard data", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDashboardData()
+  }, [])
+
+  const activeOrdersCount = orders.filter(o => !['Delivered', 'Cancelled'].includes(o.status)).length
+  const recentOrder = orders.length > 0 ? orders[0] : null
+
   return (
     <div className="min-h-screen bg-[#F4F7F6] p-6 md:p-12 text-[#1B4D3E]">
       <div className="max-w-7xl mx-auto">
@@ -30,7 +71,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl font-serif font-bold"
             >
-              Welcome Back, Sparkle ✨
+              Welcome Back, {session?.user?.name || "Sparkle"} ✨
             </motion.h1>
             <p className="text-[#1B4D3E]/60 mt-3 text-lg">
               Manage your luxury collection and account details.
@@ -46,16 +87,16 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <LuxuryStat
             title="Active Orders"
-            value="2"
-            secondary="12"
+            value={loading ? "-" : activeOrdersCount}
+            secondary={loading ? "-" : userStats.wishlistCount}
             secondaryLabel="Wishlist Items"
             icon1={Clock}
             icon2={Heart}
           />
           <LuxuryStat
             title="Order History"
-            value="12"
-            secondary="450"
+            value={loading ? "-" : orders.length}
+            secondary={loading ? "-" : userStats.rewardPoints}
             secondaryLabel="Rewards Points"
             icon1={Package}
             icon2={Star}
@@ -63,8 +104,8 @@ export default function DashboardPage() {
           />
           <LuxuryStat
             title="Reward Balance"
-            value="450"
-            secondary="24"
+            value={loading ? "-" : userStats.rewardPoints}
+            secondary={loading ? "-" : userStats.giftCards}
             secondaryLabel="Gift Cards"
             icon1={Star}
             icon2={Gift}
@@ -109,10 +150,18 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                <h4 className="text-lg font-semibold mb-2">Order #84920</h4>
-                <p className="text-sm text-[#1B4D3E]/60">
-                  Your "Eternal Diamond Ring" is out for delivery.
-                </p>
+                {loading ? (
+                  <p className="text-sm text-[#1B4D3E]/60">Loading activity...</p>
+                ) : recentOrder ? (
+                  <>
+                    <h4 className="text-lg font-semibold mb-2">Order #{recentOrder._id.toString().slice(-8).toUpperCase()}</h4>
+                    <p className="text-sm text-[#1B4D3E]/60">
+                      {recentOrder.orderItems?.length} item(s) • {recentOrder.status}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-[#1B4D3E]/60">No recent activity.</p>
+                )}
 
                 <ChevronRight className="absolute right-6 top-8 opacity-20" />
 
