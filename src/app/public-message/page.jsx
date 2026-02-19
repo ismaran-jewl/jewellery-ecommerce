@@ -69,10 +69,10 @@ function MessageContent() {
         <div className="absolute bottom-[-10%] left-[-5%] w-[300px] h-[300px] bg-[#1B4D3E]/10 rounded-full blur-[80px]"></div>
       </div>
 
-      <div className="max-w-2xl w-full bg-white rounded-[2rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100 relative z-10">
+      <div className="w-full max-w-2xl md:max-w-2xl bg-white rounded-[2rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100 relative z-10">
         
         {/* Header Section */}
-        <div className="bg-[#1B4D3E] p-8 text-center relative overflow-hidden">
+        <div className="bg-[#1B4D3E] p-4 text-center relative overflow-hidden">
            <div className="absolute top-0 left-0 w-full h-full opacity-10">
               <div className="absolute top-4 left-4"><Sparkles className="w-6 h-6 text-white" /></div>
               <div className="absolute bottom-4 right-4"><Sparkles className="w-4 h-4 text-white" /></div>
@@ -92,7 +92,7 @@ function MessageContent() {
         </div>
 
         {/* Media Content Section */}
-        <div className="p-6 md:p-10 bg-white">
+        <div className="p-3 md:p-10 bg-white">
           <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 relative group">
             
             {/* Media Type Indicator */}
