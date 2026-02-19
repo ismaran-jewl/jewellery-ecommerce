@@ -34,7 +34,7 @@ export default function CartPage() {
   // ── Fetch cart from DB ──────────────────────────────────────
   const fetchCart = useCallback(async () => {
     try {
-      const res = await fetch("/api/cart");
+      const res = await fetch(apiUrl("/api/cart"));
       if (!res.ok) throw new Error();
       const data = await res.json();
       setItems(data.items ?? []);

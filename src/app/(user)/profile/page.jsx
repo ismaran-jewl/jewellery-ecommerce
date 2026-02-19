@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/fetcher";
 import { useEffect, useState } from "react";
 
 export default function AccountPage() {
@@ -15,7 +16,7 @@ export default function AccountPage() {
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    fetch("/api/account")
+    fetch(apiUrl("/api/account"))
       .then((r) => r.json())
       .then((d) => {
         if (d.user) {

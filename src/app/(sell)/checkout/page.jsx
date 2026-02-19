@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
+import { apiUrl } from "@/lib/fetcher";
 
 const fmt = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 
@@ -60,7 +61,7 @@ export default function CheckoutPage() {
 
   // ── Load cart from DB (same as cart page) ─────────────────
   useEffect(() => {
-    fetch("/api/cart")
+    fetch(apiUrl("/api/cart"))
       .then((r) => r.json())
       .then((d) => { setCartItems(d.items ?? []); setLoading(false); })
       .catch(() => setLoading(false));

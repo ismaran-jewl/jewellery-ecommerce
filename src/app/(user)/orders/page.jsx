@@ -11,6 +11,7 @@ import {
   XCircle,
 } from "lucide-react";
 import Link from "next/link";
+import { apiUrl } from "@/lib/fetcher";
 
 const fmt = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 
@@ -178,7 +179,7 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/orders")
+    fetch(apiUrl("/api/orders"))
       .then((r) => r.json())
       .then((d) => {
         setOrders(d.orders ?? []);

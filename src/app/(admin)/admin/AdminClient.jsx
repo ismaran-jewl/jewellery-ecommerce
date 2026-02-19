@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2 } from "lucide-react";
+import { apiUrl } from "@/lib/fetcher";
 
 export default function AdminClient() {
   const [products, setProducts] = useState([]);
@@ -33,7 +34,7 @@ export default function AdminClient() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch("/api/admin/products");
+      const response = await fetch(apiUrl("/api/admin/products"));
       if (response.ok) {
         const data = await response.json();
         setProducts(data);

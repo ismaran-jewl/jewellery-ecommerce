@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { apiUrl } from "@/lib/fetcher";
 
 export function useWishlist() {
   const { data: session, status } = useSession();
@@ -32,7 +33,7 @@ export function useWishlist() {
 
     const fetchWishlist = async () => {
       try {
-        const res = await fetch("/api/wishlist");
+        const res = await fetch(apiUrl("/api/wishlist"));
         if (!res.ok) return;
 
         const data = await res.json();

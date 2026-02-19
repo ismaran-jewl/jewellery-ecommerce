@@ -18,6 +18,7 @@ import {
 import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { apiUrl } from "@/lib/fetcher"
 
 export default function DashboardPage() {
   const { data: session } = useSession()
@@ -33,8 +34,8 @@ export default function DashboardPage() {
     const fetchDashboardData = async () => {
       try {
         const [ordersRes, statsRes] = await Promise.allSettled([
-          fetch("/api/orders"),
-          fetch("/api/user/stats")
+          fetch(apiUrl("/api/orders")),
+          fetch(apiUrl("/api/user/stats"))
         ])
 
         if (ordersRes.status === "fulfilled" && ordersRes.value.ok) {

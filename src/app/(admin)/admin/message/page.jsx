@@ -1,5 +1,6 @@
 "use client";
 
+import { apiUrl } from "@/lib/fetcher";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -411,7 +412,7 @@ export default function AdminMessagesPage() {
   const fetchMessages = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/admin/message");
+      const res = await fetch(apiUrl("/api/admin/message"));
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
       setMessages(data);
