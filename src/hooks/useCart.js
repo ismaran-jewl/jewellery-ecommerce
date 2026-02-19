@@ -8,7 +8,6 @@ export function useCart() {
 	const [isLoaded, setIsLoaded] = useState(false);
 
 	useEffect(() => {
-		// Initial load
 		const loadCart = () => {
 			const savedCart = localStorage.getItem("cart");
 			if (savedCart) {
@@ -23,14 +22,7 @@ export function useCart() {
 
 		loadCart();
 
-		// Listen for storage events (cross-tab)
-		const handleStorageChange = (e) => {
-			if (e.key === "cart") {
-				loadCart();
-			}
-		};
-
-		// Listen for custom events (same-tab)
+		const handleStorageChange = (e) => { if (e.key === "cart") loadCart(); };
 		const handleLocalUpdate = () => loadCart();
 
 		window.addEventListener("storage", handleStorageChange);
@@ -45,9 +37,54 @@ export function useCart() {
 	const saveCart = (newCart) => {
 		localStorage.setItem("cart", JSON.stringify(newCart));
 		setCart(newCart);
-		// Dispatch custom event to notify other components in the same tab
 		window.dispatchEvent(new Event("cart-local-update"));
 	};
+
+	// ── DB helpers (fire-and-forget — local state is source of truth for UI) ──
+
+	const dbAdd = async (productId, quantity) => {
+		try {
+			await fetch("/api/cart", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ productId, quantity }),
+			});
+		} catch {
+			// silently fail — local cart still works
+		}
+	};
+
+	const dbUpdateQty = async (productId, quantity) => {
+		try {
+			await fetch("/api/cart", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ productId, quantity }),
+			});
+		} catch {}
+	};
+
+	const dbRemove = async (productId) => {
+		try {
+			await fetch("/api/cart", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ productId }),
+			});
+		} catch {}
+	};
+
+	const dbClear = async () => {
+		try {
+			await fetch("/api/cart", {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ clearAll: true }),
+			});
+		} catch {}
+	};
+
+	// ── Public methods ────────────────────────────────────────
 
 	const addToCart = (product, quantity = 1) => {
 		const existingItem = cart.find((item) => item.id === product._id);
@@ -60,29 +97,48 @@ export function useCart() {
 			newCart = [...cart, { id: product._id, qty: quantity }];
 		}
 		saveCart(newCart);
+		dbAdd(product._id, quantity); // save to DB
 		toast.success(`Added ${product.name} to cart`);
 	};
 
 	const updateQty = (productId, delta) => {
-		const newCart = cart.map((item) => {
-			if (item.id === productId) {
-				return { ...item, qty: Math.max(1, item.qty + delta) };
-			}
-			return item;
-		});
+		const item = cart.find((i) => i.id === productId);
+		if (!item) return;
+		const newQty = Math.max(1, item.qty + delta);
+		const newCart = cart.map((i) =>
+			i.id === productId ? { ...i, qty: newQty } : i
+		);
 		saveCart(newCart);
+		dbUpdateQty(productId, newQty); // save to DB
 	};
 
 	const removeFromCart = (productId) => {
 		const newCart = cart.filter((item) => item.id !== productId);
 		saveCart(newCart);
+		dbRemove(productId); // save to DB
 		toast.success("Removed from cart");
 	};
 
 	const clearCart = () => {
 		saveCart([]);
+		dbClear(); // save to DB
 		toast.success("Cart cleared");
 	};
 
-	return { cart, addToCart, updateQty, removeFromCart, clearCart, isLoaded };
+	const updateItem = (productId, updates) => {
+		const newCart = cart.map((item) =>
+			item.id === productId ? { ...item, ...updates } : item
+		);
+		saveCart(newCart);
+		// If message is being updated, sync to DB
+		if (updates.message !== undefined) {
+			fetch("/api/cart", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ productId, message: updates.message }),
+			}).catch(() => {});
+		}
+	};
+
+	return { cart, addToCart, updateQty, removeFromCart, clearCart, updateItem, isLoaded };
 }

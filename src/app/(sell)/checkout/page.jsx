@@ -1,262 +1,319 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { products } from "@/data/products";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 import { useCart } from "@/hooks/useCart";
-import { useUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, CreditCard, MapPin, Phone, User, Mail, ShieldCheck, Truck } from "lucide-react";
+import {
+  ArrowLeft, CreditCard, MapPin, Phone, User, Mail,
+  ShieldCheck, Truck, Loader2, ChevronDown, CheckCircle2,
+} from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
 
-export default function Page() {
-	const { cart, isLoaded, clearCart } = useCart();
-	const { addOrder } = useUser();
-	const router = useRouter();
-	const [isProcessing, setIsProcessing] = useState(false);
-	const [paymentMethod, setPaymentMethod] = useState("card");
-	const [products, setProducts] = useState([]);
-	const [loading, setLoading] = useState(true);
+const fmt = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 
-	useEffect(() => {
-		const fetchProducts = async () => {
-			try {
-				const response = await fetch("/api/products");
-				if (response.ok) {
-					const data = await response.json();
-					setProducts(data);
-				}
-			} catch (error) {
-				console.error("Failed to fetch products:", error);
-			} finally {
-				setLoading(false);
-			}
-		};
-		fetchProducts();
-	}, []);
+// ── Floating label input ─────────────────────────────────────
+const Field = ({ label, icon: Icon, type = "text", name, required, placeholder, pattern, minLength, className = "" }) => (
+  <div className={`relative ${className}`}>
+    {Icon && <Icon className="absolute left-3 top-3 h-4 w-4 text-[#b5a090] pointer-events-none" />}
+    <input
+      type={type}
+      name={name}
+      required={required}
+      placeholder={placeholder ?? label}
+      pattern={pattern}
+      minLength={minLength}
+      className={`w-full border border-[#e0d5cc] bg-white rounded-xl py-2.5 pr-3 text-sm text-[#2d1a10] placeholder:text-[#c4b4a7]
+        focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all
+        ${Icon ? "pl-10" : "pl-3"}`}
+    />
+    <label className="absolute -top-2 left-3 text-[10px] font-bold uppercase tracking-wider text-[#9c8272] bg-white px-1">
+      {label}
+    </label>
+  </div>
+);
 
-	const cartItems = cart.map((item) => {
-		const product = products.find((p) => (p._id || p.id) === item.id);
-		return product ? { ...product, qty: item.qty } : null;
-	}).filter(Boolean);
+const Section = ({ title, icon: Icon, children }) => (
+  <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-white/60 shadow-sm overflow-hidden">
+    <div className="flex items-center gap-3 px-6 py-4 border-b border-[#f0e8e0]">
+      <div className="w-8 h-8 bg-[#fff0e5] rounded-lg flex items-center justify-center">
+        <Icon className="w-4 h-4 text-[#C59D5F]" />
+      </div>
+      <h2 className="font-serif font-bold text-[#2d1a10]">{title}</h2>
+    </div>
+    <div className="p-6">{children}</div>
+  </div>
+);
 
-	const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-	const shipping = subtotal > 10000 ? 0 : 500;
-	const total = subtotal + shipping;
+export default function CheckoutPage() {
+  const { cart, clearCart } = useCart();
+  const { data: session } = useSession();
+  const router = useRouter();
 
-	const handlePlaceOrder = (e) => {
-		e.preventDefault();
-		setIsProcessing(true);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("card");
 
-		const order = {
-			id: `ORD-${Date.now()}`,
-			date: new Date().toLocaleDateString(),
-			items: cartItems,
-			total: total,
-			status: "Processing",
-		};
+  // ── Load cart from DB (same as cart page) ─────────────────
+  useEffect(() => {
+    fetch("/api/cart")
+      .then((r) => r.json())
+      .then((d) => { setCartItems(d.items ?? []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
 
-		// Simulate API call
-		setTimeout(() => {
-			setIsProcessing(false);
-			addOrder(order);
-			clearCart();
-			router.push("/order-confirmation");
-			toast.success("Order placed successfully!");
-		}, 1500);
-	};
+  const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+  const shippingPrice = subtotal > 10000 ? 0 : 500;
+  const taxPrice = Math.round(subtotal * 0.03);
+  const total = subtotal + shippingPrice + taxPrice;
 
-	if (!isLoaded || loading) {
-		return <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] text-[#5c4632]">Loading checkout...</div>;
-	}
+  // ── Place order ────────────────────────────────────────────
+  const handlePlaceOrder = async (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
 
-	if (cartItems.length === 0) {
-		return (
-			<main className="min-h-screen bg-[#f8fafc] py-20">
-				<div className="container mx-auto px-4 text-center max-w-md">
-					<div className="mb-6 flex justify-center">
-						<div className="h-24 w-24 bg-[#fff0e5] rounded-full flex items-center justify-center">
-							<CreditCard className="h-10 w-10 text-[#5c4632]" />
-						</div>
-					</div>
-					<h1 className="text-3xl font-bold mb-4 text-[#2d1a10]">Your cart is empty</h1>
-					<p className="text-[#7c6a58] mb-8">Looks like you haven't added any items to your cart yet.</p>
-					<Button asChild className="w-full sm:w-auto">
-						<Link href="/shop">Start Shopping</Link>
-					</Button>
-				</div>
-			</main>
-		);
-	}
+    const form = e.target;
+    const shippingAddress = {
+      address: form.address.value,
+      city: form.city.value,
+      postalCode: form.pincode.value,
+      country: "India",
+    };
 
-	return (
-		<main className="min-h-screen bg-[#f8fafc] py-10">
-			<div className="container mx-auto px-4 max-w-6xl">
-				<div className="mb-8">
-					<Link href="/cart" className="text-[#7c6a58] hover:text-[#2d1a10] flex items-center gap-2 text-sm font-medium transition-colors">
-						<ArrowLeft className="w-4 h-4" /> Back to Cart
-					</Link>
-				</div>
-				
-				<h1 className="text-3xl font-serif font-bold mb-8 text-[#2d1a10]">Checkout</h1>
-				
-				<form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-					{/* Left Column: Shipping & Payment */}
-					<div className="lg:col-span-7 space-y-8">
-						{/* Shipping Details */}
-						<Card className="border-none shadow-md">
-							<CardHeader>
-								<CardTitle className="flex items-center gap-2 text-xl">
-									<MapPin className="w-5 h-5 text-[#C59D5F]" /> Shipping Details
-								</CardTitle>
-							</CardHeader>
-							<CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div className="space-y-2 md:col-span-2">
-									<label className="text-sm font-medium text-[#2d1a10]">Full Name</label>
-									<div className="relative">
-										<User className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-										<input className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="John Doe" required />
-									</div>
-								</div>
-								<div className="space-y-2 md:col-span-2">
-									<label className="text-sm font-medium text-[#2d1a10]">Email Address</label>
-									<div className="relative">
-										<Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-										<input type="email" className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="john@example.com" required />
-									</div>
-								</div>
-								<div className="space-y-2 md:col-span-2">
-									<label className="text-sm font-medium text-[#2d1a10]">Phone Number</label>
-									<div className="relative">
-										<Phone className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-										<input type="tel" className="w-full border rounded-lg pl-10 pr-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="+91 98765 43210" required minLength={10} pattern="[0-9]{10,}" title="Please enter a valid 10-digit mobile number" />
-									</div>
-								</div>
-								<div className="space-y-2 md:col-span-2">
-									<label className="text-sm font-medium text-[#2d1a10]">Address</label>
-									<textarea className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all min-h-[80px]" placeholder="123, Street Name, Area" required />
-								</div>
-								<div className="space-y-2">
-									<label className="text-sm font-medium text-[#2d1a10]">City</label>
-									<input className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="Mumbai" required />
-								</div>
-								<div className="space-y-2">
-									<label className="text-sm font-medium text-[#2d1a10]">Pincode</label>
-									<input className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] focus:border-transparent outline-none transition-all" placeholder="400001" required />
-								</div>
-							</CardContent>
-						</Card>
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shippingAddress, paymentMethod }),
+      });
 
-						{/* Payment Method */}
-						<Card className="border-none shadow-md">
-							<CardHeader>
-								<CardTitle className="flex items-center gap-2 text-xl">
-									<CreditCard className="w-5 h-5 text-[#C59D5F]" /> Payment Method
-								</CardTitle>
-							</CardHeader>
-							<CardContent>
-								<div className="space-y-3">
-									<div className={`border rounded-lg transition-colors ${paymentMethod === 'card' ? 'border-[#C59D5F] bg-[#fffaf6]' : 'border-gray-200'}`}>
-										<label className="flex items-center p-4 cursor-pointer">
-											<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} />
-											<span className="ml-3 font-medium text-[#2d1a10]">Credit / Debit Card</span>
-										</label>
-										{paymentMethod === 'card' && (
-											<div className="px-4 pb-4 space-y-3 animate-in slide-in-from-top-2">
-												<input type="text" placeholder="Card Number" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
-												<div className="grid grid-cols-2 gap-4">
-													<input type="text" placeholder="MM/YY" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
-													<input type="text" placeholder="CVV" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
-												</div>
-											</div>
-										)}
-									</div>
-									<div className={`border rounded-lg transition-colors ${paymentMethod === 'upi' ? 'border-[#C59D5F] bg-[#fffaf6]' : 'border-gray-200'}`}>
-										<label className="flex items-center p-4 cursor-pointer">
-											<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} />
-											<span className="ml-3 font-medium text-[#2d1a10]">UPI / Net Banking</span>
-										</label>
-										{paymentMethod === 'upi' && (
-											<div className="px-4 pb-4 animate-in slide-in-from-top-2">
-												<input type="text" placeholder="UPI ID (e.g. user@upi)" className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#C59D5F] outline-none" required />
-											</div>
-										)}
-									</div>
-									<div className={`border rounded-lg transition-colors ${paymentMethod === 'cod' ? 'border-[#C59D5F] bg-[#fffaf6]' : 'border-gray-200'}`}>
-										<label className="flex items-center p-4 cursor-pointer">
-											<input type="radio" name="payment" className="w-4 h-4 text-[#C59D5F] focus:ring-[#C59D5F]" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} />
-											<span className="ml-3 font-medium text-[#2d1a10]">Cash on Delivery</span>
-										</label>
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
+      const data = await res.json();
 
-					{/* Right Column: Order Summary */}
-					<div className="lg:col-span-5">
-						<div className="sticky top-24 space-y-6">
-							<Card className="border-none shadow-md bg-white">
-								<CardHeader className="pb-4 border-b">
-									<CardTitle className="text-xl">Order Summary</CardTitle>
-									<CardDescription>{cartItems.length} items in your cart</CardDescription>
-								</CardHeader>
-								<CardContent className="pt-6">
-									<ul className="space-y-4 max-h-[300px] overflow-auto pr-2 custom-scrollbar">
-										{cartItems.map((item) => (
-											<li key={item.id} className="flex gap-4">
-												<div className="h-16 w-16 rounded-md border overflow-hidden flex-shrink-0">
-													<img src={item.image} alt={item.name} className="h-full w-full object-cover" />
-												</div>
-												<div className="flex-1 min-w-0">
-													<h4 className="text-sm font-medium text-[#2d1a10] truncate">{item.name}</h4>
-													<p className="text-xs text-[#7c6a58] capitalize">{item.material} {item.type}</p>
-													<div className="flex justify-between items-center mt-1">
-														<span className="text-xs text-[#7c6a58]">Qty: {item.qty}</span>
-														<span className="text-sm font-medium text-[#5c4632]">₹{(item.price * item.qty).toLocaleString()}</span>
-													</div>
-												</div>
-											</li>
-										))}
-									</ul>
-									
-									<div className="mt-6 space-y-3 pt-6 border-t">
-										<div className="flex justify-between text-sm text-[#7c6a58]">
-											<span>Subtotal</span>
-											<span>₹{subtotal.toLocaleString()}</span>
-										</div>
-										<div className="flex justify-between text-sm text-[#7c6a58]">
-											<span>Shipping</span>
-											<span>{shipping === 0 ? <span className="text-green-600 font-medium">Free</span> : `₹${shipping}`}</span>
-										</div>
-										<div className="flex justify-between text-lg font-bold text-[#2d1a10] pt-2">
-											<span>Total</span>
-											<span>₹{total.toLocaleString()}</span>
-										</div>
-									</div>
-								</CardContent>
-								<CardFooter className="flex-col gap-4 bg-[#fffaf6] rounded-b-xl p-6">
-									<Button className="w-full h-12 text-lg bg-[#2d1a10] hover:bg-[#4a2c1d]" disabled={isProcessing} type="submit">
-										{isProcessing ? "Processing..." : `Pay ₹${total.toLocaleString()}`}
-									</Button>
-									<div className="flex items-center justify-center gap-4 text-xs text-[#7c6a58]">
-										<span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Secure Payment</span>
-										<div className="flex items-center gap-1">
-											<motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}>
-												<Truck className="w-3 h-3" />
-											</motion.div>
-											Fast Delivery
-										</div>
-									</div>
-								</CardFooter>
-							</Card>
-						</div>
-					</div>
-				</form>
-			</div>
-		</main>
-	);
+      if (!res.ok) {
+        toast.error(data.error ?? "Something went wrong");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Also clear local cart state
+      clearCart?.();
+      toast.success("Order placed successfully!");
+      router.push(`/order-confirmation?orderId=${data.orderId}`)
+    } catch {
+      toast.error("Network error — please try again");
+      setIsProcessing(false);
+    }
+  };
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fdf8f4] to-[#f0ebe4]">
+      <Loader2 className="w-8 h-8 animate-spin text-[#C59D5F]" />
+    </div>
+  );
+
+  if (cartItems.length === 0) return (
+    <main className="min-h-screen bg-gradient-to-br from-[#fdf8f4] to-[#f0ebe4] flex flex-col items-center justify-center px-4">
+      <div className="text-center max-w-sm">
+        <div className="w-16 h-16 bg-[#fff0e5] rounded-full flex items-center justify-center mx-auto mb-4">
+          <CreditCard className="w-7 h-7 text-[#C59D5F]" />
+        </div>
+        <h1 className="text-2xl font-serif font-bold text-[#2d1a10] mb-2">Nothing to checkout</h1>
+        <p className="text-[#9c8272] mb-6 text-sm">Your cart is empty.</p>
+        <Link href="/shop" className="bg-[#2d1a10] text-white px-6 py-3 rounded-full text-sm font-medium hover:bg-[#4a2c1d] transition-colors">
+          Start Shopping
+        </Link>
+      </div>
+    </main>
+  );
+
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-[#fdf8f4] to-[#f0ebe4] py-10 px-4">
+      {/* ambient blobs */}
+      <div className="fixed inset-0 pointer-events-none -z-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 w-[600px] h-[600px] bg-[#FFDAB9]/15 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#d4ede5]/20 rounded-full blur-[120px]" />
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto">
+        <div className="mb-6">
+          <Link href="/cart" className="inline-flex items-center gap-2 text-sm text-[#9c8272] hover:text-[#2d1a10] transition-colors font-medium">
+            <ArrowLeft className="w-4 h-4" /> Back to Cart
+          </Link>
+        </div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-3xl font-serif font-bold text-[#2d1a10] mb-8"
+        >
+          Checkout
+        </motion.h1>
+
+        <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* ── Left: Shipping + Payment ─────────────────────── */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Shipping */}
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+              <Section title="Shipping Details" icon={MapPin}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <Field label="Full Name" icon={User} name="fullname" required placeholder="John Doe" className="md:col-span-2" />
+                  <Field label="Email" icon={Mail} name="email" type="email" required placeholder="john@example.com" className="md:col-span-2" />
+                  <Field label="Phone" icon={Phone} name="phone" type="tel" required placeholder="+91 98765 43210" pattern="[0-9]{10,}" minLength={10} className="md:col-span-2" />
+
+                  <div className="relative md:col-span-2">
+                    <textarea
+                      name="address"
+                      required
+                      placeholder="Street, Area, Landmark"
+                      rows={2}
+                      className="w-full border border-[#e0d5cc] bg-white rounded-xl pl-3 pr-3 pt-4 pb-2 text-sm text-[#2d1a10] placeholder:text-[#c4b4a7]
+                        focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all resize-none"
+                    />
+                    <label className="absolute -top-2 left-3 text-[10px] font-bold uppercase tracking-wider text-[#9c8272] bg-white px-1">Address</label>
+                  </div>
+
+                  <Field label="City" name="city" required placeholder="Mumbai" />
+                  <Field label="Pincode" name="pincode" required placeholder="400001" />
+                </div>
+              </Section>
+            </motion.div>
+
+            {/* Payment */}
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <Section title="Payment Method" icon={CreditCard}>
+                <div className="space-y-3">
+                  {[
+                    { id: "card", label: "Credit / Debit Card" },
+                    { id: "upi",  label: "UPI / Net Banking" },
+                    { id: "cod",  label: "Cash on Delivery" },
+                  ].map((opt) => (
+                    <div key={opt.id}>
+                      <label
+                        className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all
+                          ${paymentMethod === opt.id
+                            ? "border-[#C59D5F] bg-[#fffaf5] shadow-sm"
+                            : "border-[#e0d5cc] hover:border-[#d4c4b5]"
+                          }`}
+                      >
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0
+                          ${paymentMethod === opt.id ? "border-[#C59D5F]" : "border-[#c4b4a7]"}`}
+                        >
+                          {paymentMethod === opt.id && <div className="w-2 h-2 rounded-full bg-[#C59D5F]" />}
+                        </div>
+                        <input type="radio" name="payment" className="sr-only" checked={paymentMethod === opt.id} onChange={() => setPaymentMethod(opt.id)} />
+                        <span className="font-medium text-[#2d1a10] text-sm">{opt.label}</span>
+                      </label>
+
+                      {/* Expanded fields */}
+                      {paymentMethod === "card" && opt.id === "card" && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="mt-2 px-4 pb-4 space-y-3 overflow-hidden"
+                        >
+                          <input placeholder="Card Number" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
+                          <div className="grid grid-cols-2 gap-3">
+                            <input placeholder="MM / YY" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
+                            <input placeholder="CVV" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
+                          </div>
+                        </motion.div>
+                      )}
+                      {paymentMethod === "upi" && opt.id === "upi" && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          className="mt-2 px-4 pb-4 overflow-hidden"
+                        >
+                          <input placeholder="UPI ID (e.g. name@upi)" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
+                        </motion.div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Section>
+            </motion.div>
+          </div>
+
+          {/* ── Right: Order summary ────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="lg:col-span-5"
+          >
+            <div className="sticky top-24 bg-white/90 backdrop-blur-sm rounded-2xl border border-white/60 shadow-lg overflow-hidden">
+              <div className="px-6 py-4 border-b border-[#f0e8e0]">
+                <h3 className="font-serif font-bold text-[#2d1a10]">Order Summary</h3>
+                <p className="text-xs text-[#9c8272] mt-0.5">{cartItems.length} {cartItems.length === 1 ? "item" : "items"}</p>
+              </div>
+
+              {/* Items list */}
+              <ul className="divide-y divide-[#f5ede5] max-h-64 overflow-y-auto">
+                {cartItems.map((item) => (
+                  <li key={item.id} className="flex gap-3 px-6 py-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#e8ddd4] shrink-0">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[#2d1a10] truncate">{item.name}</p>
+                      <p className="text-xs text-[#a78b71] capitalize">{item.material} · Qty {item.qty}</p>
+                    </div>
+                    <p className="text-sm font-semibold text-[#5c4632] shrink-0">{fmt(item.price * item.qty)}</p>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Totals */}
+              <div className="px-6 py-4 border-t border-[#f0e8e0] space-y-2.5 text-sm">
+                <div className="flex justify-between text-[#7c6a58]">
+                  <span>Subtotal</span><span>{fmt(subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-[#7c6a58]">
+                  <span>Shipping</span>
+                  {shippingPrice === 0
+                    ? <span className="text-emerald-600 font-medium">Free</span>
+                    : <span>{fmt(shippingPrice)}</span>
+                  }
+                </div>
+                <div className="flex justify-between text-[#7c6a58]">
+                  <span>GST (3%)</span><span>{fmt(taxPrice)}</span>
+                </div>
+                <div className="h-px bg-[#ede5dd]" />
+                <div className="flex justify-between text-[#2d1a10] font-bold text-base">
+                  <span>Total</span><span>{fmt(total)}</span>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="px-6 pb-6 pt-2 space-y-3">
+                <button
+                  type="submit"
+                  disabled={isProcessing}
+                  className="w-full py-3.5 rounded-xl bg-[#2d1a10] text-white font-semibold text-sm hover:bg-[#4a2c1d] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {isProcessing
+                    ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
+                    : `Pay ${fmt(total)}`
+                  }
+                </button>
+                <div className="flex items-center justify-center gap-5 text-[10px] text-[#a78b71]">
+                  <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Secure</span>
+                  <span className="flex items-center gap-1">
+                    <motion.span animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+                      <Truck className="w-3 h-3" />
+                    </motion.span>
+                    Fast Delivery
+                  </span>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </form>
+      </div>
+    </main>
+  );
 }
