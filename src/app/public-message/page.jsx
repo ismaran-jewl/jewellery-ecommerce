@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import { Sparkles, Gift, Music, Video, Heart } from "lucide-react";
 
-export default function PublicMessagePage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+function MessageContent() {
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaType, setMediaType] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const searchParams = useSearchParams();
 
@@ -17,91 +18,118 @@ export default function PublicMessagePage() {
     if (url && (type === "video" || type === "audio")) {
       // Basic transformation for Google Drive URL to make it embeddable
       // e.g., https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/file/d/FILE_ID/preview
-      const embeddableUrl = url.replace("/view", "/preview");
+      // Ensure we handle cases where /view might not be present or different params exist
+      let embeddableUrl = url;
+      if (url.includes("/view")) {
+        embeddableUrl = url.replace("/view", "/preview");
+      } else if (!url.includes("/preview")) {
+        // If it doesn't have view or preview, append preview if it looks like a file link
+        // This is a basic fallback
+        embeddableUrl = `${url}/preview`;
+      }
+      
       setMediaUrl(embeddableUrl);
       setMediaType(type);
-      setIsModalOpen(true);
     }
+    setLoading(false);
   }, [searchParams]);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-12 w-12 bg-gray-200 rounded-full mb-4"></div>
+          <div className="h-4 w-32 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
-  const Modal = ({ children }) => (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1000,
-      }}
-      onClick={closeModal}
-    >
-      <div
-        style={{
-          backgroundColor: "white",
-          padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 10px 25px rgba(0, 0, 0, 0.2)",
-          maxWidth: "90vw",
-          maxHeight: "90vh",
-          position: "relative",
-        }}
-        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
-      >
-        <button
-          onClick={closeModal}
-          style={{
-            position: "absolute",
-            top: "15px",
-            right: "15px",
-            background: "transparent",
-            border: "none",
-            fontSize: "1.8rem",
-            cursor: "pointer",
-            color: "#333",
-          }}
-        >
-          &times;
-        </button>
-        {children}
+  if (!mediaUrl) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB] p-4">
+        <div className="bg-white p-8 rounded-2xl shadow-lg text-center max-w-md w-full border border-gray-100">
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Heart className="w-8 h-8 text-red-400" />
+          </div>
+          <h1 className="text-xl font-serif text-[#1B4D3E] mb-2">Message Not Found</h1>
+          <p className="text-gray-500 text-sm">
+            We couldn't find the message you're looking for. The link might be invalid or expired.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-[#F9FAFB] flex flex-col items-center justify-center p-4 md:p-8 relative overflow-hidden">
+      {/* Background Decorations */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[-5%] w-[300px] h-[300px] bg-[#FEF08A]/20 rounded-full blur-[80px]"></div>
+        <div className="absolute bottom-[-10%] left-[-5%] w-[300px] h-[300px] bg-[#1B4D3E]/10 rounded-full blur-[80px]"></div>
+      </div>
+
+      <div className="max-w-2xl w-full bg-white rounded-[2rem] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100 relative z-10">
+        
+        {/* Header Section */}
+        <div className="bg-[#1B4D3E] p-8 text-center relative overflow-hidden">
+           <div className="absolute top-0 left-0 w-full h-full opacity-10">
+              <div className="absolute top-4 left-4"><Sparkles className="w-6 h-6 text-white" /></div>
+              <div className="absolute bottom-4 right-4"><Sparkles className="w-4 h-4 text-white" /></div>
+           </div>
+           
+           <div className="relative z-10 flex flex-col items-center">
+             <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm border border-white/20 shadow-inner">
+               <Gift className="w-7 h-7 text-[#FEF08A]" />
+             </div>
+             <h1 className="text-2xl md:text-4xl font-serif text-white mb-3 tracking-wide">
+               A Special Gift For You
+             </h1>
+             <p className="text-emerald-100/90 text-sm font-light max-w-md mx-auto leading-relaxed">
+               Someone special has attached a personal memory to this jewellery piece.
+             </p>
+           </div>
+        </div>
+
+        {/* Media Content Section */}
+        <div className="p-6 md:p-10 bg-white">
+          <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-100 bg-gray-50 relative group">
+            
+            {/* Media Type Indicator */}
+            <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5">
+              {mediaType === 'video' ? <Video className="w-3.5 h-3.5" /> : <Music className="w-3.5 h-3.5" />}
+              <span className="capitalize">{mediaType} Message</span>
+            </div>
+
+            <div className="relative w-full aspect-video bg-black">
+               <iframe
+                src={mediaUrl}
+                className="absolute top-0 left-0 w-full h-full"
+                allow="autoplay; fullscreen"
+                title="Personal Message"
+              ></iframe>
+            </div>
+          </div>
+
+          <div className="mt-8 flex flex-col items-center text-center space-y-4">
+            <div className="h-px w-24 bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+            <p className="text-[#1B4D3E] font-medium text-sm tracking-widest uppercase">
+              Ismarn Jewellery
+            </p>
+            <p className="text-xs text-gray-400 font-light">
+              Timeless elegance, captured in memories.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
+}
 
+export default function PublicMessagePage() {
   return (
-    <div>
-      {isModalOpen && (
-        <Modal>
-          {mediaType === "video" && (
-            <iframe
-              src={mediaUrl}
-              width="800"
-              height="600"
-              allow="autoplay"
-              style={{ border: 0, maxWidth: "85vw", maxHeight: "80vh", borderRadius: '8px' }}
-              title="Google Drive Video"
-            ></iframe>
-          )}
-          {mediaType === "audio" && (
-             <iframe
-              src={mediaUrl}
-              width="800"
-              height="200"
-              allow="autoplay"
-              style={{ border: 0, maxWidth: "85vw", borderRadius: '8px' }}
-              title="Google Drive Audio"
-            ></iframe>
-          )}
-        </Modal>
-      )}
-    </div>
+    <Suspense fallback={<div className="min-h-screen bg-[#F9FAFB]" />}>
+      <MessageContent />
+    </Suspense>
   );
 }

@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { X, LayoutDashboard, ShoppingBag, Settings, User, Heart, LogOut } from "lucide-react";
+import { X, LayoutDashboard, ShoppingBag, Settings, User, Heart, LogOut, BarcodeIcon } from "lucide-react";
 
 const sidebarItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/dashboard" },
   { icon: ShoppingBag, label: "Orders", href: "/orders" },
   { icon: Heart, label: "Wishlist", href: "/wishlist" },
+  { icon: BarcodeIcon, label: "QR-code", href: "/qr-code" },
   { icon: User, label: "Profile", href: "/profile" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
