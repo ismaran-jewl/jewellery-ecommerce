@@ -173,5 +173,5 @@ export default function QRCodePage() {
       </div>
     )
   }
-  return <Suspense><QRCodeContent loaded={mounted}/></Suspense>;
+  return <Suspense><QRCodeContent/></Suspense>;
 }
