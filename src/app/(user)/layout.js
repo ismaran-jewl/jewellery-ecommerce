@@ -9,7 +9,6 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden"; // For accessi
 
 export default function ClientWrapper({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
   return (
     <div className="flex min-h-screen flex-col bg-[#FFDAB9]/10">
       {/* Sticky Navbar */}
@@ -28,10 +27,11 @@ export default function ClientWrapper({ children }) {
         {/* Mobile Sidebar (Shadcn Sheet) */}
         <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
           <SheetContent side="left" className="p-0 w-72">
-             <VisuallyHidden>
-                <SheetTitle>Navigation Menu</SheetTitle>
-             </VisuallyHidden>
-            <Sidebar />
+            <VisuallyHidden>
+              <SheetTitle>Navigation Menu</SheetTitle>
+            </VisuallyHidden>
+            {/* Pass the function to close the menu when a link is clicked */}
+            <Sidebar onClose={() => setIsSidebarOpen(false)} />
           </SheetContent>
         </Sheet>
 

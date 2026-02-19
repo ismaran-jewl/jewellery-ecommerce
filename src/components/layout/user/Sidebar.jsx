@@ -24,16 +24,6 @@ export default function Sidebar({ onClose }) {
       {/* Header with Logo and Mobile Close Button */}
       <div className="mb-8 flex items-center justify-between px-4">
         <span className="text-2xl font-black tracking-tighter text-[#1B4D3E]">ISMARN</span>
-        
-        {/* Only visible on mobile (when onClose is passed) */}
-        {onClose && (
-          <button 
-            onClick={onClose}
-            className="rounded-full p-2 hover:bg-yellow-100 md:hidden transition-colors"
-          >
-            <X className="h-6 w-6 text-gray-500" />
-          </button>
-        )}
       </div>
 
       {/* Navigation Links */}

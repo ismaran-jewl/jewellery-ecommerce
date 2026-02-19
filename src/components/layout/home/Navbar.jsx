@@ -39,14 +39,14 @@ const menuVariants = {
       delayChildren: 0.1,
     },
   },
-  closed: { 
-    x: "-100%", 
-    opacity: 0, 
-    transition: { 
+  closed: {
+    x: "-100%",
+    opacity: 0,
+    transition: {
       type: "spring",
       stiffness: 300,
-      damping: 30 
-    } 
+      damping: 30
+    }
   },
 };
 
@@ -56,9 +56,9 @@ const itemVariants = {
 };
 
 const MobileNavLink = ({ href, children, closeMenu, className = "" }) => (
-  <Link 
-    href={href} 
-    onClick={closeMenu} 
+  <Link
+    href={href}
+    onClick={closeMenu}
     className={`group flex items-center justify-between w-full p-4 text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 hover:bg-white/50 hover:pl-6 transition-all duration-300 ${className}`}
   >
     <span className="font-serif tracking-wide">{children}</span>
@@ -93,7 +93,7 @@ const MobileNavAccordion = ({ title, children }) => {
 };
 
 
-export default function Navbar() {
+export default function Navbar({ onMenuClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -142,7 +142,15 @@ export default function Navbar() {
               {/* Mobile Menu Button */}
               <button
                 className={`md:hidden text-[#1B4D3E] ${isSearchOpen ? 'hidden' : ''}`}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => {
+                  // Change 2: Call the prop here!
+                  if (onMenuClick) {
+                    onMenuClick();
+                  } else {
+                    // Fallback for pages that don't use the Sidebar
+                    setIsMenuOpen(!isMenuOpen);
+                  }
+                }}
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -422,34 +430,34 @@ export default function Navbar() {
             <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
 
             <div className="flex-1 p-6 space-y-1 relative z-10">
-            <motion.div variants={itemVariants}>
-              <MobileNavLink href="/" closeMenu={() => setIsMenuOpen(false)}>Home</MobileNavLink>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <MobileNavAccordion title="Shop">
-                <MobileNavLink href="/shop?sort=newest" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">New Arrivals</MobileNavLink>
-                <MobileNavLink href="/shop?category=rings" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Rings</MobileNavLink>
-                <MobileNavLink href="/shop?category=necklaces" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Necklaces</MobileNavLink>
-                <MobileNavLink href="/shop?category=earrings" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Earrings</MobileNavLink>
-                <MobileNavLink href="/shop" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent font-semibold">All Jewellery</MobileNavLink>
-              </MobileNavAccordion>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <MobileNavAccordion title="Gifts">
-                <MobileNavLink href="/shop?type=birthday" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Birthday Gifts</MobileNavLink>
-                <MobileNavLink href="/shop?type=anniversary" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Anniversary Gifts</MobileNavLink>
-                <MobileNavLink href="/voice-gift/create" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Personalized Gifts</MobileNavLink>
-              </MobileNavAccordion>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <MobileNavLink href="/offers" closeMenu={() => setIsMenuOpen(false)}>Offers</MobileNavLink>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <MobileNavLink href="/contact" closeMenu={() => setIsMenuOpen(false)}>Contact</MobileNavLink>
-            </motion.div>
-            <motion.div variants={itemVariants}>
-              <MobileNavLink href="/about" closeMenu={() => setIsMenuOpen(false)}>About</MobileNavLink>
-            </motion.div>
+              <motion.div variants={itemVariants}>
+                <MobileNavLink href="/" closeMenu={() => setIsMenuOpen(false)}>Home</MobileNavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MobileNavAccordion title="Shop">
+                  <MobileNavLink href="/shop?sort=newest" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">New Arrivals</MobileNavLink>
+                  <MobileNavLink href="/shop?category=rings" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Rings</MobileNavLink>
+                  <MobileNavLink href="/shop?category=necklaces" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Necklaces</MobileNavLink>
+                  <MobileNavLink href="/shop?category=earrings" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Earrings</MobileNavLink>
+                  <MobileNavLink href="/shop" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent font-semibold">All Jewellery</MobileNavLink>
+                </MobileNavAccordion>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MobileNavAccordion title="Gifts">
+                  <MobileNavLink href="/shop?type=birthday" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Birthday Gifts</MobileNavLink>
+                  <MobileNavLink href="/shop?type=anniversary" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Anniversary Gifts</MobileNavLink>
+                  <MobileNavLink href="/voice-gift/create" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Personalized Gifts</MobileNavLink>
+                </MobileNavAccordion>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MobileNavLink href="/offers" closeMenu={() => setIsMenuOpen(false)}>Offers</MobileNavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MobileNavLink href="/contact" closeMenu={() => setIsMenuOpen(false)}>Contact</MobileNavLink>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <MobileNavLink href="/about" closeMenu={() => setIsMenuOpen(false)}>About</MobileNavLink>
+              </motion.div>
             </div>
 
             {/* Mobile Menu Footer */}
