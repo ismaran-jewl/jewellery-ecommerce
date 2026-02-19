@@ -16,21 +16,18 @@ function MessageContent() {
     const type = searchParams.get("type");
 
     if (url && (type?.includes("video") || type?.includes("audio"))) {
-      // Basic transformation for Google Drive URL to make it embeddable
-      // e.g., https://drive.google.com/file/d/FILE_ID/view -> https://drive.google.com/file/d/FILE_ID/preview
-      // Ensure we handle cases where /view might not be present or different params exist
       let embeddableUrl = url;
+
       if (url.includes("/view")) {
         embeddableUrl = url.replace("/view", "/preview");
       } else if (!url.includes("/preview")) {
-        // If it doesn't have view or preview, append preview if it looks like a file link
-        // This is a basic fallback
         embeddableUrl = `${url}/preview`;
       }
-      
+
       setMediaUrl(embeddableUrl);
       setMediaType(type);
     }
+
     setLoading(false);
   }, [searchParams]);
 
@@ -52,9 +49,12 @@ function MessageContent() {
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Heart className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-xl font-serif text-[#1B4D3E] mb-2">Message Not Found</h1>
+          <h1 className="text-xl font-serif text-[#1B4D3E] mb-2">
+            Message Not Found
+          </h1>
           <p className="text-gray-500 text-sm">
-            We couldn't find the message you're looking for. The link might be invalid or expired.
+            We couldn't find the message you're looking for. The link might be
+            invalid or expired.
           </p>
         </div>
       </div>
@@ -73,22 +73,26 @@ function MessageContent() {
         
         {/* Header Section */}
         <div className="bg-[#1B4D3E] p-8 text-center relative overflow-hidden">
-           <div className="absolute top-0 left-0 w-full h-full opacity-10">
-              <div className="absolute top-4 left-4"><Sparkles className="w-6 h-6 text-white" /></div>
-              <div className="absolute bottom-4 right-4"><Sparkles className="w-4 h-4 text-white" /></div>
-           </div>
-           
-           <div className="relative z-10 flex flex-col items-center">
-             <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm border border-white/20 shadow-inner">
-               <Gift className="w-7 h-7 text-[#FEF08A]" />
-             </div>
-             <h1 className="text-2xl md:text-4xl font-serif text-white mb-3 tracking-wide">
-               A Special Gift For You
-             </h1>
-             <p className="text-emerald-100/90 text-sm font-light max-w-md mx-auto leading-relaxed">
-               Someone special has attached a personal memory to this jewellery piece.
-             </p>
-           </div>
+          <div className="absolute top-0 left-0 w-full h-full opacity-10">
+            <div className="absolute top-4 left-4">
+              <Sparkles className="w-6 h-6 text-white" />
+            </div>
+            <div className="absolute bottom-4 right-4">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+          </div>
+
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mb-4 backdrop-blur-sm border border-white/20 shadow-inner">
+              <Gift className="w-7 h-7 text-[#FEF08A]" />
+            </div>
+            <h1 className="text-2xl md:text-4xl font-serif text-white mb-3 tracking-wide">
+              A Special Gift For You
+            </h1>
+            <p className="text-emerald-100/90 text-sm font-light max-w-md mx-auto leading-relaxed">
+              Someone special has attached a personal memory to this jewellery piece.
+            </p>
+          </div>
         </div>
 
         {/* Media Content Section */}
@@ -97,12 +101,17 @@ function MessageContent() {
             
             {/* Media Type Indicator */}
             <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5">
-              {mediaType === 'video' ? <Video className="w-3.5 h-3.5" /> : <Music className="w-3.5 h-3.5" />}
+              {mediaType === "video" ? (
+                <Video className="w-3.5 h-3.5" />
+              ) : (
+                <Music className="w-3.5 h-3.5" />
+              )}
               <span className="capitalize">{mediaType} Message</span>
             </div>
 
-            <div className="relative w-full aspect-video bg-black">
-               <iframe
+            {/* 🔥 BIGGER VIDEO ON MOBILE */}
+            <div className="relative w-full bg-black h-[70vh] md:aspect-video md:h-auto">
+              <iframe
                 src={mediaUrl}
                 className="absolute top-0 left-0 w-full h-full"
                 allow="autoplay; fullscreen"
