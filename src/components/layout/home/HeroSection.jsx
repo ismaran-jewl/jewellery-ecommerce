@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-const QR_LINK = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://your-gift-story.com";
+const QR_LINK = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jewellery-ecommerce-iota.vercel.app";
 
 const WAVE_BARS = [8, 18, 24, 14, 20, 10, 22, 16];
 
