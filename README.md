@@ -1,209 +1,317 @@
-Perfect 👍
-Here’s a **clean, professional `README.md`** you can drop directly into your repo.
-It’s written for your **Jewellery E-Commerce (Buy / Sell)** platform, **JavaScript-only**, **Yarn**, **Next.js App Router**.
+# 💍 Jewellery E-Commerce — Architecture Guide
+
+> A modern, scalable jewellery e-commerce platform built with **Next.js App Router**, **MongoDB**, **Tailwind CSS**, and **shadcn/ui**.
+
+🌐 **Live:** [jewellery-ecommerce-iota.vercel.app](https://jewellery-ecommerce-iota.vercel.app/)
 
 ---
 
-```md
-# 💎 Jewellery E-Commerce Platform
+## 🚀 Tech Stack
 
-A modern, full-stack jewellery e-commerce web application built with **Next.js (App Router)** and **Yarn**, designed for **buying, selling, and managing jewellery products** with authentication, admin control, and scalable architecture.
-
----
-
-## 🌟 Project Overview
-
-This platform enables:
-- Customers to browse, search, and purchase jewellery
-- Sellers/Admins to list and manage jewellery products
-- Secure authentication and authorization
-- High-performance UI with modern design components
-
-The project is optimized for scalability, performance, and real-world e-commerce workflows.
-
----
-
-## 🛍️ Core Features
-
-### 👤 User Features
-- User registration & login
-- Secure authentication (Auth.js)
-- Browse jewellery by category
-- Product details with images & pricing
-- Add to cart & checkout flow (extensible)
-- Order history (future-ready)
-
-### 🛒 Seller / Admin Features
-- Add / edit / delete jewellery listings
-- Manage inventory
-- View user orders
-- Role-based access control
-- Admin dashboard (charts & analytics ready)
-
-### 🎨 UI / UX
-- Responsive & mobile-friendly design
-- Tailwind CSS styling
-- Reusable UI components (shadcn/ui)
-- Icons and modern dialogs/menus
-- Toast notifications & tooltips
-
----
-
-## 🧱 Tech Stack
-
-### Frontend
-- **Next.js (App Router)**
-- **React (Latest stable)**
-- **Tailwind CSS**
-- **shadcn/ui**
-- **Radix UI**
-- **Lucide / FontAwesome / React Icons**
-
-### Backend
-- **Next.js Server Actions / API Routes**
-- **MongoDB**
-- **Mongoose**
-- **Auth.js (NextAuth v5)**
-
-### State & Utilities
-- **Zustand** – state management
-- **UUID** – unique IDs
-- **bcryptjs** – password hashing
-- **Nodemailer** – email services
-
-### Charts & Analytics
-- **Chart.js**
-- **react-chartjs-2**
-- **@vercel/analytics**
-- **@vercel/speed-insights**
-
-### Package Manager
-- **Yarn (latest via Corepack)**  
-- JavaScript only (❌ No TypeScript)
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| Styling | Tailwind CSS + shadcn/ui |
+| Database | MongoDB (Mongoose) |
+| Auth | NextAuth.js |
+| Package Manager | Yarn |
+| Deployment | Vercel |
 
 ---
 
 ## 📁 Project Structure
 
 ```
-
-jewellery-ecommerce/
-├── src/
-│   ├── app/              # App Router pages & layouts
-│   ├── components/       # Reusable UI components
-│   ├── lib/              # DB, auth, helpers
-│   ├── models/           # Mongoose schemas
-│   ├── store/            # Zustand stores
-│   └── styles/           # Global styles
-├── public/               # Static assets
-├── .env.local            # Environment variables
-├── next.config.js        # Next.js config
-├── package.json
-└── README.md
-
-````
+📦 src/
+├── 📂 app/                        # Next.js App Router — all routes live here
+│   ├── 📂 (admin)/                # Route group: admin panel
+│   │   ├── admin/
+│   │   │   ├── message/page.jsx   # Admin message view
+│   │   │   ├── AdminClient.jsx    # Admin client component
+│   │   │   └── page.jsx           # Admin dashboard
+│   │   └── orders/                # Admin order management
+│   │
+│   ├── 📂 (login)/                # Route group: authentication
+│   │   ├── forgot-password/
+│   │   ├── login/
+│   │   ├── register/
+│   │   └── layout.js
+│   │
+│   ├── 📂 (policy)/               # Route group: static/info pages
+│   │   ├── about/
+│   │   ├── contact/
+│   │   ├── faq/
+│   │   ├── offers/
+│   │   ├── privacy-policy/
+│   │   ├── search/
+│   │   ├── terms/
+│   │   └── layout.js
+│   │
+│   ├── 📂 (product)/              # Route group: product browsing
+│   │   ├── category/[category]/[subcategory]/
+│   │   ├── gallery/
+│   │   ├── product/[id]/
+│   │   ├── shop/
+│   │   └── layout.js
+│   │
+│   ├── 📂 (sell)/                 # Route group: purchase flow
+│   │   ├── cart/
+│   │   ├── checkout/
+│   │   ├── order-confirmation/
+│   │   └── layout.js
+│   │
+│   ├── 📂 (user)/                 # Route group: user dashboard
+│   │   ├── addresses/
+│   │   ├── dashboard/
+│   │   ├── gift-cards/
+│   │   ├── orders/
+│   │   ├── profile/
+│   │   ├── qr-code/
+│   │   ├── reviews/
+│   │   ├── settings/
+│   │   ├── wishlist/
+│   │   └── layout.js
+│   │
+│   ├── 📂 api/                    # API Route handlers
+│   │   ├── account/
+│   │   ├── admin/          (message, orders, products)
+│   │   ├── auth/           ([...nextauth], register)
+│   │   ├── cart/
+│   │   ├── message/[id]/
+│   │   ├── orders/         ([id], root)
+│   │   ├── products/       ([id], root)
+│   │   ├── qr-code/
+│   │   ├── register/
+│   │   ├── upload/
+│   │   ├── user/
+│   │   └── wishlist/
+│   │
+│   ├── public-message/            # Public-facing message page
+│   ├── layout.js                  # Root layout
+│   ├── page.jsx                   # Home page
+│   ├── not-found.jsx
+│   └── globals.css                # ⛔ Do not modify
+│
+├── 📂 components/                 # Reusable UI components
+│   ├── cart/
+│   │   └── PersonalizedMessageButton.jsx
+│   ├── layout/
+│   │   ├── home/           (Navbar, Footer, HeroSection, FeaturedProducts…)
+│   │   ├── product/        (Sidebar)
+│   │   └── user/           (Sidebar)
+│   ├── product/
+│   │   └── ProductFilters.jsx
+│   ├── providers/
+│   │   └── auth-provider.jsx
+│   └── ui/                        # shadcn/ui — official components only
+│       └── (avatar, badge, button, card, dialog, input…)
+│
+├── 📂 features/                   # Feature-scoped custom hooks
+│   ├── cart/useCart.js
+│   ├── checkout/useCheckout.js
+│   ├── filters/useFilters.js
+│   ├── order/useOrder.js
+│   ├── product/useProduct.js
+│   ├── reviews/useReviews.js
+│   ├── search/useSearch.js
+│   ├── user/useUser.js
+│   └── wishlist/useWishlist.js
+│
+├── 📂 hooks/                      # Shared/global hooks
+│   ├── useCart.js
+│   ├── useUser.js
+│   └── useWishlist.js
+│
+├── 📂 lib/                        # ⛔ Do not modify
+│   ├── auth.js                    # NextAuth config
+│   ├── fetcher.js                 # SWR/fetch helper
+│   ├── mongodb.js                 # DB connection
+│   └── utils.js                  # Utility functions
+│
+├── 📂 models/                     # Mongoose data models
+│   ├── Cart.js
+│   ├── Message.js
+│   ├── Order.js
+│   ├── Product.js
+│   ├── User.js
+│   └── Wishlist.js
+│
+├── 📂 services/                   # External service integrations
+│   ├── api/
+│   ├── auth/
+│   └── payment/
+│
+├── 📂 config/                     # App-level configuration
+├── 📂 constants/                  # Shared constants
+├── 📂 contexts/                   # React context providers
+├── 📂 middleware/                 # Next.js middleware
+├── 📂 styles/                     # Additional global styles
+├── 📂 types/                      # TypeScript / JSDoc types
+├── 📂 utils/                      # Pure utility functions
+└── 📜 proxy.js
+```
 
 ---
 
-## 🔐 Authentication
+## 🗂️ Route Groups Explained
 
-- Powered by **Auth.js (NextAuth v5)**
-- MongoDB adapter
-- Secure session handling
-- Ready for:
-  - Email/password
-  - OAuth (Google, GitHub, etc.)
+Next.js **route groups** `(name)` organize routes without affecting the URL.
 
----
-
-## 🗄️ Database
-
-- **MongoDB**
-- **Mongoose ODM**
-- Optimized for serverless & production use
-- Connection caching for performance
+| Group | URL Prefix | Purpose |
+|---|---|---|
+| `(admin)` | `/admin` | Admin dashboard & management |
+| `(login)` | `/login`, `/register` | Auth pages with shared layout |
+| `(policy)` | `/about`, `/faq`, `/contact`… | Info & static pages |
+| `(product)` | `/shop`, `/product`, `/category` | Product discovery |
+| `(sell)` | `/cart`, `/checkout` | Purchase funnel |
+| `(user)` | `/dashboard`, `/orders`… | Logged-in user area |
 
 ---
 
-## 🚀 Getting Started
+## 🗄️ Data Models
 
-### 1️⃣ Install Dependencies
+All Mongoose models live in `src/models/`.
+
+| Model | Description |
+|---|---|
+| `User.js` | Registered users, auth info, roles |
+| `Product.js` | Jewellery products, variants, pricing |
+| `Order.js` | Purchase records, status tracking |
+| `Cart.js` | Per-user cart state |
+| `Wishlist.js` | Saved products per user |
+| `Message.js` | Personalized gift messages |
+
+---
+
+## 🔌 API Routes
+
+All API handlers are in `src/app/api/`.
+
+| Endpoint | Method(s) | Purpose |
+|---|---|---|
+| `/api/products` | GET, POST | List / create products |
+| `/api/products/[id]` | GET, PUT, DELETE | Single product CRUD |
+| `/api/orders` | GET, POST | List / place orders |
+| `/api/orders/[id]` | GET, PATCH | Order detail & update |
+| `/api/cart` | GET, POST, DELETE | Cart management |
+| `/api/wishlist` | GET, POST, DELETE | Wishlist management |
+| `/api/auth/[...nextauth]` | — | NextAuth handler |
+| `/api/register` | POST | New user registration |
+| `/api/upload` | POST | Image / asset upload |
+| `/api/qr-code` | GET | QR code generation |
+| `/api/message/[id]` | GET, POST | Gift messages |
+| `/api/admin/products` | GET, POST, PUT | Admin product management |
+| `/api/admin/orders` | GET, PATCH | Admin order management |
+| `/api/admin/message` | GET | Admin message inbox |
+| `/api/account` | GET, PUT | User account settings |
+
+---
+
+## ⚙️ Feature Hooks Architecture
+
+Business logic is decoupled from UI via custom hooks in `src/features/`.
+
+```
+UI Component
+     │
+     ▼
+features/cart/useCart.js     ←── feature-scoped hook (SWR + mutations)
+     │
+     ▼
+lib/fetcher.js               ←── shared fetch utility
+     │
+     ▼
+/api/cart                    ←── Next.js API route
+     │
+     ▼
+models/Cart.js               ←── Mongoose model
+     │
+     ▼
+MongoDB Atlas
+```
+
+---
+
+## 🚦 Rules & Constraints
+
+### ⛔ Never Touch
+- `.next/` — build output
+- `.yarn/` — package manager internals
+- `node_modules/` — dependencies
+- `src/app/globals.css` — global styles
+- `src/lib/` — core utilities (auth, db, fetcher)
+
+### ✅ Safe to Modify
+- `src/app/**/page.jsx` — page components
+- `src/components/` — reusable UI (not `ui/`)
+- `src/features/` — business logic hooks
+- `src/models/` — database schemas
+- `src/app/api/` — API route handlers
+- `public/` — static assets
+
+### 🧩 Component Rules
+- `src/components/ui/` → **shadcn/ui components only** — do not add custom files here
+- All custom reusable components go in `src/components/cart/`, `layout/`, `product/`, etc.
+- Pages should be thin — delegate logic to `features/` hooks
+
+---
+
+## ▶️ Running Locally
+
 ```bash
-yarn install
-````
+# Install dependencies
+yarn
 
-### 2️⃣ Run Development Server
-
-```bash
+# Start dev server
 yarn dev
-```
 
-App runs at:
-
-```
+# Open in browser
 http://localhost:3000
 ```
 
 ---
 
-## 🌍 Environment Variables
+## ✅ Before Every Commit
 
-Create `.env.local`:
+> ⚠️ **Mandatory** — no exceptions.
 
-```env
-MONGODB_URI=your_mongodb_connection_string
-NEXTAUTH_SECRET=your_secret_key
-NEXTAUTH_URL=http://localhost:3000
+```bash
+yarn build
 ```
 
----
-
-## 🔮 Future Enhancements
-
-* Payment gateway (Razorpay / Stripe)
-* Wishlist functionality
-* Reviews & ratings
-* Seller onboarding
-* Invoice & email notifications
-* Multi-vendor support
-* SEO optimization
+A successful build confirms:
+- No broken imports or exports
+- App Router compatibility
+- No missing environment variables
+- Production-safe code
 
 ---
 
-## 🧠 Design Philosophy
+## 🎨 Design Philosophy
 
-* Clean architecture
-* Modular & reusable components
-* Production-ready setup
-* Beginner-friendly but enterprise-scalable
-
----
-
-## 📜 License
-
-This project is for educational and commercial use.
-You are free to extend and customize it as needed.
+- **Luxury-first aesthetics** — minimal, elegant, premium feel
+- **Conversion-focused** — every page drives toward a purchase
+- **Mobile-responsive** — works across all screen sizes
+- **Scalable architecture** — features are isolated and independently testable
 
 ---
 
-## 👨‍💻 Author
+## 🔮 Roadmap
 
-**lolpol**
-GitHub: [https://github.com/ismaran-jewl](https://github.com/ismaran-jewl)
+- [ ] Payment gateway integration (Razorpay / Stripe)
+- [ ] Advanced product filters (metal, gemstone, price)
+- [ ] Seller onboarding & product valuation flow
+- [ ] Review & rating system
+- [ ] Email notifications (order updates)
+- [ ] Full admin analytics dashboard
+- [ ] PWA / mobile app
 
 ---
 
-✨ Built with passion for modern web & e-commerce
+## 📌 Deployment Notes
 
-```
-
----
-
-If you want, I can also:
-- Add **screenshots section**
-- Create **ADMIN / USER flow diagrams**
-- Write a **business description** (for investors)
-- Add **SEO-optimized landing page content**
-
-Just tell me 🔥
-```
+- Hosted on **Vercel** — zero-config Next.js deployment
+- Static assets served from `/public`
+- Environment variables configured in Vercel dashboard
+- MongoDB connection via `MONGODB_URI` env variable
+- NextAuth secret configured via `NEXTAUTH_SECRET`
