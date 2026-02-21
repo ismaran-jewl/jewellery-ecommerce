@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import connectDB from "@/lib/mongodb"
-import Cart from "@/providers/database/Cart"
-import Product from "@/providers/database/Product"
+import Cart from "@/models/Cart"
+import Product from "@/models/Product"
 
 // GET — fetch the current user's cart with populated product data
 export async function GET() {

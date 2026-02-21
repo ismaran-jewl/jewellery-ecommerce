@@ -2,9 +2,9 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import connectDB from "@/lib/mongodb"
-import Order from "@/providers/database/Order"
-import Cart from "@/providers/database/Cart"
-import Product from "@/providers/database/Product"
+import Order from "@/models/Order"
+import Cart from "@/models/Cart"
+import Product from "@/models/Product"
 
 // GET — fetch all orders for the current user
 export async function GET() {

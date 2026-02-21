@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import Message from '@/providers/database/Message';
+import Message from '@/models/Message';
 import dbConnect from '@/lib/mongodb';
 
 

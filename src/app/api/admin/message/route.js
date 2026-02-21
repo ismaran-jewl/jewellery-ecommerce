@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
-import Message from "@/providers/database/Message";
+import Message from "@/models/Message";
 
 // GET all messages (admin only)
 export async function GET() {

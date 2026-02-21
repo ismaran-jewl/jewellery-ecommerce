@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import connectDB from "@/lib/mongodb"
-import Order from "@/providers/database/Order"
+import Order from "@/models/Order"
 import mongoose from "mongoose"
 
 export async function GET(req, { params }) {

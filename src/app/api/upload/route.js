@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from "@/lib/auth"; // Using your reference
 import dbConnect from '@/lib/mongodb';
-import Message from '@/providers/database/Message';
+import Message from '@/models/Message';
 
 export async function POST(request) {
   try {

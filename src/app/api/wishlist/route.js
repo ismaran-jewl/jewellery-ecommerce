@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
-import Wishlist from "@/providers/database/Wishlist";
+import Wishlist from "@/models/Wishlist";
 
 // ======================================
 // GET — Get current user's wishlist

@@ -2,8 +2,8 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import connectDB from "@/lib/mongodb"
-import Message from "@/providers/database/Message"
-import User from "@/providers/database/User"
+import Message from "@/models/Message"
+import User from "@/models/User"
 
 export async function GET() {
   const session = await auth()
