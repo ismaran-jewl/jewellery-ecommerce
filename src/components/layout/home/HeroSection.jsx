@@ -1,40 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-// --- CHANGE YOUR QR LINK HERE ---
+import { ChevronLeft, ChevronRight } from "lucide-react";
 const QR_LINK = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://your-gift-story.com";
-// --------------------------------
 
 const WAVE_BARS = [8, 18, 24, 14, 20, 10, 22, 16];
 
 function WaveBar({ height, delay }) {
   return (
-    <div
-      className="w-[3px] rounded-sm flex-shrink-0"
-      style={{
-        height,
-        background: "#B5622A",
-        animation: `waveAnim 1.2s ease-in-out ${delay}s infinite`,
-      }}
-    />
+    <div className="w-[3px] rounded-sm flex-shrink-0" style={{ height, background: "#B5622A", animation: `waveAnim 1.2s ease-in-out ${delay}s infinite` }} />
   );
 }
 
 function FloatingCard({ className, style, children }) {
   return (
-    <div
-      className={`absolute backdrop-blur-xl p-3.5 z-30 ${className}`}
-      style={{
-        background: "rgba(255,245,235,0.7)",
-        border: "1px solid rgba(181,98,42,0.2)",
-        boxShadow: "0 12px 40px rgba(181,98,42,0.15)",
-        borderRadius: "12px",
-        ...style,
-      }}
-    >
-      {children}
-    </div>
+    <div className={`absolute backdrop-blur-xl p-3.5 z-30 ${className}`} style={{ background: "rgba(255,245,235,0.7)", border: "1px solid rgba(181,98,42,0.2)", boxShadow: "0 12px 40px rgba(181,98,42,0.15)", borderRadius: "12px", ...style }}>{children}</div>
   );
 }
 
@@ -62,7 +42,7 @@ export default function HeroSection() {
   const prevTile = () => setCurrentTile((prev) => (prev - 1 + ADS_TILES.length) % ADS_TILES.length);
 
   useEffect(() => {
-    if (isPaused) return; 
+    if (isPaused) return;
     const timer = setInterval(nextTile, 8000);
     return () => clearInterval(timer);
   }, [isPaused]);
@@ -80,6 +60,7 @@ export default function HeroSection() {
         cursorDotRef.current.style.top = e.clientY + "px";
       }
     };
+
     const animateRing = () => {
       ringPos.current.x += (mousePos.current.x - ringPos.current.x) * 0.12;
       ringPos.current.y += (mousePos.current.y - ringPos.current.y) * 0.12;
@@ -89,6 +70,7 @@ export default function HeroSection() {
       }
       rafRef.current = requestAnimationFrame(animateRing);
     };
+
     window.addEventListener("mousemove", handleMove);
     rafRef.current = requestAnimationFrame(animateRing);
 
@@ -108,68 +90,46 @@ export default function HeroSection() {
   return (
     <>
       <style>{`
-        @keyframes waveAnim { 0%, 100% { transform: scaleY(1); opacity: 0.85; } 50% { transform: scaleY(0.35); opacity: 0.4; } }
-        @keyframes heroFloat { 0%, 100% { transform: translate(-50%, -50%) rotate(-1deg); } 50% { transform: translate(-50%, -54%) rotate(1deg); } }
-        @keyframes qrFloat { 0%, 100% { transform: translateY(0px) rotate(2deg); } 50% { transform: translateY(-20px) rotate(-2deg); } }
-        @keyframes floatUp { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-        @keyframes floatDown { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(15px); } }
-        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        @keyframes progressFill { from { width: 0%; } to { width: 100%; } }
-        .hero-cursor { cursor: none; }
-        .hero-cursor * { cursor: none; }
+        @keyframes waveAnim { 0%,100%{transform:scaleY(1);opacity:.85;}50%{transform:scaleY(.35);opacity:.4;} }
+        @keyframes heroFloat { 0%,100%{transform:translate(-50%,-50%) rotate(-1deg);}50%{transform:translate(-50%,-54%) rotate(1deg);} }
+        @keyframes qrFloat { 0%,100%{transform:translateY(0px) rotate(2deg);}50%{transform:translateY(-20px) rotate(-2deg);} }
+        @keyframes floatUp { 0%,100%{transform:translateY(0px);}50%{transform:translateY(-15px);} }
+        @keyframes floatDown { 0%,100%{transform:translateY(0px);}50%{transform:translateY(15px);} }
+        @keyframes tickerScroll { 0%{transform:translateX(0);}100%{transform:translateX(-50%);} }
+        @keyframes progressFill { from{width:0%;}to{width:100%;} }
+        .hero-cursor{cursor:none;}
+        .hero-cursor *{cursor:none;}
       `}</style>
 
-      {/* Custom Cursor */}
-      {!isMobile && (
-        <>
-          <div ref={cursorRingRef} className="fixed pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ width: 36, height: 36, border: "1px solid rgba(181,98,42,0.5)", transition: "width 0.3s, height 0.3s" }} />
-          <div ref={cursorDotRef} className="fixed pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 rounded-full" style={{ width: 8, height: 8, background: GOLD }} />
-        </>
-      )}
+      <section className="hero-cursor py-10 relative overflow-hidden flex flex-col md:grid md:grid-cols-2" style={{ background: "linear-gradient(160deg,#FFF5F0 0%,#FFE8D6 100%)" }}>
 
-      {/* HERO SECTION */}
-      <section className="hero-cursor relative overflow-hidden min-h-screen flex flex-col md:grid md:grid-cols-2" style={{ background: "linear-gradient(160deg, #FFF5F0 0%, #FFE8D6 100%)" }}>
-        
-        {/* LEFT COPY */}
-        <div className="relative z-10 flex flex-col justify-center px-8 pt-32 pb-10 md:px-16 lg:px-24">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-10 h-px" style={{ background: GOLD }} />
-            <span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>Luxury Voice Gifting</span>
-          </div>
-          <h1 className="leading-[1.1] mb-4" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(44px, 6vw, 80px)", color: TEXT_DARK }}>
-            Gifts That <br /> <em style={{ fontStyle: "italic", color: GOLD }}>Speak Your</em> <br />
-            <span style={{ WebkitTextStroke: `1.5px ${GOLD}`, color: "transparent" }}>Heart.</span>
-          </h1>
-          <p className="mb-10 max-w-sm text-lg italic" style={{ fontFamily: "'Cormorant Garamond', serif", color: TEXT_MID }}>
-            Personalize your jewelry with a hidden voice message accessible via our signature QR tech.
-          </p>
-          <div className="flex flex-wrap gap-6">
-            <button className="px-10 py-4 font-semibold tracking-widest uppercase text-[12px] shadow-2xl transition-all hover:-translate-y-1" style={{ background: GOLD, color: "#fff" }}>Shop Collection</button>
-          </div>
+        <div className="relative z-10 flex flex-col justify-center px-8 pt-3 md:px-16 lg:px-24">
+          <div className="flex items-center gap-3 mb-8"><div className="w-10 h-px" style={{ background: GOLD }} /><span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>Luxury Voice Gifting</span></div>
+          <h1 className="leading-[1.1] mb-4" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(44px,6vw,80px)", color: TEXT_DARK }}>Gifts That <br /> <em style={{ fontStyle: "italic", color: GOLD }}>Speak Your</em> <br /><span style={{ WebkitTextStroke: `1.5px ${GOLD}`, color: "transparent" }}>Heart.</span></h1>
+          <p className="mb-10 max-w-sm text-lg italic" style={{ fontFamily: "'Cormorant Garamond', serif", color: TEXT_MID }}>Personalize your jewelry with a hidden voice message accessible via our signature QR tech.</p>
+          <div className="flex flex-wrap gap-6"><button className="px-10 py-4 font-semibold tracking-widest uppercase text-[12px] shadow-2xl transition-all hover:-translate-y-1" style={{ background: GOLD, color: "#fff" }}>Shop Collection</button></div>
         </div>
 
-        {/* RIGHT VISUAL AREA */}
         <div className="relative flex items-center justify-center py-20 md:py-0">
-          <div className="relative" style={{ width: isMobile ? 320 : 560, height: isMobile ? 450 : 600 }}>
-            
+          <div className="relative w-[clamp(320px,45vw,560px)] aspect-[14/15]">
             {/* 1. SCANNABLE QR CARD (NOW FRONT & CLEAR) */}
-            <div className="absolute top-[20px] right-[10px] md:top-[-20px] md:right-[20px] w-[160px] md:w-[200px] bg-white border border-orange-100 shadow-2xl p-4 flex flex-col items-center z-40" 
-                 style={{ animation: "qrFloat 6s ease-in-out infinite", borderRadius: "24px" }}>
-                <div className="mb-3 text-[9px] uppercase tracking-widest text-orange-800 font-bold">Scan the Surprise</div>
-                <div className="w-full aspect-square bg-stone-50 p-2 border border-orange-50 mb-3">
-                  <img src={QR_LINK} alt="Scannable QR" className="w-full h-full transition-all" />
-                </div>
-                <div className="text-[8px] text-stone-400 italic text-center">Open camera to hear the note</div>
+            <div className="absolute top-[20px] right-[10px] md:top-[-20px] md:right-[20px] w-[160px] md:w-[200px] bg-white border border-orange-100 shadow-2xl p-4 flex flex-col items-center z-40"
+              style={{ animation: "qrFloat 6s ease-in-out infinite", borderRadius: "24px" }}>
+              <div className="mb-3 text-[9px] uppercase tracking-widest text-orange-800 font-bold">Scan the Surprise</div>
+              <div className="w-full aspect-square bg-stone-50 p-2 border border-orange-50 mb-3">
+                <img src={QR_LINK} alt="Scannable QR" className="w-full h-full transition-all" />
+              </div>
+              <div className="text-[8px] text-stone-400 italic text-center">Open camera to hear the note</div>
             </div>
 
             {/* 2. MAIN ANNIVERSARY CARD */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[320px] md:w-[280px] md:h-[400px] bg-[#FFF0E6] border border-orange-100 shadow-2xl p-8 flex flex-col items-center justify-center text-center z-20" 
-                 style={{ animation: "heroFloat 5s ease-in-out infinite", borderRadius: "16px" }}>
+            <div className="absolute top-1/2 left-1/2  w-[220px] h-[320px] md:w-[280px] md:h-[400px] bg-[#FFF0E6] border border-orange-100 shadow-2xl p-8 flex flex-col items-center justify-center text-center z-20"
+              style={{ animation: "heroFloat 5s ease-in-out infinite", borderRadius: "16px" }}>
               <div className="text-5xl mb-6">💍</div>
               <div className="mb-2 font-serif italic text-sm text-orange-800">The Keepsake</div>
               <p className="font-serif italic text-stone-700 leading-relaxed text-lg">"Happy Anniversary. This reminded me of your sparkle."</p>
               <div className="mt-8 pt-4 border-t border-orange-200/50 w-full">
-                 <span className="text-[9px] tracking-[3px] uppercase text-stone-500 font-bold">Encrypted Audio</span>
+                <span className="text-[9px] tracking-[3px] uppercase text-stone-500 font-bold">Encrypted Audio</span>
               </div>
             </div>
 
@@ -181,21 +141,21 @@ export default function HeroSection() {
 
             {/* 4. VALENTINE'S CARD */}
             <FloatingCard className="top-[-60px] left-[60px] md:top-[-40px] md:left-[100px]" style={{ animation: "floatDown 6.5s ease-in-out infinite" }}>
-               <div className="flex items-center gap-2">
-                 <span style={{ fontSize: 14 }}>❤️</span>
-                 <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Valentine's Edit</span>
-               </div>
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize: 14 }}>❤️</span>
+                <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Valentine's Edit</span>
+              </div>
             </FloatingCard>
 
             {/* 5. DAUGHTER QUOTE CARD */}
             <FloatingCard className="bottom-[40px] left-[-20px] md:bottom-[60px] md:left-[-50px] max-w-[160px]" style={{ animation: "floatUp 5.8s ease-in-out infinite" }}>
-               <div style={{ fontSize: 9, color: TEXT_DARK, fontStyle: "italic", lineHeight: "1.4" }}>"To my daughter, my pride..."</div>
+              <div style={{ fontSize: 9, color: TEXT_DARK, fontStyle: "italic", lineHeight: "1.4" }}>"To my daughter, my pride..."</div>
             </FloatingCard>
 
             {/* 6. HAND-CRAFTED BADGE */}
             <FloatingCard className="bottom-[-30px] right-[40px] md:bottom-[-10px] md:right-[100px] flex items-center gap-2" style={{ animation: "floatDown 5.2s ease-in-out infinite" }}>
-               <div className="w-5 h-5 rounded-full bg-orange-200 flex items-center justify-center text-[10px]">✨</div>
-               <div style={{ fontSize: 9, fontWeight: 700, color: GOLD }}>100% Artisan Made</div>
+              <div className="w-5 h-5 rounded-full bg-orange-200 flex items-center justify-center text-[10px]">✨</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: GOLD }}>100% Artisan Made</div>
             </FloatingCard>
 
             {/* 7. DELIVERY CARD */}
@@ -215,6 +175,69 @@ export default function HeroSection() {
             )}
           </div>
         </div>
+        {/* CROSS-FADE CAROUSEL */}
+        <div className="py-2 relative mt-16 md:absolute md:left-1/2 md:-translate-x-1/2 md:top-1/2 md:-translate-y-1/2 w-full max-w-6xl px-6 md:px-16 z-10" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
+          <div className="max-w-4xl mx-auto h-[250px] md:h-[400px] rounded-[30px] overflow-hidden relative bg-white/30 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(255,255,255,0.25),0_0_80px_rgba(255,215,180,0.15)]">
+            {!isPaused && (
+              <div
+                className="absolute top-0 left-0 h-1 z-50"
+                style={{ animation: `progressFill 8s linear infinite`, background: GOLD }}
+              />
+            )}
+
+            {ADS_TILES.map((tile, idx) => (
+              <div
+                key={tile.id}
+                className="absolute inset-0 transition-opacity duration-1000 flex items-center"
+                style={{ opacity: currentTile === idx ? 1 : 0 }}
+              >
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-[800ms]"
+                  style={{
+                    backgroundImage: `url(${tile.img})`,
+                    transform: currentTile === idx ? "scale(1.1)" : "scale(1)",
+                  }}
+                />
+
+                {/* darker gradient for readability */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+
+                <div className="relative z-10 px-12 md:px-24 text-white max-w-2xl">
+                  <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-md border border-white/30 rounded-full text-[9px] tracking-[3px] uppercase mb-6">
+                    Exquisite Selection
+                  </span>
+
+                  <h3 className="text-4xl md:text-6xl font-serif mb-4 leading-tight">
+                    {tile.content}
+                  </h3>
+
+                  <p className="text-white/80 font-serif italic text-lg md:text-2xl">
+                    {tile.sub}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            <div className="absolute bottom-4 right-4 md:bottom-12 md:right-12 flex gap-3 md:gap-4 z-40">
+
+              <button
+                onClick={prevTile}
+                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-stone-900 active:scale-95 transition-all duration-300"
+              >
+                <ChevronLeft className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+
+              <button
+                onClick={nextTile}
+                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-full border border-white/30 bg-black/20 backdrop-blur-md text-white hover:bg-white hover:text-stone-900 active:scale-95 transition-all duration-300"
+              >
+                <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+              </button>
+
+            </div>
+
+          </div>
+        </div>
       </section>
 
       {/* TICKER */}
@@ -222,38 +245,23 @@ export default function HeroSection() {
         <div className="flex gap-16 whitespace-nowrap opacity-50" style={{ animation: "tickerScroll 30s linear infinite" }}>
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-16 uppercase tracking-[3px] text-[10px] font-bold text-stone-600">
-               <span>◆ Free Gift Wrapping</span>
-               <span>◆ Voice Notes Included</span>
-               <span>◆ QR Code Enabled</span>
-               <span>◆ Luxury Box Included</span>
+              <span>◆ Free Gift Wrapping</span>
+              <span>◆ Voice Notes Included</span>
+              <span>◆ QR Code Enabled</span>
+              <span>◆ Luxury Box Included</span>
             </div>
           ))}
         </div>
       </div>
+      <div
+        ref={cursorDotRef}
+        className="fixed w-2 h-2 bg-[#B5622A] rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
+      />
 
-      {/* CROSS-FADE CAROUSEL */}
-      <section className="relative px-6 md:px-16 -mt-10 z-40" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
-        <div className="max-w-6xl mx-auto h-[350px] md:h-[450px] rounded-[40px] overflow-hidden shadow-2xl relative bg-stone-900">
-          {!isPaused && <div className="absolute top-0 left-0 h-1 z-50" style={{ animation: `progressFill 8s linear infinite`, background: GOLD }} />}
-          {ADS_TILES.map((tile, idx) => (
-            <div key={tile.id} className="absolute inset-0 transition-opacity duration-1000 flex items-center" style={{ opacity: currentTile === idx ? 1 : 0 }}>
-              <div className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms]" style={{ backgroundImage: `url(${tile.img})`, transform: currentTile === idx ? 'scale(1.1)' : 'scale(1)' }} />
-              <div className="absolute inset-0 bg-gradient-to-r from-stone-900/90 via-stone-900/40 to-transparent" />
-              <div className="relative z-10 px-12 md:px-24 text-white max-w-2xl">
-                <span className="inline-block px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[9px] tracking-[3px] uppercase mb-6">Exquisite Selection</span>
-                <h3 className="text-4xl md:text-6xl font-serif mb-4 leading-tight">{tile.content}</h3>
-                <p className="text-orange-100/80 font-serif italic text-lg md:text-2xl">{tile.sub}</p>
-              </div>
-            </div>
-          ))}
-          <div className="absolute bottom-12 right-12 flex gap-4 z-40">
-            <button onClick={prevTile} className="w-12 h-12 rounded-full border border-white/20 text-white hover:bg-white hover:text-stone-900 transition-all">←</button>
-            <button onClick={nextTile} className="w-12 h-12 rounded-full border border-white/20 text-white hover:bg-white hover:text-stone-900 transition-all">→</button>
-          </div>
-        </div>
-      </section>
-
-      <div className="h-24" />
+      <div
+        ref={cursorRingRef}
+        className="fixed w-10 h-10 border border-[#B5622A]/40 rounded-full pointer-events-none z-[9998] -translate-x-1/2 -translate-y-1/2"
+      />
     </>
   );
 }
