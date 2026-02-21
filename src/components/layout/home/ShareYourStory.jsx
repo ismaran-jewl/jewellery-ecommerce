@@ -6,82 +6,72 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Camera } from "lucide-react";
 
 const stories = [
-  { 
-    id: 1, 
-    img: "https://images.unsplash.com/photo-1617113937231-794337380896?q=80&w=400&auto=format&fit=crop", 
-    name: "Sarah & James", 
-    text: "“We'll never forget the day he proposed. This ring is a symbol of our beginning.”", 
-    x: "5%", 
-    y: "20%", 
-    rotate: -6,
-    delay: 0
+  {
+    id: 1,
+    img: "https://images.unsplash.com/photo-1617113937231-794337380896?q=80&w=400&auto=format&fit=crop",
+    name: "Sarah & James",
+    text: `"We'll never forget the day he proposed. This ring is a symbol of our beginning."`,
+    x: "5%", y: "20%", rotate: -6, delay: 0
   },
-  { 
-    id: 2, 
-    img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop", 
-    name: "Elena's 30th", 
-    text: "“My friends gifted me this necklace for my birthday. It shines as bright as our memories together.”", 
-    x: "75%", 
-    y: "15%", 
-    rotate: 6,
-    delay: 0.1
+  {
+    id: 2,
+    img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop",
+    name: "Elena's 30th",
+    text: `"My friends gifted me this necklace for my birthday. It shines as bright as our memories together."`,
+    x: "75%", y: "15%", rotate: 6, delay: 0.1
   },
-  { 
-    id: 3, 
-    img: "https://images.unsplash.com/photo-1544168190-79c11e66b380?q=80&w=400&auto=format&fit=crop", 
-    name: "The Graduation", 
-    text: "“A gift from my parents to celebrate a new chapter. It reminds me how far I've come.”", 
-    x: "10%", 
-    y: "65%", 
-    rotate: 4,
-    delay: 0.2
+  {
+    id: 3,
+    img: "https://images.unsplash.com/photo-1544168190-79c11e66b380?q=80&w=400&auto=format&fit=crop",
+    name: "The Graduation",
+    text: `"A gift from my parents to celebrate a new chapter. It reminds me how far I've come."`,
+    x: "10%", y: "65%", rotate: 4, delay: 0.2
   },
-  { 
-    id: 4, 
-    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400&auto=format&fit=crop", 
-    name: "Anniversary", 
-    text: "“Ten years of love, captured in one timeless piece. It's more than a jewel, it's our story.”", 
-    x: "80%", 
-    y: "60%", 
-    rotate: -4,
-    delay: 0.3
+  {
+    id: 4,
+    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400&auto=format&fit=crop",
+    name: "Anniversary",
+    text: `"Ten years of love, captured in one timeless piece. It's more than a jewel, it's our story."`,
+    x: "80%", y: "60%", rotate: -4, delay: 0.3
   },
 ];
 
 function FloatingImage({ story, mouseX, mouseY }) {
-  // Parallax effect based on mouse position
-  // We use different ranges for x/y to create non-uniform movement (more organic)
   const xRange = [50 * (story.id % 2 === 0 ? 1 : -1), -50 * (story.id % 2 === 0 ? 1 : -1)];
   const yRange = [50 * (story.id % 2 === 0 ? -1 : 1), -50 * (story.id % 2 === 0 ? -1 : 1)];
-  
+
   const x = useTransform(mouseX, [0, 1], xRange);
   const y = useTransform(mouseY, [0, 1], yRange);
-  
   const xSpring = useSpring(x, { stiffness: 40, damping: 20 });
   const ySpring = useSpring(y, { stiffness: 40, damping: 20 });
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.8, delay: story.delay }}
-      style={{ left: story.x, top: story.y, x: xSpring, y: ySpring, rotate: story.rotate }}
-      className="absolute hidden lg:block w-56 aspect-[3/4] bg-white p-2 shadow-2xl rounded-lg z-10 hover:z-30 transition-all duration-500 group cursor-pointer"
+      style={{
+        left: story.x,
+        top: story.y,
+        x: xSpring,
+        y: ySpring,
+        rotate: story.rotate,
+        background: "rgba(255,255,255,0.85)",
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255,255,255,0.9)",
+      }}
+      className="absolute hidden lg:block w-56 aspect-[3/4] p-2 shadow-2xl rounded-lg z-10 hover:z-30 transition-all duration-500 group cursor-pointer"
       whileHover={{ scale: 1.1, rotate: 0, transition: { duration: 0.3 } }}
     >
       <div className="relative w-full h-full overflow-hidden bg-neutral-100 rounded-md">
         <img src={story.img} alt={story.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-        
-        {/* Overlay Content */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end text-left p-4">
-          <p className="text-[#C59D5F] font-serif text-lg mb-1 italic">{story.name}</p>
+          <p className="font-serif text-lg mb-1 italic" style={{ color: "#FFD4C2" }}>{story.name}</p>
           <p className="text-white/90 text-xs font-light leading-snug">{story.text}</p>
         </div>
       </div>
-      
-      {/* Pin/Tape effect (Visual flair) */}
-      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/10 backdrop-blur-sm rounded-sm opacity-80 -rotate-6" />
+      <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-12 h-5 bg-white/30 backdrop-blur-sm rounded-sm opacity-80 -rotate-6" />
     </motion.div>
   );
 }
@@ -93,40 +83,38 @@ export default function ShareYourStory() {
 
   const handleMouseMove = (e) => {
     const rect = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
-    mouseX.set(x);
-    mouseY.set(y);
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
   };
 
   return (
-    <section 
+    <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative py-20 lg:py-32 min-h-[auto] lg:min-h-[850px] bg-[#0A0A0A] text-white overflow-hidden flex flex-col items-center justify-center"
+      className="relative py-20 lg:py-32 min-h-[auto] lg:min-h-[850px] bg-transparent overflow-hidden flex flex-col items-center justify-center"
     >
-      {/* 1. BACKGROUND LAYERS */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a1a] via-[#0a0a0a] to-black" />
-      <div className="absolute inset-0 opacity-[0.2] bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
-      
-      {/* Animated Glow Orbs */}
-      <motion.div 
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+      {/* Warm glow orbs */}
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.12, 0.22, 0.12] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#C59D5F] rounded-full blur-[150px] opacity-10 pointer-events-none"
+        className="absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[150px] pointer-events-none z-[1]"
+        style={{ background: "#FFD4C2", opacity: 0.12 }}
       />
-      <motion.div 
-        animate={{ scale: [1, 1.3, 1], opacity: [0.05, 0.15, 0.05] }}
+      <motion.div
+        animate={{ scale: [1, 1.3, 1], opacity: [0.06, 0.16, 0.06] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#2D5A40] rounded-full blur-[150px] opacity-10 pointer-events-none"
+        className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] rounded-full blur-[150px] pointer-events-none z-[1]"
+        style={{ background: "#B7E4C7", opacity: 0.08 }}
       />
 
-      {/* 2. FLOATING IMAGES (Desktop Only) */}
-      {stories.map((story) => (
-        <FloatingImage key={story.id} story={story} mouseX={mouseX} mouseY={mouseY} />
-      ))}
+      {/* Floating Polaroid images (desktop) */}
+      <div className="absolute inset-0 z-[2]">
+        {stories.map((story) => (
+          <FloatingImage key={story.id} story={story} mouseX={mouseX} mouseY={mouseY} />
+        ))}
+      </div>
 
-      {/* 3. MAIN CONTENT */}
+      {/* Main Content */}
       <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -135,49 +123,78 @@ export default function ShareYourStory() {
           transition={{ duration: 0.8, ease: "easeOut" }}
         >
           {/* Badge */}
-          <motion.div 
+          <motion.div
             whileHover={{ scale: 1.05 }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#C59D5F]/30 bg-[#C59D5F]/5 text-[#C59D5F] text-xs tracking-[0.2em] uppercase mb-10 backdrop-blur-md cursor-default"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border text-xs tracking-[0.2em] uppercase mb-10 backdrop-blur-md cursor-default"
+            style={{
+              borderColor: "rgba(255,212,194,0.3)",
+              background: "rgba(255,212,194,0.08)",
+              color: "#FFD4C2",
+            }}
           >
             <Sparkles size={14} />
             <span>Ismaran Community</span>
           </motion.div>
-          
+
           {/* Heading */}
-          <h2 className="text-4xl md:text-7xl lg:text-8xl font-serif mb-8 leading-[0.9] tracking-tight">
+          <h2 className="text-4xl md:text-7xl lg:text-8xl font-serif mb-8 leading-[0.9] tracking-tight text-white">
             Your Story, <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F0E68C] via-[#C59D5F] to-[#B8860B] italic relative">
+            <span
+              className="italic relative"
+              style={{
+                background: "linear-gradient(135deg, #FFE8D6 0%, #FF9E80 50%, #E8603C 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Our Legacy
-              <motion.svg 
-                className="absolute w-full h-3 -bottom-1 left-0 text-[#C59D5F]" 
-                viewBox="0 0 100 10" 
+              <motion.svg
+                className="absolute w-full h-3 -bottom-1 left-0"
+                viewBox="0 0 100 10"
                 preserveAspectRatio="none"
                 initial={{ pathLength: 0, opacity: 0 }}
                 whileInView={{ pathLength: 1, opacity: 1 }}
                 transition={{ delay: 0.5, duration: 1 }}
               >
-                <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="2" fill="none" />
+                <path d="M0 5 Q 50 10 100 5" stroke="#FF9E80" strokeWidth="2" fill="none" />
               </motion.svg>
             </span>
           </h2>
 
-          {/* Description */}
-          <p className="text-neutral-400 text-base md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed">
-            More than just jewellery, each piece is a silent storyteller. Your moments give it a voice, your memories make it a treasure. 
+          <p className="text-base md:text-xl max-w-2xl mx-auto mb-12 font-light leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+            More than just jewellery, each piece is a silent storyteller. Your moments give it a voice, your memories make it a treasure.
             Share your story and become part of the Ismaran legacy.
           </p>
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-            <Button 
-              className="group h-14 px-10 bg-[#C59D5F] text-[#0A0A0A] hover:bg-[#D4AF37] rounded-full text-sm tracking-[0.15em] uppercase font-bold transition-all hover:scale-105 shadow-[0_0_40px_-10px_rgba(197,157,95,0.4)]"
+            <Button
+              className="group h-14 px-10 rounded-full text-sm tracking-[0.15em] uppercase font-bold transition-all hover:scale-105 border-0"
+              style={{
+                background: "linear-gradient(135deg, #FFD4C2, #FF9E80)",
+                color: "#2D2D2D",
+                boxShadow: "0 0 40px -10px rgba(255,158,128,0.5)",
+              }}
             >
               <Camera className="mr-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
               Upload Photo
             </Button>
-            <Button 
+            <Button
               variant="outline"
-              className="group h-14 px-10 border-white/10 bg-white/5 text-white hover:bg-white/10 hover:text-[#C59D5F] hover:border-[#C59D5F]/50 rounded-full text-sm tracking-[0.15em] uppercase font-bold backdrop-blur-sm transition-all"
+              className="group h-14 px-10 rounded-full text-sm tracking-[0.15em] uppercase font-bold backdrop-blur-sm transition-all"
+              style={{
+                borderColor: "rgba(255,255,255,0.15)",
+                background: "rgba(255,255,255,0.07)",
+                color: "white",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,158,128,0.5)";
+                e.currentTarget.style.color = "#FF9E80";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)";
+                e.currentTarget.style.color = "white";
+              }}
             >
               View Gallery
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -185,12 +202,12 @@ export default function ShareYourStory() {
           </div>
         </motion.div>
       </div>
-      
-      {/* 4. MOBILE STORIES SLIDER (Visible only on mobile) */}
+
+      {/* Mobile Stories Slider */}
       <div className="lg:hidden w-full mt-16 overflow-x-auto pb-8 px-6 z-20 snap-x snap-mandatory">
         <div className="flex gap-4 w-max">
           {stories.map((story, i) => (
-            <motion.div 
+            <motion.div
               key={story.id}
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -201,7 +218,7 @@ export default function ShareYourStory() {
               <div className="relative w-full h-full overflow-hidden bg-neutral-100 rounded-md">
                 <img src={story.img} alt={story.name} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end text-left p-4">
-                  <p className="text-[#C59D5F] font-serif text-lg mb-1 italic">{story.name}</p>
+                  <p className="font-serif text-lg mb-1 italic" style={{ color: "#FFD4C2" }}>{story.name}</p>
                   <p className="text-white/90 text-xs font-light leading-snug line-clamp-3">{story.text}</p>
                 </div>
               </div>

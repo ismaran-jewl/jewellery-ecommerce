@@ -10,7 +10,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#2D2D2D]">
+      <body className="min-h-screen flex flex-col bg-[#FAF7F2] min-h-screen">
         <AuthProvider>
           <Toaster />
           <main className="flex-1">

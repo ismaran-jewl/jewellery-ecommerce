@@ -7,23 +7,23 @@ import { useRef } from "react";
 import Link from "next/link";
 
 const collections = [
-  { 
-    name: "Modern Minimalist", 
-    desc: "Everyday luxury for the office", 
+  {
+    name: "Modern Minimalist",
+    desc: "Everyday luxury for the office",
     image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800",
-    size: "col-span-1 md:col-span-1 h-[240px] md:h-[500px]" 
+    size: "col-span-1 md:col-span-1 h-[240px] md:h-[500px]"
   },
-  { 
-    name: "The Bridal Suite", 
-    desc: "Timeless pieces for your big day", 
+  {
+    name: "The Bridal Suite",
+    desc: "Timeless pieces for your big day",
     image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800",
-    size: "col-span-1 md:col-span-2 h-[300px] md:h-[500px]" 
+    size: "col-span-1 md:col-span-2 h-[300px] md:h-[500px]"
   },
-  { 
-    name: "Royal Heritage", 
-    desc: "Inspired by ancient craftsmanship", 
+  {
+    name: "Royal Heritage",
+    desc: "Inspired by ancient craftsmanship",
     image: "https://i.pinimg.com/736x/28/26/f3/2826f32d2e67a1baf351356d800fd049.jpg",
-    size: "col-span-2 md:col-span-3 h-[250px] md:h-[500px]" 
+    size: "col-span-2 md:col-span-3 h-[250px] md:h-[500px]"
   },
 ];
 
@@ -37,60 +37,52 @@ export default function CollectionsGrid() {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   return (
-    <section ref={containerRef} className="relative py-16 md:py-32 bg-[#FFDAB9] overflow-hidden">
-      
-      {/* --- MOTION GRAPHIC BACKGROUND --- */}
-      <div className="absolute inset-0 z-0">
-        {/* Floating Gradient Liquid Blobs */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            rotate: [0, 90, 0],
-            x: [0, 50, 0] 
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-20 -left-20 w-[500px] h-[500px] bg-[#F5FFFA] rounded-full blur-[120px] opacity-40"
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            y: [0, 100, 0] 
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[#4A8565]/10 rounded-full blur-[150px]"
-        />
-      </div>
+    /* bg-transparent — background comes from the seamless canvas in page.jsx */
+    <section ref={containerRef} className="relative py-16 md:py-32 bg-transparent">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
-        
-        {/* --- HEADER WITH STAGGERED TEXT --- */}
+
+        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-20 gap-6">
           <div className="max-w-xl">
-            <motion.span 
+            <motion.span
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
-              className="text-[#2D5A40] font-bold tracking-[0.4em] uppercase text-xs block mb-4"
+              className="font-bold tracking-[0.4em] uppercase text-xs block mb-4"
+              style={{ color: "#52B788" }}
             >
               Exquisite Craftsmanship
             </motion.span>
-            <motion.h3 
+            <motion.h3
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-7xl font-serif text-[#2D5A40] leading-tight"
+              className="text-5xl md:text-7xl font-serif leading-tight"
+              style={{ color: "#2D2D2D" }}
             >
-              Curated <span className="italic font-light">Collections</span>
+              Curated{" "}
+              <span
+                className="italic font-light"
+                style={{
+                  background: "linear-gradient(135deg, #FF9E80, #E8603C)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Collections
+              </span>
             </motion.h3>
           </div>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            className="text-[#4A6355] text-lg max-w-xs border-l border-[#2D5A40]/20 pl-6 mb-2"
+            className="text-lg max-w-xs border-l pl-6 mb-2"
+            style={{ color: "#7A8A82", borderColor: "rgba(82,183,136,0.3)" }}
           >
             Handpicked treasures designed to resonate with your unique story.
           </motion.p>
         </div>
 
-        {/* --- BENTO GRID COLLECTIONS --- */}
+        {/* Bento Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
           {collections.map((collection, i) => (
             <motion.div
@@ -99,36 +91,43 @@ export default function CollectionsGrid() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8 }}
-              className={`relative ${collection.size} overflow-hidden group rounded-[2rem] shadow-2xl shadow-[#2D5A40]/5`}
+              className={`relative ${collection.size} overflow-hidden group rounded-[2rem] shadow-2xl shadow-black/10`}
             >
-              {/* Image with Parallax effect */}
               <motion.img
                 style={{ y: backgroundY }}
                 src={collection.image}
                 alt={collection.name}
                 className="absolute inset-0 w-full h-[120%] object-cover transition-transform duration-1000 group-hover:scale-110"
               />
-              
-              {/* Overlay Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#2D5A40]/90 via-[#2D5A40]/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500" />
 
-              {/* Content Reveal */}
+              {/* Overlay */}
+              <div
+                className="absolute inset-0 opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+                style={{
+                  background: "linear-gradient(to top, rgba(45,45,45,0.9) 0%, rgba(45,45,45,0.2) 50%, transparent 100%)"
+                }}
+              />
+
+              {/* Content */}
               <div className="absolute inset-0 p-4 md:p-10 flex flex-col justify-end">
-                <motion.div 
+                <motion.div
                   initial={{ y: 20, opacity: 0 }}
                   whileInView={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.3 }}
                   className="relative z-20"
                 >
-                  <h4 className="text-lg md:text-4xl font-serif text-[#F5FFFA] mb-1 md:mb-3 group-hover:translate-x-2 transition-transform duration-500">
+                  <h4 className="text-lg md:text-4xl font-serif text-white mb-1 md:mb-3 group-hover:translate-x-2 transition-transform duration-500">
                     {collection.name}
                   </h4>
-                  <p className="text-[#F5FFFA]/80 text-xs md:text-lg mb-3 md:mb-8 max-w-sm transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 line-clamp-2 md:line-clamp-none">
+                  <p className="text-white/80 text-xs md:text-lg mb-3 md:mb-8 max-w-sm transform translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 line-clamp-2 md:line-clamp-none">
                     {collection.desc}
                   </p>
-                  
-                  <Button asChild className="bg-[#F5FFFA] text-[#2D5A40] hover:bg-[#FFDAB9] rounded-full px-4 py-2 md:px-8 md:py-6 text-xs md:text-base flex items-center gap-2 group/btn transition-all w-fit">
-                    <Link href="/shop">
+                  <Button
+                    asChild
+                    className="rounded-full px-4 py-2 md:px-8 md:py-6 text-xs md:text-base flex items-center gap-2 group/btn transition-all w-fit border-0"
+                    style={{ background: "rgba(255,255,255,0.92)", color: "#2D2D2D" }}
+                  >
+                    <Link href="/gallery">
                       <span className="hidden md:inline">Explore Gallery</span>
                       <span className="md:hidden">Explore</span>
                       <ArrowUpRight size={16} className="group-hover/btn:rotate-45 transition-transform" />
@@ -137,7 +136,7 @@ export default function CollectionsGrid() {
                 </motion.div>
               </div>
 
-              {/* Decorative Border on Hover */}
+              {/* Hover border */}
               <div className="absolute inset-4 border border-white/20 rounded-[1.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
             </motion.div>
           ))}

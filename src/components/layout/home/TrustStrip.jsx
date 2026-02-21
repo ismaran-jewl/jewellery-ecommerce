@@ -1,6 +1,7 @@
 "use client";
 
 import { Gem, ShieldCheck, Truck, Heart } from "lucide-react";
+import { motion } from "framer-motion";
 
 const trustItems = [
   { icon: Gem, title: "BIS Hallmarked", sub: "100% Certified Gold" },
@@ -11,15 +12,51 @@ const trustItems = [
 
 export default function TrustStrip() {
   return (
-    <section className="border-y border-neutral-200 bg-white">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
-        {trustItems.map((item, i) => (
-          <div key={i} className="flex flex-col items-center text-center group">
-            <item.icon className="mb-4 w-8 h-8 text-[#C59D5F] group-hover:scale-110 transition-transform" />
-            <h5 className="font-semibold text-sm uppercase tracking-wider">{item.title}</h5>
-            <p className="text-xs text-neutral-500 mt-1">{item.sub}</p>
-          </div>
-        ))}
+    /* bg-transparent — background comes from the seamless canvas in page.jsx */
+    <section className="relative bg-transparent py-2">
+      {/* Glassmorphism card floats above the canvas */}
+      <div className="max-w-7xl mx-auto px-6 py-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 rounded-3xl bg-white/40 backdrop-blur-md border border-white/60 px-8 py-10 shadow-xl shadow-[#FFD4C2]/15"
+        >
+          {trustItems.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
+              className="flex flex-col items-center text-center group"
+            >
+              <div
+                className="mb-4 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                style={{
+                  background: i % 2 === 0
+                    ? "linear-gradient(135deg, #FFD4C2, #FFE8D6)"
+                    : "linear-gradient(135deg, #B7E4C7, #D8F3DC)",
+                  boxShadow: i % 2 === 0
+                    ? "0 6px 20px rgba(255,158,128,0.25)"
+                    : "0 6px 20px rgba(82,183,136,0.25)",
+                }}
+              >
+                <item.icon
+                  className="w-6 h-6"
+                  style={{ color: i % 2 === 0 ? "#E07040" : "#52B788" }}
+                />
+              </div>
+              <h5 className="font-semibold text-sm uppercase tracking-wider" style={{ color: "#3D3D3D" }}>
+                {item.title}
+              </h5>
+              <p className="text-xs mt-1" style={{ color: "#8A8A8A" }}>
+                {item.sub}
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );

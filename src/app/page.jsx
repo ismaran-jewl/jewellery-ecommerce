@@ -22,16 +22,31 @@ export default function HomePage() {
   if (!mounted) return null;
 
   return (
-    <>
+    /*
+      Single seamless canvas — all sections sit on this one background.
+      Every child section must be bg-transparent so this shows through.
+      `overflow-hidden` prevents any section from leaking outside the canvas.
+    */
+    <div
+      className="relative overflow-hidden"
+      style={{
+        background: "linear-gradient(160deg, #FFF5F0 0%, #F0FAF4 35%, #FFF8F5 60%, #F2FAF6 100%)",
+      }}
+    >
       <Navbar />
-      <HeroSection />
-      <SeasonalOffers />
-      <FeaturedProducts />
-      <CollectionsGrid />
-      <VoiceGiftSection />
-      <ShareYourStory />
-      <TrustStrip />
+
+      {/* All sections stacked with zero gap — no margin, no padding between */}
+      <main className="flex flex-col">
+        <HeroSection />
+        <SeasonalOffers />
+        <FeaturedProducts />
+        <CollectionsGrid />
+        <VoiceGiftSection />
+        <ShareYourStory />
+        <TrustStrip />
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 }
