@@ -8,7 +8,7 @@ import { ArrowRight, Sparkles, Camera } from "lucide-react";
 const stories = [
   {
     id: 1,
-    img: "https://images.unsplash.com/photo-1617113937231-794337380896?q=80&w=400&auto=format&fit=crop",
+    img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop",
     name: "Sarah & James",
     text: `"We'll never forget the day he proposed. This ring is a symbol of our beginning."`,
     x: "5%", y: "20%", rotate: -6, delay: 0
@@ -22,7 +22,7 @@ const stories = [
   },
   {
     id: 3,
-    img: "https://images.unsplash.com/photo-1544168190-79c11e66b380?q=80&w=400&auto=format&fit=crop",
+    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400&auto=format&fit=crop",
     name: "The Graduation",
     text: `"A gift from my parents to celebrate a new chapter. It reminds me how far I've come."`,
     x: "10%", y: "65%", rotate: 4, delay: 0.2
