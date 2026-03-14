@@ -11,7 +11,6 @@ export const metadata = {
   description: siteConfig.description,
   keywords: ["jewellery", "gold", "diamonds", "bridal", "accessories", "luxury jewellery"],
   author: siteConfig.author,
-  viewport: "width=device-width, initial-scale=1.0",
   robots: "index, follow",
   openGraph: {
     type: "website",

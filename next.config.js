@@ -42,17 +42,8 @@ const nextConfig = {
       },
     ],
     formats: ["image/avif", "image/webp"],
-  },
-
-  // Swagger UI for API docs
-  swaggerUI: {
-    url: "/api-docs",
-  },
-
-  // Environment variables
-  env: {
-    NEXT_PUBLIC_APP_NAME: "Jewellery E-Commerce",
-  },
+  }
+  
 };
 
 module.exports = nextConfig;

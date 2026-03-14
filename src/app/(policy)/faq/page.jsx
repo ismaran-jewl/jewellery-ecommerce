@@ -1,3 +1,13 @@
+export const metadata = {
+  title: "FAQ | Jewellery Store",
+  description:
+    "Find answers to common questions about orders, payments, security, and returns at our jewellery store.",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 export default function Page() {
 	const faqs = [
 		{
