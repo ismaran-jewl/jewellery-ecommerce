@@ -93,7 +93,15 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "Processing",
-      enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
+      enum: ["Processing", "Confirmed", "Shipped", "Delivered", "Cancelled"],
+    },
+    promoCode: {
+      type: String,
+      default: null,
+    },
+    discountAmount: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -5,6 +5,7 @@ import connectDB from "@/lib/mongodb"
 import Order from "@/models/Order"
 import Cart from "@/models/Cart"
 import Product from "@/models/Product"
+import Promo from "@/models/Promo"
 
 // GET — fetch all orders for the current user
 export async function GET() {
@@ -25,7 +26,7 @@ export async function POST(req) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 
-  const { shippingAddress, paymentMethod } = await req.json()
+  const { shippingAddress, paymentMethod, promoCode, discountAmount = 0, razorpayOrderId } = await req.json()
 
   if (!shippingAddress || !paymentMethod) {
     return NextResponse.json({ error: "Shipping address and payment method required" }, { status: 400 })
@@ -63,9 +64,10 @@ export async function POST(req) {
   }
 
   const itemsPrice = orderItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
-  const shippingPrice = itemsPrice > 10000 ? 0 : 500
+  const shippingPrice = itemsPrice > 10000 || promoCode ? 0 : 500
   const taxPrice = Math.round(itemsPrice * 0.03)
-  const totalPrice = itemsPrice + shippingPrice + taxPrice
+  const safeDiscount = Math.min(Number(discountAmount) || 0, itemsPrice)
+  const totalPrice = Math.max(0, itemsPrice + shippingPrice + taxPrice - safeDiscount)
 
   const order = await Order.create({
     user: session.user.id,
@@ -76,8 +78,13 @@ export async function POST(req) {
     shippingPrice,
     taxPrice,
     totalPrice,
-    isPaid: paymentMethod !== "cod",
-    paidAt: paymentMethod !== "cod" ? new Date() : undefined,
+    discountAmount: safeDiscount,
+    promoCode: promoCode || null,
+    razorpayOrderId: razorpayOrderId || null,
+    // For Razorpay, order is pending until payment verification
+    isPaid: paymentMethod === "cod",
+    paidAt: paymentMethod === "cod" ? new Date() : undefined,
+    paymentStatus: paymentMethod === "cod" ? "completed" : "pending",
     status: "Processing",
   })
 
@@ -93,6 +100,14 @@ export async function POST(req) {
     { user: session.user.id },
     { $set: { items: [] } }
   )
+
+  // Mark promo code as used
+  if (promoCode) {
+    await Promo.findOneAndUpdate(
+      { code: promoCode.toUpperCase() },
+      { $inc: { usedCount: 1 }, $push: { usedBy: session.user.id } }
+    )
+  }
 
   return NextResponse.json({
     success: true,

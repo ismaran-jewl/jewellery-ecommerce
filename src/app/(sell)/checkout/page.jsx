@@ -1,23 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/hooks/useCart";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
   ArrowLeft, CreditCard, MapPin, Phone, User, Mail,
-  ShieldCheck, Truck, Loader2, ChevronDown, CheckCircle2,
+  ShieldCheck, Truck, Loader2, CheckCircle2, Tag, X,
+  BadgeCheck, ChevronRight, Gift,
 } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { apiUrl } from "@/lib/fetcher";
 
 const fmt = (n) => `₹${Number(n).toLocaleString("en-IN")}`;
 
 // ── Floating label input ─────────────────────────────────────
-const Field = ({ label, icon: Icon, type = "text", name, required, placeholder, pattern, minLength, className = "" }) => (
+const Field = ({ label, icon: Icon, type = "text", name, required, placeholder, pattern, minLength, className = "", defaultValue = "" }) => (
   <div className={`relative ${className}`}>
     {Icon && <Icon className="absolute left-3 top-3 h-4 w-4 text-[#b5a090] pointer-events-none" />}
     <input
@@ -27,6 +28,7 @@ const Field = ({ label, icon: Icon, type = "text", name, required, placeholder, 
       placeholder={placeholder ?? label}
       pattern={pattern}
       minLength={minLength}
+      defaultValue={defaultValue}
       className={`w-full border border-[#e0d5cc] bg-white rounded-xl py-2.5 pr-3 text-sm text-[#2d1a10] placeholder:text-[#c4b4a7]
         focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all
         ${Icon ? "pl-10" : "pl-3"}`}
@@ -49,6 +51,19 @@ const Section = ({ title, icon: Icon, children }) => (
   </div>
 );
 
+// ── Load Razorpay SDK ─────────────────────────────────────────
+function loadRazorpayScript() {
+  return new Promise((resolve) => {
+    if (document.getElementById("razorpay-sdk")) { resolve(true); return; }
+    const script = document.createElement("script");
+    script.id = "razorpay-sdk";
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
 export default function CheckoutPage() {
   const { cart, clearCart } = useCart();
   const { data: session } = useSession();
@@ -57,9 +72,14 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("razorpay");
 
-  // ── Load cart from DB (same as cart page) ─────────────────
+  // Promo state
+  const [promoInput, setPromoInput] = useState("");
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState(null); // { code, discount, freeShipping, description }
+
+  // ── Load cart from DB ─────────────────────────────────────
   useEffect(() => {
     fetch(apiUrl("/api/cart"))
       .then((r) => r.json())
@@ -68,14 +88,127 @@ export default function CheckoutPage() {
   }, []);
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
-  const shippingPrice = subtotal > 10000 ? 0 : 500;
+  const discount = appliedPromo?.discount ?? 0;
+  const shippingPrice = (subtotal > 10000 || appliedPromo?.freeShipping) ? 0 : 500;
   const taxPrice = Math.round(subtotal * 0.03);
-  const total = subtotal + shippingPrice + taxPrice;
+  const total = Math.max(0, subtotal + shippingPrice + taxPrice - discount);
 
-  // ── Place order ────────────────────────────────────────────
+  // ── Apply Promo Code ──────────────────────────────────────
+  const handleApplyPromo = async () => {
+    if (!promoInput.trim()) return;
+    setPromoLoading(true);
+    try {
+      const res = await fetch("/api/promo/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: promoInput.trim(), cartTotal: subtotal }),
+      });
+      const data = await res.json();
+      if (!res.ok) { toast.error(data.error); return; }
+      setAppliedPromo(data);
+      toast.success(`Promo applied! You saved ${fmt(data.discount)}`);
+    } catch {
+      toast.error("Could not apply promo code");
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const removePromo = () => {
+    setAppliedPromo(null);
+    setPromoInput("");
+    toast.info("Promo code removed");
+  };
+
+  // ── Place order (COD path) ────────────────────────────────
+  const createOrder = async (shippingAddress, paymentMethod, razorpayOrderId = null) => {
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        shippingAddress,
+        paymentMethod,
+        promoCode: appliedPromo?.code || null,
+        discountAmount: discount,
+        razorpayOrderId,
+      }),
+    });
+    return res;
+  };
+
+  // ── Handle Razorpay payment flow ──────────────────────────
+  const handleRazorpay = async (shippingAddress) => {
+    const loaded = await loadRazorpayScript();
+    if (!loaded) { toast.error("Payment gateway failed to load"); return; }
+
+    // 1. Initialize Razorpay order on server
+    setIsProcessing(true);
+    const initRes = await fetch("/api/payment/initialize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ discountAmount: discount }),
+    });
+    const initData = await initRes.json();
+    if (!initRes.ok) { toast.error(initData.error ?? "Payment init failed"); setIsProcessing(false); return; }
+
+    // 2. Open Razorpay modal
+    const options = {
+      key: initData.keyId,
+      amount: initData.amount,
+      currency: initData.currency,
+      name: "Jewellery Store",
+      description: "Luxury Jewellery Purchase",
+      order_id: initData.orderId,
+      prefill: {
+        name: session?.user?.name ?? "",
+        email: session?.user?.email ?? "",
+      },
+      theme: { color: "#C59D5F" },
+      handler: async (response) => {
+        try {
+          // 3. Create order in DB with razorpayOrderId
+          const orderRes = await createOrder(shippingAddress, "razorpay", initData.orderId);
+          const orderData = await orderRes.json();
+          if (!orderRes.ok) { toast.error(orderData.error ?? "Order creation failed"); setIsProcessing(false); return; }
+
+          // 4. Verify payment signature server-side
+          const verifyRes = await fetch("/api/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              paymentId: response.razorpay_payment_id,
+              orderId: response.razorpay_order_id,
+              signature: response.razorpay_signature,
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (!verifyRes.ok) { toast.error(verifyData.error ?? "Payment verification failed"); setIsProcessing(false); return; }
+
+          clearCart?.();
+          toast.success("Payment successful! Order confirmed.");
+          router.push(`/order-confirmation?orderId=${verifyData.orderId ?? orderData.orderId}`);
+        } catch {
+          toast.error("Error confirming payment. Contact support.");
+          setIsProcessing(false);
+        }
+      },
+      modal: {
+        ondismiss: () => { setIsProcessing(false); },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.on("payment.failed", (resp) => {
+      toast.error(`Payment failed: ${resp.error.description}`);
+      setIsProcessing(false);
+    });
+    rzp.open();
+  };
+
+  // ── Form submit ───────────────────────────────────────────
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    setIsProcessing(true);
+    if (isProcessing) return;
 
     const form = e.target;
     const shippingAddress = {
@@ -85,28 +218,21 @@ export default function CheckoutPage() {
       country: "India",
     };
 
-    try {
-      const res = await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shippingAddress, paymentMethod }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        toast.error(data.error ?? "Something went wrong");
+    if (paymentMethod === "cod") {
+      setIsProcessing(true);
+      try {
+        const res = await createOrder(shippingAddress, "cod");
+        const data = await res.json();
+        if (!res.ok) { toast.error(data.error ?? "Something went wrong"); setIsProcessing(false); return; }
+        clearCart?.();
+        toast.success("Order placed successfully!");
+        router.push(`/order-confirmation?orderId=${data.orderId}`);
+      } catch {
+        toast.error("Network error — please try again");
         setIsProcessing(false);
-        return;
       }
-
-      // Also clear local cart state
-      clearCart?.();
-      toast.success("Order placed successfully!");
-      router.push(`/order-confirmation?orderId=${data.orderId}`)
-    } catch {
-      toast.error("Network error — please try again");
-      setIsProcessing(false);
+    } else {
+      await handleRazorpay(shippingAddress);
     }
   };
 
@@ -151,7 +277,7 @@ export default function CheckoutPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-3xl font-serif font-bold text-[#2d1a10] mb-8"
         >
-          Checkout
+          Secure Checkout
         </motion.h1>
 
         <form onSubmit={handlePlaceOrder} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -161,8 +287,8 @@ export default function CheckoutPage() {
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
               <Section title="Shipping Details" icon={MapPin}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Field label="Full Name" icon={User} name="fullname" required placeholder="John Doe" className="md:col-span-2" />
-                  <Field label="Email" icon={Mail} name="email" type="email" required placeholder="john@example.com" className="md:col-span-2" />
+                  <Field label="Full Name" icon={User} name="fullname" required placeholder="John Doe" className="md:col-span-2" defaultValue={session?.user?.name ?? ""} />
+                  <Field label="Email" icon={Mail} name="email" type="email" required placeholder="john@example.com" className="md:col-span-2" defaultValue={session?.user?.email ?? ""} />
                   <Field label="Phone" icon={Phone} name="phone" type="tel" required placeholder="+91 98765 43210" pattern="[0-9]{10,}" minLength={10} className="md:col-span-2" />
 
                   <div className="relative md:col-span-2">
@@ -188,53 +314,42 @@ export default function CheckoutPage() {
               <Section title="Payment Method" icon={CreditCard}>
                 <div className="space-y-3">
                   {[
-                    { id: "card", label: "Credit / Debit Card" },
-                    { id: "upi",  label: "UPI / Net Banking" },
-                    { id: "cod",  label: "Cash on Delivery" },
+                    { id: "razorpay", label: "Pay Online", sub: "Cards, UPI, Net Banking — powered by Razorpay", badge: "Recommended" },
+                    { id: "cod", label: "Cash on Delivery", sub: "Pay when your order arrives" },
                   ].map((opt) => (
-                    <div key={opt.id}>
-                      <label
-                        className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all
-                          ${paymentMethod === opt.id
-                            ? "border-[#C59D5F] bg-[#fffaf5] shadow-sm"
-                            : "border-[#e0d5cc] hover:border-[#d4c4b5]"
-                          }`}
+                    <label
+                      key={opt.id}
+                      className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all
+                        ${paymentMethod === opt.id
+                          ? "border-[#C59D5F] bg-[#fffaf5] shadow-sm"
+                          : "border-[#e0d5cc] hover:border-[#d4c4b5]"
+                        }`}
+                    >
+                      <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0
+                        ${paymentMethod === opt.id ? "border-[#C59D5F]" : "border-[#c4b4a7]"}`}
                       >
-                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0
-                          ${paymentMethod === opt.id ? "border-[#C59D5F]" : "border-[#c4b4a7]"}`}
-                        >
-                          {paymentMethod === opt.id && <div className="w-2 h-2 rounded-full bg-[#C59D5F]" />}
+                        {paymentMethod === opt.id && <div className="w-2 h-2 rounded-full bg-[#C59D5F]" />}
+                      </div>
+                      <input type="radio" name="payment" className="sr-only" checked={paymentMethod === opt.id} onChange={() => setPaymentMethod(opt.id)} />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-[#2d1a10] text-sm">{opt.label}</span>
+                          {opt.badge && (
+                            <span className="text-[9px] font-bold uppercase tracking-wider bg-[#C59D5F] text-white px-1.5 py-0.5 rounded-full">{opt.badge}</span>
+                          )}
                         </div>
-                        <input type="radio" name="payment" className="sr-only" checked={paymentMethod === opt.id} onChange={() => setPaymentMethod(opt.id)} />
-                        <span className="font-medium text-[#2d1a10] text-sm">{opt.label}</span>
-                      </label>
-
-                      {/* Expanded fields */}
-                      {paymentMethod === "card" && opt.id === "card" && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          className="mt-2 px-4 pb-4 space-y-3 overflow-hidden"
-                        >
-                          <input placeholder="Card Number" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
-                          <div className="grid grid-cols-2 gap-3">
-                            <input placeholder="MM / YY" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
-                            <input placeholder="CVV" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
-                          </div>
-                        </motion.div>
-                      )}
-                      {paymentMethod === "upi" && opt.id === "upi" && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          className="mt-2 px-4 pb-4 overflow-hidden"
-                        >
-                          <input placeholder="UPI ID (e.g. name@upi)" className="w-full border border-[#e0d5cc] rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] transition-all" required />
-                        </motion.div>
-                      )}
-                    </div>
+                        <p className="text-xs text-[#a78b71] mt-0.5">{opt.sub}</p>
+                      </div>
+                    </label>
                   ))}
                 </div>
+
+                {paymentMethod === "razorpay" && (
+                  <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 flex items-center gap-2 text-xs text-[#9c8272] bg-[#f9f5f1] rounded-xl px-4 py-3">
+                    <ShieldCheck className="w-4 h-4 text-[#4CAF50] shrink-0" />
+                    Your payment is 256-bit SSL encrypted & secured by Razorpay PCI DSS compliance
+                  </motion.p>
+                )}
               </Section>
             </motion.div>
           </div>
@@ -253,9 +368,9 @@ export default function CheckoutPage() {
               </div>
 
               {/* Items list */}
-              <ul className="divide-y divide-[#f5ede5] max-h-64 overflow-y-auto">
+              <ul className="divide-y divide-[#f5ede5] max-h-52 overflow-y-auto">
                 {cartItems.map((item) => (
-                  <li key={item.id} className="flex gap-3 px-6 py-4">
+                  <li key={item.id} className="flex gap-3 px-6 py-3">
                     <div className="w-12 h-12 rounded-lg overflow-hidden border border-[#e8ddd4] shrink-0">
                       <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                     </div>
@@ -268,11 +383,64 @@ export default function CheckoutPage() {
                 ))}
               </ul>
 
+              {/* Promo code */}
+              <div className="px-6 py-4 border-t border-[#f0e8e0]">
+                <AnimatePresence mode="wait">
+                  {appliedPromo ? (
+                    <motion.div
+                      key="applied"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="flex items-center justify-between bg-[#f0faf5] border border-[#6dba9e] rounded-xl px-4 py-3"
+                    >
+                      <div className="flex items-center gap-2">
+                        <BadgeCheck className="w-4 h-4 text-[#2d9e6b]" />
+                        <div>
+                          <p className="text-xs font-bold text-[#2d9e6b]">{appliedPromo.code}</p>
+                          <p className="text-[10px] text-[#5c7a6a]">{appliedPromo.description || `${fmt(appliedPromo.discount)} off`}</p>
+                        </div>
+                      </div>
+                      <button type="button" onClick={removePromo} className="text-[#9c8272] hover:text-red-500 transition-colors">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div key="input" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex gap-2">
+                      <div className="relative flex-1">
+                        <Tag className="absolute left-3 top-2.5 w-3.5 h-3.5 text-[#b5a090]" />
+                        <input
+                          placeholder="Promo code"
+                          value={promoInput}
+                          onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyPromo())}
+                          className="w-full pl-9 pr-3 py-2.5 border border-[#e0d5cc] rounded-xl text-xs text-[#2d1a10] placeholder:text-[#c4b4a7] focus:outline-none focus:ring-2 focus:ring-[#C59D5F]/40 focus:border-[#C59D5F] bg-white transition-all tracking-widest font-mono"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleApplyPromo}
+                        disabled={promoLoading || !promoInput.trim()}
+                        className="px-3 py-2.5 bg-[#2d1a10] text-white text-xs font-semibold rounded-xl hover:bg-[#4a2c1d] transition-colors disabled:opacity-50 whitespace-nowrap flex items-center gap-1.5"
+                      >
+                        {promoLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : "Apply"}
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Totals */}
               <div className="px-6 py-4 border-t border-[#f0e8e0] space-y-2.5 text-sm">
                 <div className="flex justify-between text-[#7c6a58]">
                   <span>Subtotal</span><span>{fmt(subtotal)}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-[#2d9e6b] font-medium">
+                    <span>Discount ({appliedPromo?.code})</span>
+                    <span>−{fmt(discount)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-[#7c6a58]">
                   <span>Shipping</span>
                   {shippingPrice === 0
@@ -294,21 +462,24 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={isProcessing}
-                  className="w-full py-3.5 rounded-xl bg-[#2d1a10] text-white font-semibold text-sm hover:bg-[#4a2c1d] transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#2d1a10] to-[#5c3a1e] text-white font-semibold text-sm hover:from-[#4a2c1d] hover:to-[#7a4f2c] transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg hover:shadow-[0_8px_24px_rgba(45,26,16,0.4)]"
                 >
                   {isProcessing
-                    ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing…</>
-                    : `Pay ${fmt(total)}`
+                    ? <><Loader2 className="w-4 h-4 animate-spin" />Processing…</>
+                    : paymentMethod === "razorpay"
+                      ? <><CreditCard className="w-4 h-4" />Pay {fmt(total)} Securely</>
+                      : `Place Order · ${fmt(total)}`
                   }
                 </button>
                 <div className="flex items-center justify-center gap-5 text-[10px] text-[#a78b71]">
-                  <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> Secure</span>
+                  <span className="flex items-center gap-1"><ShieldCheck className="w-3 h-3" /> SSL Secured</span>
                   <span className="flex items-center gap-1">
                     <motion.span animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
                       <Truck className="w-3 h-3" />
                     </motion.span>
                     Fast Delivery
                   </span>
+                  <span className="flex items-center gap-1"><Gift className="w-3 h-3" /> Luxury Packing</span>
                 </div>
               </div>
             </div>
