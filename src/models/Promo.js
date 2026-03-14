@@ -68,7 +68,6 @@ const promoSchema = new mongoose.Schema(
   }
 );
 
-promoSchema.index({ code: 1 });
 promoSchema.index({ active: 1, expiresAt: 1 });
 
 export default mongoose.models.Promo || mongoose.model("Promo", promoSchema);
