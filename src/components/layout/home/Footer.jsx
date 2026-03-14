@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Instagram, Facebook, Twitter, ArrowRight, Mail, Phone, Linkedin, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -291,10 +291,15 @@ export default function EnhancedFooter() {
               Collections
             </h4>
             <ul className="space-y-2.5">
-              {["Shop All", "New Arrivals", "Best Sellers", "Custom Design"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
+              {[
+                { name: "Shop All", href: "/shop" },
+                { name: "New Arrivals", href: "/category/new" },
+                { name: "Best Sellers", href: "/category/best" },
+                { name: "About Us", href: "/about" }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
                     className="text-sm transition-all duration-300 flex items-center group"
                     style={{ color: "#7A5C4E" }}
                     onMouseEnter={e => (e.currentTarget.style.color = peach)}
@@ -304,8 +309,8 @@ export default function EnhancedFooter() {
                       className="h-px w-0 group-hover:w-3 mr-0 group-hover:mr-2 transition-all duration-300"
                       style={{ background: peach }}
                     />
-                    {link}
-                  </a>
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -317,10 +322,15 @@ export default function EnhancedFooter() {
               Support
             </h4>
             <ul className="space-y-2.5">
-              {["Shipping Info", "Returns", "Order Tracking", "Size Guide"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
+              {[
+                { name: "FAQ", href: "/faq" },
+                { name: "Offers", href: "/offers" },
+                { name: "Contact Us", href: "/contact" },
+                { name: "Size Guide", href: "/size-guide" }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
                     className="text-sm transition-all duration-300 flex items-center group"
                     style={{ color: "#7A5C4E" }}
                     onMouseEnter={e => (e.currentTarget.style.color = peach)}
@@ -330,8 +340,8 @@ export default function EnhancedFooter() {
                       className="h-px w-0 group-hover:w-3 mr-0 group-hover:mr-2 transition-all duration-300"
                       style={{ background: peach }}
                     />
-                    {link}
-                  </a>
+                    {link.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -421,16 +431,20 @@ export default function EnhancedFooter() {
           </p>
 
           <div className="flex items-center gap-6 text-xs" style={{ color: "#A07060" }}>
-            {["Privacy", "Terms", "Cookies"].map((l) => (
-              <a
-                key={l}
-                href="#"
+            {[
+              { name: "Privacy", href: "/privacy-policy" },
+              { name: "Terms", href: "/terms" },
+              { name: "Cookies", href: "#" }
+            ].map((l) => (
+              <Link
+                key={l.name}
+                href={l.href}
                 className="transition-colors"
                 onMouseEnter={e => (e.currentTarget.style.color = peach)}
                 onMouseLeave={e => (e.currentTarget.style.color = "#A07060")}
               >
-                {l}
-              </a>
+                {l.name}
+              </Link>
             ))}
           </div>
 

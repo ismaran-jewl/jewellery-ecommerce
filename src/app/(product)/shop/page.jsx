@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import {
     Heart, ShoppingCart, SlidersHorizontal, ChevronDown, X,
     Filter, Star, Truck, Shield, RotateCcw, Tag, ChevronRight,
-    Sparkles, ChevronUp, BadgeCheck
+    Sparkles, ChevronUp, BadgeCheck, Ruler
 } from "lucide-react";
 import Link from "next/link";
 import { useCart } from "@/hooks/useCart";
@@ -450,6 +450,13 @@ function HeroBanner() {
                             <Tag className="w-3 h-3" />
                             Up to 30% OFF
                         </div>
+                        <Link 
+                            href="/size-guide"
+                            className="flex items-center gap-2 border border-white/30 text-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-xs font-bold tracking-wide hover:bg-white/10 transition-colors"
+                        >
+                            <Ruler className="w-3 h-3 text-[#c4a882]" />
+                            SIZE GUIDE
+                        </Link>
                         <span className="text-white/35 text-[9px] sm:text-[10px] tracking-wider">No code · Auto-applied at checkout</span>
                     </div>
                 </div>
