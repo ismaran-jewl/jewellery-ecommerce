@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /user/
+Disallow: /*.json$
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+
+Sitemap: https://jewellery-ecommerce-iota.vercel.app/sitemap.xml
+
+# Crawl-delay for bots
+Crawl-delay: 1
+Request-rate: 1/1s

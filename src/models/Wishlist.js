@@ -19,4 +19,8 @@ const wishlistSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create indexes
+wishlistSchema.index({ user: 1 }, { unique: true });
+wishlistSchema.index({ updatedAt: 1 });
+
 export default mongoose.models.Wishlist || mongoose.model("Wishlist", wishlistSchema);

@@ -48,4 +48,12 @@ const ProductSchema = new mongoose.Schema(
   }
 );
 
+// Create indexes
+ProductSchema.index({ category: 1 });
+ProductSchema.index({ type: 1 });
+ProductSchema.index({ price: 1 });
+ProductSchema.index({ createdAt: -1 });
+ProductSchema.index({ stock: 1 });
+ProductSchema.index({ name: "text", description: "text" });
+
 export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

@@ -42,6 +42,18 @@ const orderSchema = new mongoose.Schema(
       update_time: String,
       email_address: String,
     },
+    // Razorpay payment fields
+    razorpayOrderId: {
+      type: String,
+    },
+    paymentId: {
+      type: String,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "authorized", "captured", "failed", "paid", "completed"],
+      default: "pending",
+    },
     itemsPrice: {
       type: Number,
       required: true,
@@ -88,5 +100,12 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Create indexes
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ razorpayOrderId: 1 });
+orderSchema.index({ paymentId: 1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ paymentStatus: 1 });
 
 export default mongoose.models.Order || mongoose.model("Order", orderSchema);

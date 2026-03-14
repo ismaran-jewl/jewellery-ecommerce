@@ -140,33 +140,35 @@ export default function GalleryPage() {
       <section className="max-w-7xl mx-auto px-4 md:px-6 py-8 md:py-24">
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 lg:gap-8">
           <AnimatePresence mode="popLayout">
-            {filteredCollections.map((collection, i) => (
+            {filteredCollections.map((collection, i) => {
+              // Find a real product to link to, or fallback to hash if loading/none found
+              const realProduct = products.find(p => p.category === collection.category) || products[i % products.length];
+              const linkHref = realProduct ? `/product/${realProduct._id || realProduct.id}` : "#";
+
+              return (
               <motion.div key={collection.id} layout initial={{ opacity: 0, scale: 0.95, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.5, delay: i * 0.07 }}
                 className={`relative overflow-hidden rounded-2xl cursor-pointer group ${i === 0 ? "md:col-span-2 h-[200px] md:h-[420px]" : i === 3 ? "lg:col-span-2 h-[180px] md:h-[380px]" : "h-[180px] md:h-[380px]"}`}
                 onMouseEnter={() => setHoveredId(`c-${collection.id}`)} onMouseLeave={() => setHoveredId(null)}>
-                <motion.img src={collection.image} alt={collection.name} animate={{ scale: hoveredId === `c-${collection.id}` ? 1.08 : 1 }} transition={{ duration: 0.8, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover" />
-                <div className="absolute inset-0 transition-opacity duration-500" style={{ background: `linear-gradient(to top, ${collection.accent}EE 0%, ${collection.accent}44 50%, transparent 100%)`, opacity: hoveredId === `c-${collection.id}` ? 0.95 : 0.75 }} />
-                <div className="absolute top-5 left-5 z-10">
-                  <span className="bg-[#FFDAB9]/90 text-[#2D5A40] text-xs font-sans font-bold tracking-widest uppercase px-3 py-1 rounded-full">{collection.tag}</span>
-                </div>
-                <div className="absolute top-5 right-5 z-10">
-                  <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-sans px-3 py-1 rounded-full">{collection.pieces} pieces</span>
-                </div>
-                <div className="absolute inset-0 p-4 md:p-7 flex flex-col justify-end z-10">
-                  <span className="hidden md:block text-[#FFDAB9]/80 text-xs font-sans tracking-[0.3em] uppercase mb-2">{collection.category}</span>
-                  <h3 className="text-lg md:text-4xl text-white mb-1 md:mb-3 leading-tight group-hover:-translate-y-1 transition-transform duration-300">{collection.name}</h3>
-                  <div className="hidden md:block overflow-hidden transition-all duration-500" style={{ maxHeight: hoveredId === `c-${collection.id}` ? "120px" : "0px" }}>
-                    <p className="text-white/80 font-sans text-sm leading-relaxed mb-4">{collection.desc}</p>
+                <Link href={linkHref} className="block w-full h-full">
+                  <motion.img src={collection.image} alt={collection.name} animate={{ scale: hoveredId === `c-${collection.id}` ? 1.08 : 1 }} transition={{ duration: 0.8, ease: "easeOut" }} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute inset-0 transition-opacity duration-500" style={{ background: `linear-gradient(to top, ${collection.accent}EE 0%, ${collection.accent}44 50%, transparent 100%)`, opacity: hoveredId === `c-${collection.id}` ? 0.95 : 0.75 }} />
+                  <div className="absolute top-5 left-5 z-10">
+                    <span className="bg-[#FFDAB9]/90 text-[#2D5A40] text-xs font-sans font-bold tracking-widest uppercase px-3 py-1 rounded-full">{collection.tag}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Button asChild className="bg-[#FFDAB9] text-[#2D5A40] hover:bg-white rounded-full px-3 py-1 md:px-6 md:py-2 text-xs md:text-sm font-sans flex items-center gap-1 group/btn transition-all w-fit">
-                      <Link href="/shop">View <span className="hidden md:inline">Collection</span> <ArrowUpRight size={13} className="group-hover/btn:rotate-45 transition-transform" /></Link>
-                    </Button>
+                  <div className="absolute top-5 right-5 z-10">
+                    <span className="bg-white/20 backdrop-blur-sm text-white text-xs font-sans px-3 py-1 rounded-full">{collection.pieces} pieces</span>
                   </div>
-                </div>
+                  <div className="absolute inset-0 p-4 md:p-7 flex flex-col justify-end z-10">
+                    <span className="hidden md:block text-[#FFDAB9]/80 text-xs font-sans tracking-[0.3em] uppercase mb-2">{collection.category}</span>
+                    <h3 className="text-lg md:text-4xl text-white mb-1 md:mb-3 leading-tight group-hover:-translate-y-1 transition-transform duration-300">{collection.name}</h3>
+                    <div className="hidden md:block overflow-hidden transition-all duration-500" style={{ maxHeight: hoveredId === `c-${collection.id}` ? "120px" : "0px" }}>
+                      <p className="text-white/80 font-sans text-sm leading-relaxed mb-4">{collection.desc}</p>
+                    </div>
+                  </div>
+                </Link>
                 <div className="absolute inset-4 border border-white/20 rounded-[1.5rem] pointer-events-none transition-opacity duration-500" style={{ opacity: hoveredId === `c-${collection.id}` ? 1 : 0 }} />
               </motion.div>
-            ))}
+            )})}
           </AnimatePresence>
         </motion.div>
       </section>
@@ -245,22 +247,22 @@ export default function GalleryPage() {
                     onMouseEnter={() => setHoveredId(`p-${pid}`)} onMouseLeave={() => setHoveredId(null)}>
 
                     {/* Image */}
-                    <Link href={`/product/${pid}`} className="block relative overflow-hidden h-36 sm:h-52 lg:h-60 shrink-0">
-                      <motion.img src={image} alt={name} animate={{ scale: hoveredId === `p-${pid}` ? 1.07 : 1 }} transition={{ duration: 0.7, ease: "easeOut" }} className="w-full h-full object-cover" />
-
+                    <div className="block relative overflow-hidden h-36 sm:h-52 lg:h-60 shrink-0">
+                      <Link href={`/product/${pid}`} className="block w-full h-full">
+                        <motion.img src={image} alt={name} animate={{ scale: hoveredId === `p-${pid}` ? 1.07 : 1 }} transition={{ duration: 0.7, ease: "easeOut" }} className="w-full h-full object-cover" />
+                        {/* Hover overlay — desktop only */}
+                        <div className={`hidden sm:flex absolute inset-0 bg-[#2D5A40]/80 items-center justify-center transition-opacity duration-300 ${hoveredId === `p-${pid}` ? "opacity-100" : "opacity-0"}`}>
+                          <span className="text-white font-sans text-xs tracking-widest uppercase border border-white/40 px-4 py-2 rounded-full flex items-center gap-2">
+                            View Details <ArrowUpRight size={13} />
+                          </span>
+                        </div>
+                      </Link>
                       {/* Wishlist */}
                       <button onClick={(e) => { e.preventDefault(); toggleWishlist(pid); }}
                         className="absolute top-2 right-2 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center transition-all hover:scale-110 z-10">
                         <Heart size={12} className={wishlist.includes(pid) ? "fill-[#8B5E6A] text-[#8B5E6A]" : "text-[#2D5A40]"} />
                       </button>
-
-                      {/* Hover overlay — desktop only */}
-                      <div className={`hidden sm:flex absolute inset-0 bg-[#2D5A40]/80 items-center justify-center transition-opacity duration-300 ${hoveredId === `p-${pid}` ? "opacity-100" : "opacity-0"}`}>
-                        <span className="text-white font-sans text-xs tracking-widest uppercase border border-white/40 px-4 py-2 rounded-full flex items-center gap-2">
-                          View Details <ArrowUpRight size={13} />
-                        </span>
-                      </div>
-                    </Link>
+                    </div>
 
                     {/* Info */}
                     <div className="p-2.5 sm:p-4 flex flex-col gap-1 flex-1">

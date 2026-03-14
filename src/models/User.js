@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
+      index: true,
     },
     passwordHash: {
       type: String,
@@ -30,5 +31,9 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Create indexes
+UserSchema.index({ createdAt: -1 });
+UserSchema.index({ email: 1 }, { unique: true });
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

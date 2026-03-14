@@ -411,8 +411,18 @@ function MobileFilterDrawer({ open, onClose, searchParams, availableFilters, onT
 function HeroBanner() {
     return (
         <div className="relative w-full rounded-3xl overflow-hidden mb-5 sm:mb-10">
-            {/* Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1a0e05] via-[#2d1a08] to-[#0f0804]" />
+            {/* Background Video */}
+            <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover z-0"
+                src="https://videos.pexels.com/video-files/3254013/3254013-hd.mp4"
+                poster="https://images.pexels.com/photos/1689731/pexels-photo-1689731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            />
+            {/* Overlay */}
+            <div className="absolute inset-0 bg-black/60 z-0" />
             {/* Noise texture overlay */}
             <div className="absolute inset-0 opacity-[0.04]"
                 style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E\")", backgroundSize: "200px" }} />

@@ -32,4 +32,8 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Create indexes
+cartSchema.index({ user: 1 }, { unique: true });
+cartSchema.index({ updatedAt: 1 });
+
 export default mongoose.models.Cart || mongoose.model("Cart", cartSchema);
