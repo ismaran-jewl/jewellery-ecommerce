@@ -8,7 +8,7 @@ export default function ClientWrapper({ children }) {
         <div className="flex flex-col min-h-screen bg-[#fffaf6]">
             <Navbar />
             <main className="flex-1 w-full">
-                <div className="">
+                <div className="max-w-8xl mx-auto min-h-full">
                     {children}
                 </div>
             </main>

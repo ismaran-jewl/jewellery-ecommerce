@@ -24,7 +24,7 @@ export default function ClientWrapper({ children }) {
                 </aside>
 
                 <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-                    <div className="max-w-7xl mx-auto min-h-full">
+                    <div className="max-w-8xl mx-auto min-h-full">
                         {/* 3. Keep children (the Shop Page) wrapped in Suspense in the page.js itself as we did before */}
                         {children}
                     </div>
