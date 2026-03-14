@@ -36,11 +36,9 @@ export default function TrustStrip() {
                 className="mb-4 w-14 h-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
                 style={{
                   background: i % 2 === 0
-                    ? "linear-gradient(135deg, #FFD4C2, #FFE8D6)"
-                    : "linear-gradient(135deg, #B7E4C7, #D8F3DC)",
-                  boxShadow: i % 2 === 0
-                    ? "0 6px 20px rgba(255,158,128,0.25)"
-                    : "0 6px 20px rgba(82,183,136,0.25)",
+                    ? "linear-gradient(135deg, #FAF5F2, #FDFBF7)"
+                    : "linear-gradient(135deg, #F5F5F0, #FAF9F6)",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.05)",
                 }}
               >
                 <item.icon

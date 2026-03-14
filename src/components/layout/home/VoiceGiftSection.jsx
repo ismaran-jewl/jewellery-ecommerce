@@ -72,7 +72,7 @@ function PhoneDemo() {
 
   return (
     <div className="relative mx-auto w-[200px] sm:w-[230px]">
-      <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-b from-[#FFD4C2]/40 via-[#C8EDDA]/30 to-[#FFD4C2]/20 blur-2xl" />
+      <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-b from-[#FAF5F2]/60 via-[#FDFBF7]/40 to-[#FAF9F6]/30 blur-2xl" />
 
       <div className="relative bg-white/75 backdrop-blur-xl rounded-[2.8rem] border border-white/90 shadow-2xl shadow-[#FFB899]/25 overflow-hidden aspect-[9/19]">
         <div className="absolute top-0 left-0 right-0 h-10 bg-white/40 flex items-center justify-center">
@@ -127,7 +127,7 @@ function PhoneDemo() {
                   <motion.div
                     animate={{ opacity: [0.7, 1, 0.7] }}
                     transition={{ duration: 2.5, repeat: Infinity }}
-                    className="absolute inset-0 bg-gradient-to-br from-[#FFD4C2]/60 to-[#B7E4C7]/60"
+                    className="absolute inset-0 bg-gradient-to-br from-[#FAF5F2]/60 to-[#F5F5F0]/60"
                   />
                   <motion.div
                     animate={{ scale: [1, 1.12, 1] }}

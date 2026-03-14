@@ -124,9 +124,9 @@ export default function Navbar({ onMenuClick }) {
 
   return (
     <>
-      <div className="sticky top-0 z-50 flex flex-col w-full bg-[#FFDAB9]/95 backdrop-blur transition-colors duration-300">
+      <div className="sticky top-0 z-50 flex flex-col w-full bg-white/95 backdrop-blur transition-colors duration-300">
         {/* Top Promotional Banner */}
-        <div className="bg-[#D1F2EB] text-[#1B4D3E] text-sm py-2.5 text-center tracking-wide font-medium overflow-hidden">
+        <div className="bg-[#FAF5F2] text-[#3D1F0D] text-sm py-2.5 text-center tracking-wide font-medium overflow-hidden">
           <motion.div
             animate={{ x: [0, 5, 0, -5, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}>

@@ -101,7 +101,7 @@ export default function HeroSection() {
         .hero-cursor *{cursor:none;}
       `}</style>
 
-      <section className="hero-cursor py-10 relative overflow-hidden flex flex-col md:grid md:grid-cols-2" style={{ background: "linear-gradient(160deg,#FFF5F0 0%,#FFE8D6 100%)" }}>
+      <section className="hero-cursor py-10 relative overflow-hidden flex flex-col md:grid md:grid-cols-2" style={{ background: "linear-gradient(160deg, #FDFBF7 0%, #FAF5F2 100%)" }}>
 
         <div className="relative z-10 flex flex-col justify-center px-8 pt-3 md:px-16 lg:px-24">
           <div className="flex items-center gap-3 mb-8"><div className="w-10 h-px" style={{ background: GOLD }} /><span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>Luxury Voice Gifting</span></div>
@@ -241,7 +241,7 @@ export default function HeroSection() {
       </section>
 
       {/* TICKER */}
-      <div className="py-6 border-y border-orange-100 bg-[#FFF9F5] overflow-hidden">
+      <div className="py-6 border-y border-stone-100 bg-[#FAF9F6] overflow-hidden">
         <div className="flex gap-16 whitespace-nowrap opacity-50" style={{ animation: "tickerScroll 30s linear infinite" }}>
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-16 uppercase tracking-[3px] text-[10px] font-bold text-stone-600">

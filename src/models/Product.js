@@ -33,6 +33,36 @@ const ProductSchema = new mongoose.Schema(
       enum: ["Women", "Men", "Unisex"],
       default: "Women",
     },
+    // Phase 2: Smart Pricing Engine fields
+    metalType: {
+      type: String,
+      enum: ["Gold", "Silver", "Platinum", "Rose Gold", "None"],
+      default: "None",
+    },
+    purity: {
+      type: String, // e.g., "22K", "18K", "925"
+      default: "",
+    },
+    metalWeight: {
+      type: Number, // in grams
+      default: 0,
+    },
+    diamondWeight: {
+      type: Number, // in carats
+      default: 0,
+    },
+    gemstoneValue: {
+      type: Number,
+      default: 0,
+    },
+    makingCharges: {
+      type: Number,
+      default: 0,
+    },
+    isPriceFixed: {
+      type: Boolean,
+      default: true,
+    },
     image: {
       type: String,
       required: true,
