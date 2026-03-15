@@ -2,7 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-const QR_LINK = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://jewellery-ecommerce-iota.vercel.app";
+import Link from "next/link";
+import { siteConfig } from "@/config/seo";
+
+const QR_LINK = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${siteConfig.url}`;
 
 const WAVE_BARS = [8, 18, 24, 14, 20, 10, 22, 16];
 
@@ -107,7 +110,11 @@ export default function HeroSection() {
           <div className="flex items-center gap-3 mb-8"><div className="w-10 h-px" style={{ background: GOLD }} /><span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>Luxury Voice Gifting</span></div>
           <h1 className="leading-[1.1] mb-4" style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(44px,6vw,80px)", color: TEXT_DARK }}>Gifts That <br /> <em style={{ fontStyle: "italic", color: GOLD }}>Speak Your</em> <br /><span style={{ WebkitTextStroke: `1.5px ${GOLD}`, color: "transparent" }}>Heart.</span></h1>
           <p className="mb-10 max-w-sm text-lg italic" style={{ fontFamily: "'Cormorant Garamond', serif", color: TEXT_MID }}>Personalize your jewelry with a hidden voice message accessible via our signature QR tech.</p>
-          <div className="flex flex-wrap gap-6"><button className="px-10 py-4 font-semibold tracking-widest uppercase text-[12px] shadow-2xl transition-all hover:-translate-y-1" style={{ background: GOLD, color: "#fff" }}>Shop Collection</button></div>
+          <div className="flex flex-wrap gap-6">
+            <Link href="/shop" className="px-10 py-4 font-semibold tracking-widest uppercase text-[12px] shadow-2xl transition-all hover:-translate-y-1 inline-block" style={{ background: GOLD, color: "#fff" }}>
+              Shop Collection
+            </Link>
+          </div>
         </div>
 
         <div className="relative flex items-center justify-center py-20 md:py-0">

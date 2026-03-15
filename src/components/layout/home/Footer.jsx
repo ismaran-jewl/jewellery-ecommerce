@@ -293,8 +293,8 @@ export default function EnhancedFooter() {
             <ul className="space-y-2.5">
               {[
                 { name: "Shop All", href: "/shop" },
-                { name: "New Arrivals", href: "/category/new" },
-                { name: "Best Sellers", href: "/category/best" },
+                { name: "New Arrivals", href: "/shop?sort=newest" },
+                { name: "Best Sellers", href: "/shop?sort=price-desc" },
                 { name: "About Us", href: "/about" }
               ].map((link) => (
                 <li key={link.name}>

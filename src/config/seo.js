@@ -1,13 +1,14 @@
 // src/config/seo.js
 
 export const siteConfig = {
-  name: "Jewellery E-Commerce",
-  description: "Discover exquisite handcrafted jewellery with timeless elegance and modern design. Premium collections for every occasion.",
+  name: "ISMARN Jewels",
+  description: "Exquisite handcrafted jewellery carrying your most precious memories through voice and video embedding. Luxury gold, diamond, and gemstone collections.",
   url: process.env.NEXTAUTH_URL || "https://jewellery-ecommerce-iota.vercel.app",
   image: "/images/og-image.jpg",
-  author: "Jewellery E-Commerce",
-  email: "contact@jewellery-ecommerce.com",
+  author: "ISMARN Jewels",
+  email: "ismarn.jewls@gmail.com",
 };
+
 
 export const getPageMetadata = {
   home: {
@@ -74,9 +75,9 @@ export const generateStructuredData = (type, data = {}) => {
         email: siteConfig.email,
       },
       sameAs: [
-        "https://www.facebook.com/jewelleryecommerce",
-        "https://www.instagram.com/jewelleryecommerce",
-        "https://www.twitter.com/jewelleryecom",
+        "https://www.facebook.com/profile.php?id=61588464684790",
+        "https://www.instagram.com/ismarn.jewels?igsh=amkyeTRydW45bHo4/",
+        "https://x.com/IsmarnJewls",
       ],
     },
     product: {

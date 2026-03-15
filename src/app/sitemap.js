@@ -2,8 +2,11 @@
 import connectDB from "@/lib/mongodb";
 import Product from "@/models/Product";
 
+import { siteConfig } from "@/config/seo";
+
 export default async function sitemap() {
-  const baseUrl = "https://jewellery-ecommerce-iota.vercel.app";
+  const baseUrl = siteConfig.url;
+
 
   // Static routes
   const staticRoutes = [

@@ -18,7 +18,7 @@ export async function GET(request) {
 
     // 1. Make category case-insensitive (matches "Men", "men", "MEN")
     if (category) {
-      query.category = { $regex: new RegExp(`^${category}$`, "i") };
+      query.category = { $regex: new RegExp(`^${category.replace(/s$/, '')}s?$`, "i") };
     }
     
     if (type) query.type = type;

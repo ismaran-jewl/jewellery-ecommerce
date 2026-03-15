@@ -5,8 +5,8 @@ import "@/app/globals.css";
 
 export const metadata = {
   title: {
-    default: "Jewellery E-Commerce | Premium Handcrafted Jewellery",
-    template: "%s | Jewellery E-Commerce",
+    default: "ISMARN Jewels | Luxury Handcrafted Memory Jewellery",
+    template: "%s | ISMARN Jewels",
   },
   description: siteConfig.description,
   keywords: ["jewellery", "gold", "diamonds", "bridal", "accessories", "luxury jewellery"],
@@ -16,20 +16,20 @@ export const metadata = {
     type: "website",
     locale: "en_IN",
     url: siteConfig.url,
-    title: "Jewellery E-Commerce | Premium Handcrafted Jewellery",
+    title: "ISMARN Jewels | Luxury Handcrafted Memory Jewellery",
     description: siteConfig.description,
     images: [
       {
         url: `${siteConfig.url}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "Jewellery E-Commerce",
+        alt: "ISMARN Jewels",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jewellery E-Commerce",
+    title: "ISMARN Jewels",
     description: siteConfig.description,
     images: [`${siteConfig.url}/og-image.jpg`],
   },

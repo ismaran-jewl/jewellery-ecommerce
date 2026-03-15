@@ -36,10 +36,10 @@ export default function Filters({
             {/* Filter Groups */}
             <div className="flex flex-col gap-6">
                 <FilterGroup 
-                    label="Category" 
-                    options={categories} 
-                    activeValues={activeFilters.category} 
-                    onToggle={(val) => onToggle("category", val)} 
+                    label="Jewellery Type" 
+                    options={types} 
+                    activeValues={activeFilters.type} 
+                    onToggle={(val) => onToggle("type", val)} 
                 />
                 <FilterGroup 
                     label="Gender" 
@@ -48,10 +48,10 @@ export default function Filters({
                     onToggle={(val) => onToggle("gender", val)} 
                 />
                 <FilterGroup 
-                    label="Occasion" 
-                    options={types} 
-                    activeValues={activeFilters.type} 
-                    onToggle={(val) => onToggle("type", val)} 
+                    label="Category" 
+                    options={categories} 
+                    activeValues={activeFilters.category} 
+                    onToggle={(val) => onToggle("category", val)} 
                 />
                 <FilterGroup 
                     label="Material" 

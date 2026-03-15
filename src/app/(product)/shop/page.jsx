@@ -36,7 +36,7 @@ export default async function Page({ searchParams }) {
 
   if (sp.category) {
     const cats = sp.category.split(",").map(c => c.trim());
-    filter.category = { $in: cats.map(c => new RegExp(`^${c}$`, "i")) };
+    filter.category = { $in: cats.map(c => new RegExp(`^${c.replace(/s$/, '')}s?$`, "i")) };
   }
 
   if (sp.type) {

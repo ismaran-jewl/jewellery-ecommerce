@@ -212,11 +212,11 @@ export default function Navbar({ onMenuClick }) {
                             <motion.div variants={itemVariants} className="space-y-3">
                               <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">By Category</h4>
                               <ul className="space-y-1">
-                                {['Rings', 'Necklaces', 'Earrings', 'Bracelets'].map((item) => (
-                                  <li key={item}>
+                                {[{label: 'Rings', value: 'ring'}, {label: 'Necklaces', value: 'necklace'}, {label: 'Earrings', value: 'earrings'}, {label: 'Bracelets', value: 'bracelet'}].map((item) => (
+                                  <li key={item.label}>
                                     <NavigationMenuLink asChild>
-                                      <Link href={`/shop?category=${item.toLowerCase()}`} className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">
-                                        {item}
+                                      <Link href={`/shop?type=${item.value}`} className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">
+                                        {item.label}
                                       </Link>
                                     </NavigationMenuLink>
                                   </li>
@@ -234,7 +234,7 @@ export default function Navbar({ onMenuClick }) {
                             <motion.div variants={itemVariants} className="space-y-3">
                               <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">Collections</h4>
                               <ul className="space-y-1">
-                                <li><NavigationMenuLink asChild><Link href="/category/new" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">New Arrivals</Link></NavigationMenuLink></li>
+                                <li><NavigationMenuLink asChild><Link href="/shop?sort=newest" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">New Arrivals</Link></NavigationMenuLink></li>
                                 <li><NavigationMenuLink asChild><Link href="/shop?type=wedding" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Wedding & Bridal</Link></NavigationMenuLink></li>
                                 <li><NavigationMenuLink asChild><Link href="/shop?material=gold" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Gold Essentials</Link></NavigationMenuLink></li>
                                 <li><NavigationMenuLink asChild><Link href="/shop?material=diamond" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Diamond Sparkle</Link></NavigationMenuLink></li>
@@ -252,7 +252,7 @@ export default function Navbar({ onMenuClick }) {
                                   Discover the pieces everyone is talking about.
                                 </p>
                                  <NavigationMenuLink asChild>
-                                  <Link href="/category/best" className="inline-block px-4 py-2 bg-[#1B4D3E] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#143a2f] transition-colors">
+                                  <Link href="/shop?sort=price-desc" className="inline-block px-4 py-2 bg-[#1B4D3E] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#143a2f] transition-colors">
                                     Shop Best Sellers
                                   </Link>
                                 </NavigationMenuLink>
@@ -456,10 +456,11 @@ export default function Navbar({ onMenuClick }) {
               </motion.div>
               <motion.div variants={itemVariants}>
                 <MobileNavAccordion title="Shop">
-                  <MobileNavLink href="/category/new" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">New Arrivals</MobileNavLink>
-                  <MobileNavLink href="/shop?category=rings" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Rings</MobileNavLink>
-                  <MobileNavLink href="/shop?category=necklaces" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Necklaces</MobileNavLink>
-                  <MobileNavLink href="/shop?category=earrings" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Earrings</MobileNavLink>
+                  <MobileNavLink href="/shop?sort=newest" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">New Arrivals</MobileNavLink>
+                   <MobileNavLink href="/shop?type=ring" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Rings</MobileNavLink>
+                  <MobileNavLink href="/shop?type=necklace" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Necklaces</MobileNavLink>
+                  <MobileNavLink href="/shop?type=earring" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Earrings</MobileNavLink>
+                  <MobileNavLink href="/shop?type=bracelet" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Bracelets</MobileNavLink>
                   <MobileNavLink href="/shop" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent font-semibold">All Jewellery</MobileNavLink>
                 </MobileNavAccordion>
               </motion.div>
