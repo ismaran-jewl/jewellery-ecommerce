@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Search, Loader2, RefreshCw } from "lucide-react";
 import { apiUrl } from "@/lib/fetcher";
+import { getImageUrl } from "@/lib/utils";
 
 const fmt = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
@@ -123,9 +124,29 @@ export default function AdminProductsPage() {
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1"><Label>Image URL</Label><Input value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} required /></div>
-                  <div className="space-y-1"><Label>Stock</Label><Input type="number" value={formData.stock} onChange={e => setFormData({ ...formData, stock: e.target.value })} /></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <Label>Image URL / Path</Label>
+                    <Input 
+                      value={formData.image} 
+                      onChange={e => setFormData({ ...formData, image: e.target.value })} 
+                      placeholder="e.g. https://ibb.co/... or /images/p1.jpg"
+                      required 
+                    />
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-2 border-2 border-dashed border-stone-100 rounded-lg bg-stone-50/50 min-h-[80px]">
+                    {formData.image ? (
+                      <img 
+                        src={getImageUrl(formData.image)} 
+                        alt="Preview" 
+                        className="h-16 w-16 object-cover rounded-md shadow-sm border border-white"
+                        onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Invalid+URL"; }}
+                      />
+                    ) : (
+                      <span className="text-[10px] text-stone-400 font-medium italic">Image Preview</span>
+                    )}
+                  </div>
+                  <div className="space-y-1"><Label>Stock Units</Label><Input type="number" value={formData.stock} onChange={e => setFormData({ ...formData, stock: e.target.value })} placeholder="0" /></div>
                 </div>
                 <div className="flex justify-end gap-2 pt-2">
                   <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
@@ -149,7 +170,11 @@ export default function AdminProductsPage() {
               filtered.map(p => (
                 <tr key={p._id} className="hover:bg-stone-50/40">
                   <td className="px-6 py-4 flex items-center gap-3">
-                    <img src={p.image} className="w-10 h-10 rounded-lg object-cover border" />
+                    <img 
+                      src={getImageUrl(p.image)} 
+                      className="w-10 h-10 rounded-lg object-cover border" 
+                      onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Error"; }}
+                    />
                     <span className="font-semibold text-stone-800">{p.name}</span>
                   </td>
                   <td className="px-6 py-4"><span className="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium capitalize">{p.category}</span></td>

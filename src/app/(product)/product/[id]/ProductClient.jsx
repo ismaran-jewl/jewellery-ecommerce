@@ -15,6 +15,7 @@ import { useWishlist } from "@/hooks/useWishlist";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
+import { getImageUrl } from "@/lib/utils";
 
 // ── Image Zoom Component ─────────────────────────────────────
 function ImageZoom({ src, alt }) {
@@ -38,7 +39,7 @@ function ImageZoom({ src, alt }) {
       onMouseLeave={() => setZoomed(false)}
     >
       <img
-        src={src}
+        src={getImageUrl(src)}
         alt={alt}
         className="w-full h-full object-cover transition-transform duration-200"
         style={
@@ -597,7 +598,7 @@ export default function ProductClient({ product: initialProduct, id }) {
                   <Link href={`/product/${rp._id}`}>
                     <div className="aspect-[4/5] overflow-hidden bg-[#fdf6ef]">
                       <img
-                        src={rp.image}
+                        src={getImageUrl(rp.image)}
                         alt={rp.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />

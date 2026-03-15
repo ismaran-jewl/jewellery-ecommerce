@@ -12,9 +12,9 @@ export async function PUT(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
-    const { name, description, price, category, type, material, image, stock } = body;
+    const { name, description, price, category, type, material, gender, image, stock } = body;
 
     const updateData = {};
     if (name) updateData.name = name;
@@ -23,6 +23,7 @@ export async function PUT(request, { params }) {
     if (category) updateData.category = category;
     if (type) updateData.type = type;
     if (material) updateData.material = material;
+    if (gender) updateData.gender = gender;
     if (image) updateData.image = image;
     if (stock !== undefined) updateData.stock = parseInt(stock);
 
@@ -56,7 +57,7 @@ export async function DELETE(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
 
     const product = await Product.findByIdAndDelete(id);
 

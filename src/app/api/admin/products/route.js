@@ -34,14 +34,7 @@ export async function POST(request) {
     await dbConnect();
 
     const body = await request.json();
-    const { name, description, price, category, type, material, image, stock } = body;
-
-    if (!name || !price || !category || !type || !material || !image) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
+    const { name, description, price, category, type, material, gender, image, stock } = body;
 
     const product = new Product({
       name,
@@ -50,6 +43,7 @@ export async function POST(request) {
       category,
       type,
       material,
+      gender: gender || "Women",
       image,
       stock: stock ? parseInt(stock) : 0,
     });
