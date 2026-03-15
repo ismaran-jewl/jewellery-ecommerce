@@ -109,41 +109,42 @@ export default function ShopClient({ initialProducts, categories, types, materia
 
     return (
         <>
-            <div className="flex flex-col">
+            <div className="flex flex-col p-4">
                 <div className="w-full">
                     {/* Sorting and View Controls */}
-                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-                        <p className="text-sm text-gray-500">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
+                        <p className="text-xs sm:text-sm text-gray-500 order-2 sm:order-1">
                             Showing <span className="text-black font-bold">{sortedProducts.length}</span> unique pieces
                         </p>
                         
-                        <div className="flex items-center gap-6">
-                            <div className="hidden sm:flex items-center gap-2 pr-6 border-r border-gray-100">
+                        <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto order-1 sm:order-2">
+                            {/* View Mode Icons - Visible on small screens now too but smaller gap */}
+                            <div className="flex items-center gap-1 sm:gap-2 sm:pr-6 sm:border-r border-gray-100">
                                 <button 
                                     onClick={() => setViewMode("grid")}
                                     className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-black text-white" : "text-gray-400 hover:text-black"}`}
                                 >
-                                    <LayoutGrid size={18} />
+                                    <LayoutGrid size={16} />
                                 </button>
                                 <button 
                                     onClick={() => setViewMode("list")}
                                     className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-black text-white" : "text-gray-400 hover:text-black"}`}
                                 >
-                                    <List size={18} />
+                                    <List size={16} />
                                 </button>
                             </div>
 
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Sort By</span>
+                            <div className="flex items-center gap-2 sm:gap-3 bg-stone-50 sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-full sm:rounded-none border border-stone-200 sm:border-none">
+                                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Sort By</span>
                                 <select 
                                     value={sortBy} 
                                     onChange={(e) => setSortBy(e.target.value)}
-                                    className="bg-transparent text-sm font-bold text-gray-900 border-none focus:ring-0 cursor-pointer outline-none"
+                                    className="bg-transparent text-[11px] sm:text-sm font-bold text-gray-900 border-none focus:ring-0 cursor-pointer outline-none min-w-[100px]"
                                 >
-                                    <option value="newest">Newest First</option>
-                                    <option value="price-asc">Price: Low to High</option>
-                                    <option value="price-desc">Price: High to Low</option>
-                                    <option value="name-asc">Name: A-Z</option>
+                                    <option value="newest">Newest</option>
+                                    <option value="price-asc">Price: Low</option>
+                                    <option value="price-desc">Price: High</option>
+                                    <option value="name-asc">A-Z</option>
                                 </select>
                             </div>
                         </div>
@@ -158,9 +159,9 @@ export default function ShopClient({ initialProducts, categories, types, materia
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className={`grid gap-6 sm:gap-8 ${
+                                className={`grid gap-4 sm:gap-6 ${
                                     viewMode === "grid" 
-                                        ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
+                                        ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" 
                                         : "grid-cols-1"
                                 }`}
                             >

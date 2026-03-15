@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Search, Loader2, RefreshCw } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Loader2, RefreshCw, Upload, Image as ImageIcon } from "lucide-react";
 import { apiUrl } from "@/lib/fetcher";
 import { getImageUrl } from "@/lib/utils";
 
@@ -21,11 +21,41 @@ export default function AdminProductsPage() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isDialogOpen, setIsDialogOpen]     = useState(false);
   const [submitting, setSubmitting]         = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "", description: "", price: "", category: "",
     type: "", material: "", gender: "Women", image: "", stock: "",
   });
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/cloudinary", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFormData(prev => ({ ...prev, image: data.url }));
+        toast.success("Image uploaded to Cloudinary");
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Upload failed");
+      }
+    } catch (error) {
+      toast.error("Network error during upload");
+    } finally {
+      setImageUploading(false);
+    }
+  };
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -126,22 +156,44 @@ export default function AdminProductsPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <Label>Image URL / Path</Label>
-                    <Input 
-                      value={formData.image} 
-                      onChange={e => setFormData({ ...formData, image: e.target.value })} 
-                      placeholder="e.g. https://ibb.co/... or /images/p1.jpg"
-                      required 
-                    />
-                  </div>
-                  <div className="flex flex-col items-center justify-center p-2 border-2 border-dashed border-stone-100 rounded-lg bg-stone-50/50 min-h-[80px]">
-                    {formData.image ? (
-                      <img 
-                        src={getImageUrl(formData.image)} 
-                        alt="Preview" 
-                        className="h-16 w-16 object-cover rounded-md shadow-sm border border-white"
-                        onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Invalid+URL"; }}
+                    <Label className="flex justify-between items-center">
+                      <span>Image URL / Path</span>
+                      <label className={`text-[10px] font-bold uppercase cursor-pointer flex items-center gap-1 ${imageUploading ? "text-stone-400" : "text-stone-600 hover:text-stone-900"}`}>
+                        {imageUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                        {imageUploading ? "Uploading..." : "Upload to Cloudinary"}
+                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={imageUploading} />
+                      </label>
+                    </Label>
+                    <div className="relative">
+                      <Input 
+                        value={formData.image} 
+                        onChange={e => setFormData({ ...formData, image: e.target.value })} 
+                        placeholder="e.g. https://res.cloudinary.com/..."
+                        className="pr-9"
+                        required 
                       />
+                      <div className="absolute right-3 top-2.5">
+                        <ImageIcon className="w-4 h-4 text-stone-300" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center justify-center p-2 border-2 border-dashed border-stone-100 rounded-lg bg-stone-50/50 min-h-[80px] group relative">
+                    {formData.image ? (
+                      <>
+                        <img 
+                          src={getImageUrl(formData.image)} 
+                          alt="Preview" 
+                          className="h-16 w-16 object-cover rounded-md shadow-sm border border-white"
+                          onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Invalid+URL"; }}
+                        />
+                        <button 
+                          type="button"
+                          onClick={() => setFormData({ ...formData, image: "" })}
+                          className="absolute -top-1 -right-1 bg-white rounded-full p-0.5 shadow-sm border border-stone-100 text-stone-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </>
                     ) : (
                       <span className="text-[10px] text-stone-400 font-medium italic">Image Preview</span>
                     )}
