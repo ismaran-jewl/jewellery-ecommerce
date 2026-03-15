@@ -2,6 +2,8 @@ import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "@/components/providers/auth-provider";
 import { siteConfig, generateStructuredData } from "@/config/seo";
 import "@/app/globals.css";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: {
@@ -66,6 +68,8 @@ export default function RootLayout({ children }) {
           <main className="flex-1">
             {children}
           </main>
+          <Analytics />
+          <SpeedInsights />
         </AuthProvider>
       </body>
     </html>
