@@ -13,29 +13,28 @@ export default function Filters({
     activeCount
 }) {
     return (
-        <div className="flex flex-col gap-8 mb-10">
+        <div className="flex flex-col gap-4">
             {/* Header & Main Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1" style={{ fontFamily: "var(--font-playfair)" }}>
-                        Refine Your Search
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                    <Filter size={18} className="text-[#B8860B]" />
+                    <h2 className="text-lg font-bold text-gray-900" style={{ fontFamily: "var(--font-playfair)" }}>
+                        Filters
                     </h2>
-                    <p className="text-gray-500 text-sm">Find the perfect piece that resonates with your style.</p>
                 </div>
                 
                 {activeCount > 0 && (
                     <button 
                         onClick={onClearAll}
-                        className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors group"
+                        className="text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors"
                     >
-                        <X size={14} className="group-hover:rotate-90 transition-transform" />
-                        Clear All Filters
+                        Clear
                     </button>
                 )}
             </div>
 
             {/* Filter Groups */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-col gap-6">
                 <FilterGroup 
                     label="Category" 
                     options={categories} 
@@ -64,7 +63,7 @@ export default function Filters({
 
             {/* Active Tags (Horizontal Scroll on Mobile) */}
             {activeCount > 0 && (
-                <div className="flex flex-wrap gap-2 items-center border-t border-gray-100 pt-6">
+                <div className="flex flex-wrap gap-2 items-center pt-4 border-t border-gray-50">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mr-2">Active:</span>
                     {Object.entries(activeFilters).map(([key, values]) => 
                         values.map(val => (

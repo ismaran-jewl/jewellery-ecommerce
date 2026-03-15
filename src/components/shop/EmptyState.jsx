@@ -8,7 +8,7 @@ export default function EmptyState({ onClearAll }) {
         <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex flex-col items-center justify-center py-32 px-6 text-center bg-white rounded-[2rem] border border-gray-100 shadow-sm"
+            className="flex flex-col items-center justify-center py-20 px-6 text-center bg-white rounded-[2rem] border border-gray-100 shadow-sm"
         >
             <div className="w-20 h-20 bg-[#F9F6F3] rounded-full flex items-center justify-center mb-8 relative">
                 <Sparkles className="text-[#B8860B]" size={32} />

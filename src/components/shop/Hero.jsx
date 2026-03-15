@@ -5,7 +5,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 
 export default function Hero() {
     return (
-        <section className="relative w-full mb-12 sm:mb-20 overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-[#121212] min-h-[400px] flex items-center">
+        <section className="relative w-full mb-8 sm:mb-12 overflow-hidden rounded-[2rem] sm:rounded-[3rem] bg-[#121212] min-h-[400px] flex items-center">
             {/* Background Decorative Elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#B8860B]/20 blur-[120px] rounded-full" />

@@ -6,7 +6,7 @@ import { getImageUrl } from "@/lib/utils";
 
 export default function AdBanner() {
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -25,11 +25,11 @@ export default function AdBanner() {
                         <Sparkles size={12} className="text-[#B8860B]" />
                         <span className="text-[10px] text-[#B8860B] font-bold uppercase tracking-widest">Limited Edition</span>
                     </div>
-                    
+
                     <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
                         The Royal <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#B8860B] to-[#E6BE8A]">Solitaire</span> Collection
                     </h2>
-                    
+
                     <p className="text-gray-400 text-sm font-light mb-6">
                         Exquisite craftsmanship meeting timeless beauty. Get 15% off on your first bridal purchase.
                     </p>
@@ -44,8 +44,8 @@ export default function AdBanner() {
                     <div className="absolute inset-0 rounded-full border border-[#B8860B]/30 animate-[spin_10s_linear_infinite]" />
                     <div className="absolute inset-4 rounded-full border border-white/10" />
                     <div className="absolute inset-2 rounded-full overflow-hidden shadow-2xl border-4 border-[#121212]">
-                        <img 
-                            src={getImageUrl("https://drive.google.com/file/d/1cnliPXRXGTdt458rDrgOvL-yftZJ3U-C/view?usp=drivesdk")} 
+                        <img
+                            src={getImageUrl(" ")}
                             alt="Promotion"
                             className="w-full h-full object-cover"
                         />
