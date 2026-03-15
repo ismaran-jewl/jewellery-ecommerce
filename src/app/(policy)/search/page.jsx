@@ -52,7 +52,7 @@ export default function SearchPage() {
         background: "linear-gradient(160deg, #FFF5F0 0%, #F0FAF4 35%, #FFF8F5 60%, #F2FAF6 100%)"
       }}
     >
-      <div className="container mx-auto px-6 max-w-7xl">
+      <div className="container mx-auto px-6 max-w-8xl">
         {/* Header Section */}
         <div className="mb-16 text-center">
           <motion.div

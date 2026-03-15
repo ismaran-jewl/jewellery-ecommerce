@@ -64,7 +64,7 @@ export default async function Page({ searchParams }) {
 
   return (
     <main className="min-h-screen bg-[#FDFCFB]">
-      <div className="container mx-auto px-0 py-4 max-w-7xl">
+      <div className="container mx-auto px-0 py-4 max-w-8xl">
         <Suspense fallback={<ShopSkeleton />}>
           <ShopClient 
             initialProducts={products} 
