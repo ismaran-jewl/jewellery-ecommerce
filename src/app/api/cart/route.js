@@ -8,7 +8,7 @@ import Product from "@/models/Product"
 // GET — fetch the current user's cart with populated product data
 export async function GET() {
   const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session?.user?.id) return NextResponse.json({ items: [] })
 
   await connectDB()
 
@@ -37,7 +37,7 @@ export async function GET() {
 // POST — add an item or increment qty
 export async function POST(req) {
   const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session?.user?.id) return NextResponse.json({ success: true, guest: true })
 
   const { productId, quantity = 1 } = await req.json()
   if (!productId) return NextResponse.json({ error: "productId required" }, { status: 400 })
@@ -70,7 +70,7 @@ export async function POST(req) {
 // PATCH — update quantity or attach a message to a cart item
 export async function PATCH(req) {
   const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session?.user?.id) return NextResponse.json({ success: true, guest: true })
 
   const { productId, quantity, message } = await req.json()
   if (!productId) return NextResponse.json({ error: "productId required" }, { status: 400 })
@@ -93,7 +93,7 @@ export async function PATCH(req) {
 // DELETE — remove one item or clear the whole cart
 export async function DELETE(req) {
   const session = await auth()
-  if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session?.user?.id) return NextResponse.json({ success: true, guest: true })
 
   const { productId, clearAll } = await req.json()
   await connectDB()

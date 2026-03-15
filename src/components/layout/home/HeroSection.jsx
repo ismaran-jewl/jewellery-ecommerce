@@ -117,21 +117,43 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center py-20 md:py-0">
-          <div className="relative w-[clamp(320px,45vw,560px)] aspect-[14/15]">
-            {/* 1. SCANNABLE QR CARD (NOW FRONT & CLEAR) */}
-            <div className="absolute top-[20px] right-[10px] md:top-[-20px] md:right-[20px] w-[160px] md:w-[200px] bg-white border border-orange-100 shadow-2xl p-4 flex flex-col items-center z-40"
-              style={{ animation: "qrFloat 6s ease-in-out infinite", borderRadius: "24px" }}>
-              <div className="mb-3 text-[9px] uppercase tracking-widest text-orange-800 font-bold">Scan the Surprise</div>
-              <div className="w-full aspect-square bg-stone-50 p-2 border border-orange-50 mb-3">
+        <div className="relative flex items-center justify-center py-12 md:py-0 overflow-visible">
+          <div className={`${isMobile ? 'flex flex-col gap-8 w-full px-6 items-center' : 'relative w-[clamp(320px,45vw,560px)] aspect-[14/15]'}`}>
+            {/* 1. SCANNABLE QR CARD */}
+            <div className={`${isMobile ? 'w-full max-w-[280px] relative' : 'absolute top-[20px] right-[10px] md:top-[-20px] md:right-[20px] w-[160px] md:w-[200px] z-40'}`}
+              style={{ 
+                animation: "qrFloat 6s ease-in-out infinite", 
+                borderRadius: "24px",
+                background: "white",
+                border: "1px solid #ffedd5",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                padding: isMobile ? "24px" : "16px",
+                display: "flex",
+                flexDirection: "column",
+                itemsCenter: "center"
+              }}>
+              <div className="mb-3 text-[10px] md:text-[9px] uppercase tracking-widest text-orange-800 font-bold text-center">Scan the Surprise</div>
+              <div className="w-full aspect-square bg-stone-50 p-2 border border-orange-50 mb-3 mx-auto max-w-[120px]">
                 <img src={QR_LINK} alt="Scannable QR" className="w-full h-full transition-all" />
               </div>
-              <div className="text-[8px] text-stone-400 italic text-center">Open camera to hear the note</div>
+              <div className="text-[10px] md:text-[8px] text-stone-400 italic text-center">Open camera to hear the note</div>
             </div>
 
             {/* 2. MAIN ANNIVERSARY CARD */}
-            <div className="absolute top-1/2 left-1/2  w-[220px] h-[320px] md:w-[280px] md:h-[400px] bg-[#FFF0E6] border border-orange-100 shadow-2xl p-8 flex flex-col items-center justify-center text-center z-20"
-              style={{ animation: "heroFloat 5s ease-in-out infinite", borderRadius: "16px" }}>
+            <div className={`${isMobile ? 'w-full max-w-[320px] relative h-auto py-12' : 'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220px] h-[320px] md:w-[280px] md:h-[400px] z-20'}`}
+              style={{ 
+                animation: isMobile ? "floatUp 5s ease-in-out infinite" : "heroFloat 5s ease-in-out infinite", 
+                borderRadius: "16px",
+                background: "#FFF0E6",
+                border: "1px solid #ffedd5",
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                padding: "32px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+                justifyContent: "center"
+              }}>
               <div className="text-5xl mb-6">💍</div>
               <div className="mb-2 font-serif italic text-sm text-orange-800">The Keepsake</div>
               <p className="font-serif italic text-stone-700 leading-relaxed text-lg">"Happy Anniversary. This reminded me of your sparkle."</p>
@@ -140,45 +162,61 @@ export default function HeroSection() {
               </div>
             </div>
 
-            {/* 3. VOICE NOTE WAVE CARD */}
-            <FloatingCard className="top-[100px] left-[-30px] md:top-[120px] md:left-[-70px] min-w-[140px]" style={{ animation: "floatUp 7s ease-in-out infinite" }}>
-              <div style={{ fontSize: 9, letterSpacing: "2px", color: GOLD, textTransform: "uppercase", marginBottom: 6 }}>🎙️ Audio ID: 882</div>
-              <div className="flex items-center gap-[3px]" style={{ height: 20 }}>{WAVE_BARS.map((h, i) => <WaveBar key={i} height={h} delay={i * 0.1} />)}</div>
-            </FloatingCard>
-
-            {/* 4. VALENTINE'S CARD */}
-            <FloatingCard className="top-[-60px] left-[60px] md:top-[-40px] md:left-[100px]" style={{ animation: "floatDown 6.5s ease-in-out infinite" }}>
-              <div className="flex items-center gap-2">
-                <span style={{ fontSize: 14 }}>❤️</span>
-                <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Valentine's Edit</span>
+            {/* FLEX GROUP FOR MOBILE FEATURES */}
+            {isMobile ? (
+              <div className="grid grid-cols-2 gap-4 w-full max-w-[320px]">
+                <div className="bg-white/70 backdrop-blur-md p-4 rounded-xl border border-orange-100 flex flex-col gap-2">
+                   <div style={{ fontSize: 9, letterSpacing: "1px", color: GOLD, textTransform: "uppercase" }}>🎙️ Audio ID: 882</div>
+                   <div className="flex items-center gap-[3px]" style={{ height: 16 }}>{WAVE_BARS.map((h, i) => <WaveBar key={i} height={h*0.7} delay={i * 0.1} />)}</div>
+                </div>
+                <div className="bg-white/70 backdrop-blur-md p-4 rounded-xl border border-orange-100 flex items-center justify-center gap-2">
+                  <span style={{ fontSize: 14 }}>❤️</span>
+                  <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Valentine</span>
+                </div>
+                <div className="bg-white/70 backdrop-blur-md p-4 rounded-xl border border-orange-100 flex items-center gap-2 col-span-2">
+                  <div className="w-5 h-5 rounded-full bg-orange-200 flex items-center justify-center text-[10px]">✨</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: GOLD }}>100% Artisan Made Luxury</div>
+                </div>
               </div>
-            </FloatingCard>
+            ) : (
+              <>
+                {/* 3. VOICE NOTE WAVE CARD */}
+                <FloatingCard className="top-[100px] left-[-30px] md:top-[120px] md:left-[-70px] min-w-[140px]" style={{ animation: "floatUp 7s ease-in-out infinite" }}>
+                  <div style={{ fontSize: 9, letterSpacing: "2px", color: GOLD, textTransform: "uppercase", marginBottom: 6 }}>🎙️ Audio ID: 882</div>
+                  <div className="flex items-center gap-[3px]" style={{ height: 20 }}>{WAVE_BARS.map((h, i) => <WaveBar key={i} height={h} delay={i * 0.1} />)}</div>
+                </FloatingCard>
 
-            {/* 5. DAUGHTER QUOTE CARD */}
-            <FloatingCard className="bottom-[40px] left-[-20px] md:bottom-[60px] md:left-[-50px] max-w-[160px]" style={{ animation: "floatUp 5.8s ease-in-out infinite" }}>
-              <div style={{ fontSize: 9, color: TEXT_DARK, fontStyle: "italic", lineHeight: "1.4" }}>"To my daughter, my pride..."</div>
-            </FloatingCard>
+                {/* 4. VALENTINE'S CARD */}
+                <FloatingCard className="top-[-60px] left-[60px] md:top-[-40px] md:left-[100px]" style={{ animation: "floatDown 6.5s ease-in-out infinite" }}>
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize: 14 }}>❤️</span>
+                    <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Valentine's Edit</span>
+                  </div>
+                </FloatingCard>
 
-            {/* 6. HAND-CRAFTED BADGE */}
-            <FloatingCard className="bottom-[-30px] right-[40px] md:bottom-[-10px] md:right-[100px] flex items-center gap-2" style={{ animation: "floatDown 5.2s ease-in-out infinite" }}>
-              <div className="w-5 h-5 rounded-full bg-orange-200 flex items-center justify-center text-[10px]">✨</div>
-              <div style={{ fontSize: 9, fontWeight: 700, color: GOLD }}>100% Artisan Made</div>
-            </FloatingCard>
+                {/* 5. DAUGHTER QUOTE CARD */}
+                <FloatingCard className="bottom-[40px] left-[-20px] md:bottom-[60px] md:left-[-50px] max-w-[160px]" style={{ animation: "floatUp 5.8s ease-in-out infinite" }}>
+                  <div style={{ fontSize: 9, color: TEXT_DARK, fontStyle: "italic", lineHeight: "1.4" }}>"To my daughter, my pride..."</div>
+                </FloatingCard>
 
-            {/* 7. DELIVERY CARD */}
-            {!isMobile && (
-              <FloatingCard className="bottom-[180px] right-[-60px] min-w-[140px]" style={{ animation: "floatUp 6.2s ease-in-out infinite" }}>
-                <div style={{ fontSize: 8, color: "rgba(61,31,13,0.5)", textTransform: "uppercase" }}>📦 Shipping</div>
-                <div style={{ fontSize: 10, color: GOLD, fontWeight: 700 }}>Arriving in 24h</div>
-              </FloatingCard>
-            )}
+                {/* 6. HAND-CRAFTED BADGE */}
+                <FloatingCard className="bottom-[-30px] right-[40px] md:bottom-[-10px] md:right-[100px] flex items-center gap-2" style={{ animation: "floatDown 5.2s ease-in-out infinite" }}>
+                  <div className="w-5 h-5 rounded-full bg-orange-200 flex items-center justify-center text-[10px]">✨</div>
+                  <div style={{ fontSize: 9, fontWeight: 700, color: GOLD }}>100% Artisan Made</div>
+                </FloatingCard>
 
-            {/* 8. RATING CARD */}
-            {!isMobile && (
-              <FloatingCard className="top-[180px] right-[-90px] min-w-[120px]" style={{ animation: "floatDown 7.2s ease-in-out infinite" }}>
-                <div style={{ color: GOLD, fontSize: 10 }}>★★★★★</div>
-                <div style={{ fontSize: 9, fontWeight: 600 }}>9k+ Happy Voices</div>
-              </FloatingCard>
+                {/* 7. DELIVERY CARD */}
+                <FloatingCard className="bottom-[180px] right-[-60px] min-w-[140px]" style={{ animation: "floatUp 6.2s ease-in-out infinite" }}>
+                  <div style={{ fontSize: 8, color: "rgba(61,31,13,0.5)", textTransform: "uppercase" }}>📦 Shipping</div>
+                  <div style={{ fontSize: 10, color: GOLD, fontWeight: 700 }}>Arriving in 24h</div>
+                </FloatingCard>
+
+                {/* 8. RATING CARD */}
+                <FloatingCard className="top-[180px] right-[-90px] min-w-[120px]" style={{ animation: "floatDown 7.2s ease-in-out infinite" }}>
+                  <div style={{ color: GOLD, fontSize: 10 }}>★★★★★</div>
+                  <div style={{ fontSize: 9, fontWeight: 600 }}>9k+ Happy Voices</div>
+                </FloatingCard>
+              </>
             )}
           </div>
         </div>

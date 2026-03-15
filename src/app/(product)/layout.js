@@ -16,7 +16,7 @@ export default function ClientWrapper({ children }) {
             <Navbar />
 
             <div className="flex flex-1 overflow-hidden relative">
-                <aside className="hidden md:block w-64 flex-none border-r border-[#1B4D3E]/10 overflow-y-auto bg-white">
+                <aside className="hidden lg:block w-64 flex-none border-r border-[#1B4D3E]/10 overflow-y-auto bg-white">
                     {/* 2. Wrap Sidebar in Suspense because it uses useSearchParams */}
                     <Suspense fallback={<div className="p-4 text-sm">Loading Filters...</div>}>
                         <Sidebar />
