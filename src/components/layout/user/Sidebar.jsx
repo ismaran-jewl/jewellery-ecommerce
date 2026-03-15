@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -11,6 +12,7 @@ import {
   Heart,
   LogOut,
   BarcodeIcon,
+  Shield,
 } from "lucide-react";
 
 const mainItems = [
@@ -20,8 +22,10 @@ const mainItems = [
   { icon: BarcodeIcon, label: "QR Code", href: "/qr-code" },
 ];
 
-export default function Sidebar({ user, onClose }) {
+export default function Sidebar({ onClose }) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const renderNavItem = (item) => {
     const isActive = pathname === item.href;
@@ -75,10 +79,21 @@ export default function Sidebar({ user, onClose }) {
 
       <nav className="space-y-2">
         {mainItems.map(renderNavItem)}
+        {user?.role === 'admin' && (
+          <Link
+            href=" /admin"
+            onClick={onClose}
+            className="group flex items-center rounded-xl px-4 py-3 text-sm font-bold text-blue-600 transition-all duration-300 hover:bg-blue-50"
+          >
+            <Shield className="mr-3 h-5 w-5" />
+            Admin Panel
+          </Link>
+        )}
       </nav>
 
       <div className="mt-auto pt-4 border-t">
         <button
+          onClick={() => signOut()}
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "w-full justify-start text-red-600"

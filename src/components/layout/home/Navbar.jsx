@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ShoppingBag, Heart, User, X, LayoutDashboard, LogOut, ShoppingCart, Menu, ChevronDown, ArrowRight, Instagram, Facebook, Twitter } from "lucide-react";
+import { Search, ShoppingBag, Heart, User, X, LayoutDashboard, LogOut, ShoppingCart, Menu, ChevronDown, ArrowRight, Instagram, Facebook, Twitter, Shield } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -212,7 +212,7 @@ export default function Navbar({ onMenuClick }) {
                             <motion.div variants={itemVariants} className="space-y-3">
                               <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">By Category</h4>
                               <ul className="space-y-1">
-                                {[{label: 'Rings', value: 'ring'}, {label: 'Necklaces', value: 'necklace'}, {label: 'Earrings', value: 'earrings'}, {label: 'Bracelets', value: 'bracelet'}].map((item) => (
+                                {[{ label: 'Rings', value: 'ring' }, { label: 'Necklaces', value: 'necklace' }, { label: 'Earrings', value: 'earrings' }, { label: 'Bracelets', value: 'bracelet' }].map((item) => (
                                   <li key={item.label}>
                                     <NavigationMenuLink asChild>
                                       <Link href={`/shop?type=${item.value}`} className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">
@@ -251,7 +251,7 @@ export default function Navbar({ onMenuClick }) {
                                 <p className="text-sm leading-tight text-[#1B4D3E]/80 mb-4">
                                   Discover the pieces everyone is talking about.
                                 </p>
-                                 <NavigationMenuLink asChild>
+                                <NavigationMenuLink asChild>
                                   <Link href="/shop?sort=price-desc" className="inline-block px-4 py-2 bg-[#1B4D3E] text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-[#143a2f] transition-colors">
                                     Shop Best Sellers
                                   </Link>
@@ -323,7 +323,7 @@ export default function Navbar({ onMenuClick }) {
                           </Link>
                         </NavigationMenuLink>
                       </NavigationMenuItem>
-                      
+
                       <NavigationMenuItem>
                         <NavigationMenuLink asChild>
                           <Link href="/about" className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-base font-medium transition-colors hover:bg-white/20 hover:text-[#1B4D3E] focus:bg-white/20 focus:text-[#1B4D3E] text-[#1B4D3E]">
@@ -406,6 +406,14 @@ export default function Navbar({ onMenuClick }) {
                           <span>Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
+                      {session?.user?.role === 'admin' && (
+                        <DropdownMenuItem asChild>
+                          <Link href=" /admin" className="cursor-pointer flex items-center text-blue-600 focus:text-blue-600">
+                            <Shield className="mr-2 h-4 w-4" />
+                            <span>Admin Dashboard</span>
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem asChild>
                         <Link href="/shop" className="cursor-pointer flex items-center">
                           <ShoppingCart className="mr-2 h-4 w-4" />
@@ -457,7 +465,7 @@ export default function Navbar({ onMenuClick }) {
               <motion.div variants={itemVariants}>
                 <MobileNavAccordion title="Shop">
                   <MobileNavLink href="/shop?sort=newest" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">New Arrivals</MobileNavLink>
-                   <MobileNavLink href="/shop?type=ring" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Rings</MobileNavLink>
+                  <MobileNavLink href="/shop?type=ring" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Rings</MobileNavLink>
                   <MobileNavLink href="/shop?type=necklace" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Necklaces</MobileNavLink>
                   <MobileNavLink href="/shop?type=earring" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Earrings</MobileNavLink>
                   <MobileNavLink href="/shop?type=bracelet" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Bracelets</MobileNavLink>
@@ -474,6 +482,11 @@ export default function Navbar({ onMenuClick }) {
               <motion.div variants={itemVariants}>
                 <MobileNavLink href="/offers" closeMenu={() => setIsMenuOpen(false)}>Offers</MobileNavLink>
               </motion.div>
+              {session?.user?.role === 'admin' && (
+                <motion.div variants={itemVariants}>
+                  <MobileNavLink href=" /admin" closeMenu={() => setIsMenuOpen(false)} className="text-blue-600 font-bold">Admin Dashboard</MobileNavLink>
+                </motion.div>
+              )}
               <motion.div variants={itemVariants}>
                 <MobileNavLink href="/contact" closeMenu={() => setIsMenuOpen(false)}>Contact</MobileNavLink>
               </motion.div>
