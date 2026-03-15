@@ -30,3 +30,22 @@ export function getImageUrl(url) {
 
   return url;
 }
+
+/**
+ * Generates a Cloudinary transformation URL
+ * @param {string} url - Original Cloudinary URL
+ * @param {Object} options - Transformation options
+ */
+export function getCloudinaryUrl(url, { width, height, crop = "fill", quality = "auto" } = {}) {
+  if (!url || !url.includes("cloudinary.com")) return url;
+  
+  const parts = url.split("/upload/");
+  if (parts.length !== 2) return url;
+  
+  let transformations = `q_${quality},f_auto`;
+  if (width) transformations += `,w_${width}`;
+  if (height) transformations += `,h_${height}`;
+  if (crop) transformations += `,c_${crop}`;
+  
+  return `${parts[0]}/upload/${transformations}/${parts[1]}`;
+}

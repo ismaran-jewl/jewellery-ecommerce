@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, Package, ShoppingCart, MessageSquare, Menu, X, Tag, HelpCircle
+  LayoutDashboard, Package, ShoppingCart, MessageSquare, Menu, X, Tag, HelpCircle, Image as ImageIcon
 } from "lucide-react";
 
 export default function AdminLayout({ children }) {
@@ -18,6 +18,7 @@ export default function AdminLayout({ children }) {
     { id: "promos",    icon: Tag,             label: "Promos",    href: "/admin/promos" },
     { id: "messages",  icon: MessageSquare,    label: "Messages",  href: "/admin/messages" },
     { id: "inquiries", icon: HelpCircle,       label: "Inquiries", href: "/admin/inquiries" },
+    { id: "gallery",   icon: ImageIcon,        label: "Gallery",   href: "/admin/gallery" },
   ];
 
   return (

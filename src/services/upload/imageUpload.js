@@ -1,5 +1,7 @@
 // src/services/upload/imageUpload.js
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+import cloudinary from "@/lib/cloudinary";
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB for Cloudinary
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export const validateImageFile = (file) => {
@@ -8,7 +10,7 @@ export const validateImageFile = (file) => {
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    return { valid: false, error: "File size exceeds 5MB limit" };
+    return { valid: false, error: "File size exceeds 10MB limit" };
   }
 
   if (!ALLOWED_MIME_TYPES.includes(file.type)) {
@@ -18,33 +20,71 @@ export const validateImageFile = (file) => {
   return { valid: true };
 };
 
-export const uploadImage = async (file) => {
-  // Validate file
-  const validation = validateImageFile(file);
-  if (!validation.valid) {
-    throw new Error(validation.error);
-  }
-
+/**
+ * Uploads an image to Cloudinary
+ * @param {string|Buffer|File} fileData - Base64 string, Buffer, or File object
+ * @param {string} folder - Cloudinary folder name
+ */
+export const uploadImage = async (fileData, folder = "jewellery") => {
   try {
-    const buffer = await file.arrayBuffer();
-    const base64 = Buffer.from(buffer).toString("base64");
-    const dataUrl = `data:${file.type};base64,${base64}`;
+    // If it's a File/Blob, we might need to convert it or handle it differently
+    // In Next.js API routes, we usually get a base64 or buffer
+    
+    const options = {
+      folder: folder,
+      resource_type: "auto",
+    };
+
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(fileData, options, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
 
     return {
       success: true,
-      url: dataUrl,
-      fileName: file.name,
+      url: result.secure_url,
+      publicId: result.public_id,
+      width: result.width,
+      height: result.height,
+      format: result.format,
     };
   } catch (error) {
-    console.error("Upload error:", error);
-    throw error;
+    console.error("Cloudinary upload error:", error);
+    throw new Error(error.message || "Failed to upload image to Cloudinary");
   }
 };
 
-export const deleteImage = async (imageUrl) => {
-  // For data URLs, no deletion needed
-  if (imageUrl.startsWith("data:")) {
-    return { success: true };
+/**
+ * Deletes an image from Cloudinary
+ * @param {string} publicId - The public ID of the image to delete
+ */
+export const deleteImage = async (publicId) => {
+  if (!publicId) return { success: true };
+  
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    return { success: result.result === "ok" };
+  } catch (error) {
+    console.error("Cloudinary delete error:", error);
+    return { success: false, error: error.message };
   }
-  return { success: true };
+};
+
+/**
+ * Lists resources from Cloudinary
+ */
+export const listImages = async (folder = "jewellery", maxResults = 50) => {
+  try {
+    const result = await cloudinary.api.resources({
+      type: 'upload',
+      prefix: folder,
+      max_results: maxResults,
+    });
+    return { success: true, images: result.resources };
+  } catch (error) {
+    console.error("Cloudinary list error:", error);
+    return { success: false, error: error.message };
+  }
 };
