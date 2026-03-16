@@ -11,12 +11,11 @@ export default function ClientWrapper({ children }) {
 
     return (
         <>
-        <div className="flex flex-col overflow-hidden bg-[#FFDAB9]/20">
-
+        <div className="flex flex-col bg-[#FFDAB9]/20 font-sans">
             <Navbar />
 
-            <div className="flex flex-1 overflow-hidden relative">
-                <aside className="hidden lg:block w-64 flex-none border-r border-[#1B4D3E]/10 overflow-y-auto bg-white">
+            <div className="flex flex-1 relative min-h-screen">
+                <aside className="hidden lg:block w-64 flex-none border-r border-[#1B4D3E]/10 bg-white sticky top-0 h-screen overflow-y-auto custom-scrollbar">
                     {/* 2. Wrap Sidebar in Suspense because it uses useSearchParams */}
                     <Suspense fallback={
                         <div className="p-6 space-y-8 animate-pulse">
@@ -36,16 +35,15 @@ export default function ClientWrapper({ children }) {
                     </Suspense>
                 </aside>
 
-                <main className="flex-1 custom-scrollbar overflow-hidden">
-                    <div className="max-w-8xl mx-auto h-full max-h-[85vh] overflow-y-auto scrollbar-thin">
+                <main className="flex-1">
+                    <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         {/* 3. Keep children (the Shop Page) wrapped in Suspense in the page.js itself as we did before */}
                         {children}
                     </div>
                 </main>
             </div>
-
         </div>
-            <Footer />
+        <Footer />
         </>
     );
 }

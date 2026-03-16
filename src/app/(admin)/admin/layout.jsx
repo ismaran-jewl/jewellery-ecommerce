@@ -29,7 +29,7 @@ export default function AdminLayout({ children }) {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:static inset-y-0 left-0 z-50 w-60 bg-white border-r border-stone-100 shadow-sm transform transition-transform duration-200 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+      <aside className={`fixed lg:sticky top-0 inset-y-0 left-0 z-50 w-60 bg-white border-r border-stone-100 shadow-sm transform transition-transform duration-200 ease-in-out h-screen overflow-y-auto ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         <div className="p-5 border-b border-stone-100">
           <h2 className="text-lg font-bold text-stone-800">Admin Panel</h2>
           <p className="text-[10px] text-stone-400 mt-0.5 uppercase tracking-wider">Store Management</p>
@@ -57,7 +57,7 @@ export default function AdminLayout({ children }) {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 flex flex-col h-screen overflow-y-auto">
+      <main className="flex-1 min-w-0 flex flex-col">
         {/* Header */}
         <header className="bg-white/90 backdrop-blur-sm border-b border-stone-100 px-5 py-3.5 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-3">

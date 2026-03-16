@@ -6,10 +6,10 @@ import Footer from "@/components/layout/home/Footer";
 export default function ClientWrapper({ children }) {
     return (
         <>
-        <div className="flex flex-col overflow-hidden bg-[#FFDAB9]/20">
+        <div className="flex flex-col bg-[#FFDAB9]/20">
             <Navbar />
-            <div className="flex flex-1 overflow-hidden relative">
-                <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+            <div className="flex flex-1 relative">
+                <main className="flex-1 p-4 md:p-8">
                     <div className="max-w-8xl mx-auto min-h-full">
                         {children}
                     </div>

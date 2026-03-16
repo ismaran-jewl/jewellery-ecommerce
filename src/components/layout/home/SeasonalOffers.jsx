@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Clock, ShoppingBag, X, Star } from "lucide-react";
+import Link from "next/link";
 
 /* ============================= */
 /* HORIZONTAL SCROLL COMPONENT  */
@@ -279,14 +280,16 @@ export default function SeasonalOffers() {
             <p className="text-xs md:text-base mb-4 md:mb-6" style={{ color: "#8A8A8A" }}>
               {isMobile ? "Scroll to explore our collection" : "Click any piece to explore the details"}
             </p>
-            <Button
-              size="lg"
-              className="rounded-full px-6 md:px-8 py-4 md:py-5 text-sm md:text-base w-full sm:w-auto border-0"
-              style={{ background: "#2D2D2D", color: "white" }}
-            >
-              Explore All
-              <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
-            </Button>
+            <Link href="/seasonal-edit" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="rounded-full px-6 md:px-8 py-4 md:py-5 text-sm md:text-base w-full sm:w-auto border-0"
+                style={{ background: "#2D2D2D", color: "white" }}
+              >
+                Explore All
+                <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+              </Button>
+            </Link>
           </motion.div>
 
           {isMobile && (
