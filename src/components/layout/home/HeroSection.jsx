@@ -186,13 +186,15 @@ export default function HeroSection() {
                   <div className="flex items-center gap-[3px]" style={{ height: 20 }}>{WAVE_BARS.map((h, i) => <WaveBar key={i} height={h} delay={i * 0.1} />)}</div>
                 </FloatingCard>
 
-                {/* 4. VALENTINE'S CARD */}
-                <FloatingCard className="top-[-60px] left-[60px] md:top-[-40px] md:left-[100px]" style={{ animation: "floatDown 6.5s ease-in-out infinite" }}>
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 14 }}>❤️</span>
-                    <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Valentine's Edit</span>
-                  </div>
-                </FloatingCard>
+                {/* 4. VALENTINE'S EDIT CARD */}
+                <Link href="/seasonal-edit">
+                  <FloatingCard className="top-[-60px] left-[60px] md:top-[-40px] md:left-[100px] cursor-pointer hover:scale-105 transition-transform" style={{ animation: "floatDown 6.5s ease-in-out infinite" }}>
+                    <div className="flex items-center gap-2">
+                      <span style={{ fontSize: 14 }}>✨</span>
+                      <span style={{ fontSize: 9, color: GOLD, fontWeight: 800, textTransform: "uppercase" }}>Seasonal Edit</span>
+                    </div>
+                  </FloatingCard>
+                </Link>
 
                 {/* 5. DAUGHTER QUOTE CARD */}
                 <FloatingCard className="bottom-[40px] left-[-20px] md:bottom-[60px] md:left-[-50px] max-w-[160px]" style={{ animation: "floatUp 5.8s ease-in-out infinite" }}>
@@ -260,8 +262,8 @@ export default function HeroSection() {
                     {tile.sub}
                   </p>
 
-                  <Link href="/shop" className="px-8 py-3 bg-white text-stone-900 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-stone-100 transition-all inline-block shadow-lg">
-                    Shop Collection
+                  <Link href="/seasonal-edit" className="px-8 py-3 bg-white text-stone-900 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-stone-100 transition-all inline-block shadow-lg">
+                    Discover Edit
                   </Link>
                 </div>
               </div>

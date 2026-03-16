@@ -76,13 +76,13 @@ export default function AdBanner() {
                         Discover pieces that transcend time. Hand-crafted with ethically sourced diamonds and 24K gold.
                     </motion.p>
 
-                    <Link href="/shop">
+                    <Link href="/seasonal-edit">
                         <motion.button 
                             whileHover={{ scale: 1.05, backgroundColor: "#D4AF37" }}
                             whileTap={{ scale: 0.95 }}
                             className="px-10 py-4 bg-[#B8860B] text-white rounded-full font-bold text-xs uppercase tracking-widest transition-all flex items-center gap-4 group shadow-xl shadow-black/40"
                         >
-                            Explore Curation
+                            Explore the Edit
                             <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                         </motion.button>
                     </Link>
