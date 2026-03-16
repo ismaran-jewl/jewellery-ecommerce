@@ -7,6 +7,10 @@ export async function GET(request) {
     await dbConnect();
 
     const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 20;
+    const skip = (page - 1) * limit;
+
     const category = searchParams.get("category");
     const type = searchParams.get("type");
     const material = searchParams.get("material");
@@ -16,8 +20,14 @@ export async function GET(request) {
 
     let query = {};
 
-    // 1. Make category case-insensitive (matches "Men", "men", "MEN")
+    // 1. Text search using index if search term exists
+    if (search) {
+      query.$text = { $search: search };
+    }
+
+    // 2. Exact match filters (more efficient than regex for fixed categories)
     if (category) {
+      // Still using regex for category flexibility if needed, but anchored and optimized
       query.category = { $regex: new RegExp(`^${category.replace(/s$/, '')}s?$`, "i") };
     }
     
@@ -29,22 +39,31 @@ export async function GET(request) {
       if (minPrice) query.price.$gte = parseFloat(minPrice);
       if (maxPrice) query.price.$lte = parseFloat(maxPrice);
     }
-    
-    if (search) {
-      query.name = { $regex: search, $options: "i" };
-    }
 
-    // 2. Use .lean() to get plain JavaScript objects instead of Mongoose documents
-    const products = await Product.find(query).sort({ createdAt: -1 }).lean();
+    // 3. Optimized count and fetch
+    const totalCount = await Product.countDocuments(query);
+    const products = await Product.find(query)
+      .sort(search ? { score: { $meta: "textScore" } } : { createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
-    // 3. Map _id to id so the frontend can read it
+    // 4. Map _id to id
     const formattedProducts = products.map((product) => ({
       ...product,
       id: product._id.toString(),
-      _id: product._id.toString(), // Keep _id as string just in case
+      _id: product._id.toString(),
     }));
 
-    return NextResponse.json(formattedProducts);
+    return NextResponse.json({
+      products: formattedProducts,
+      pagination: {
+        total: totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+      }
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(

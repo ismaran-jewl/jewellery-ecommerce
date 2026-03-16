@@ -21,8 +21,9 @@ export default function FeaturedProducts() {
         const response = await fetch(apiUrl("/api/products"));
         if (response.ok) {
           const data = await response.json();
-          if (Array.isArray(data) && data.length > 0) {
-            setProducts(data.slice(0, 3));
+          const productsArray = Array.isArray(data) ? data : data.products;
+          if (Array.isArray(productsArray) && productsArray.length > 0) {
+            setProducts(productsArray.slice(0, 3));
             setLoading(false);
             return;
           }

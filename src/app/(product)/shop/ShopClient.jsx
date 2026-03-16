@@ -16,12 +16,11 @@ import AdBanner from "@/components/shop/AdBanner";
 
 const ALL_FILTER_KEYS = ["gender", "category", "type", "material"];
 
-export default function ShopClient({ initialProducts, categories, types, materials }) {
+export default function ShopClient({ initialProducts, pagination, categories, types, materials }) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { data: session } = useSession();
 
-    const [sortBy, setSortBy] = useState(searchParams.get("sort") || "newest");
     const [viewMode, setViewMode] = useState("grid");
 
     const { cart, addToCart: addToCartHook, removeFromCart } = useCart();
@@ -29,7 +28,7 @@ export default function ShopClient({ initialProducts, categories, types, materia
 
     // URL Sync Logic
     const navigate = useCallback((params) => {
-        router.push(`?${params.toString()}`, { scroll: false });
+        router.push(`?${params.toString()}`, { scroll: true });
     }, [router]);
 
     const getParamValues = useCallback((key) => {
@@ -49,12 +48,27 @@ export default function ShopClient({ initialProducts, categories, types, materia
         if (next.length) params.set(key, next.join(","));
         else params.delete(key);
         
+        params.set("page", "1"); // Reset to page 1 on filter change
         navigate(params);
     }, [searchParams, getParamValues, navigate]);
+
+    const handleSortChange = (newSort) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("sort", newSort);
+        params.set("page", "1");
+        navigate(params);
+    };
+
+    const handlePageChange = (newPage) => {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set("page", newPage.toString());
+        navigate(params);
+    };
 
     const handleClearAll = useCallback(() => {
         const params = new URLSearchParams(searchParams.toString());
         ALL_FILTER_KEYS.forEach(k => params.delete(k));
+        params.set("page", "1");
         navigate(params);
     }, [searchParams, navigate]);
 
@@ -65,20 +79,6 @@ export default function ShopClient({ initialProducts, categories, types, materia
         });
         return filters;
     }, [getParamValues]);
-
-    const activeCount = useMemo(() => 
-        Object.values(activeFilters).reduce((sum, vals) => sum + vals.length, 0),
-    [activeFilters]);
-
-    // Client-side sorting for instant feedback
-    const sortedProducts = useMemo(() => {
-        let result = [...initialProducts];
-        if (sortBy === "price-asc") result.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-        else if (sortBy === "price-desc") result.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
-        else if (sortBy === "name-asc") result.sort((a, b) => a.name?.localeCompare(b.name));
-        else if (sortBy === "newest") result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        return result;
-    }, [initialProducts, sortBy]);
 
     const handleToggleWishlist = async (product) => {
         if (!session) {
@@ -114,11 +114,11 @@ export default function ShopClient({ initialProducts, categories, types, materia
                     {/* Sorting and View Controls */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
                         <p className="text-xs sm:text-sm text-gray-500 order-2 sm:order-1">
-                            Showing <span className="text-black font-bold">{sortedProducts.length}</span> unique pieces
+                            Showing <span className="text-black font-bold">{initialProducts.length}</span> of <span className="text-black font-bold">{pagination.total}</span> unique pieces
                         </p>
                         
                         <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto order-1 sm:order-2">
-                            {/* View Mode Icons - Visible on small screens now too but smaller gap */}
+                            {/* View Mode Icons */}
                             <div className="flex items-center gap-1 sm:gap-2 sm:pr-6 sm:border-r border-gray-100">
                                 <button 
                                     onClick={() => setViewMode("grid")}
@@ -137,8 +137,8 @@ export default function ShopClient({ initialProducts, categories, types, materia
                             <div className="flex items-center gap-2 sm:gap-3 bg-stone-50 sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-full sm:rounded-none border border-stone-200 sm:border-none">
                                 <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-400 whitespace-nowrap">Sort By</span>
                                 <select 
-                                    value={sortBy} 
-                                    onChange={(e) => setSortBy(e.target.value)}
+                                    value={searchParams.get("sort") || "newest"} 
+                                    onChange={(e) => handleSortChange(e.target.value)}
                                     className="bg-transparent text-[11px] sm:text-sm font-bold text-gray-900 border-none focus:ring-0 cursor-pointer outline-none min-w-[100px]"
                                 >
                                     <option value="newest">Newest</option>
@@ -151,45 +151,113 @@ export default function ShopClient({ initialProducts, categories, types, materia
                     </div>
 
                     <AnimatePresence mode="wait">
-                        {sortedProducts.length === 0 ? (
+                        {initialProducts.length === 0 ? (
                             <EmptyState key="empty" onClearAll={handleClearAll} />
                         ) : (
-                            <motion.div 
-                                key="grid"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className={`grid gap-4 sm:gap-6 ${
-                                    viewMode === "grid" 
-                                        ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" 
-                                        : "grid-cols-1"
-                                }`}
-                            >
-                                {sortedProducts.map((product, idx) => {
-                                    const isCartItem = cart?.some(item => item.id === product._id);
-                                    const isWishlisted = isInWishlist(product._id);
-                                    
-                                    return (
-                                        <Fragment key={product._id}>
-                                            <ProductCard 
-                                                product={product}
-                                                isCartItem={isCartItem}
-                                                isWishlisted={isWishlisted}
-                                                onToggleWishlist={() => handleToggleWishlist(product)}
-                                                onToggleCart={() => handleToggleCart(product)}
-                                            />
-                                            {/* Insert AdBanner after the 8th product in grid mode */}
-                                            {idx === 7 && viewMode === "grid" && (
-                                                <AdBanner key="promo-banner" />
-                                            )}
-                                        </Fragment>
-                                    );
-                                })}
-                                {/* If there are fewer than 8 products, show the banner at the end of the grid */}
-                                {sortedProducts.length < 8 && sortedProducts.length > 0 && viewMode === "grid" && (
-                                    <AdBanner key="promo-banner-end" />
+                            <div className="space-y-16">
+                                <motion.div 
+                                    key="grid-container"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="flex flex-col gap-12"
+                                >
+                                    {/* First Grid: up to 8 products */}
+                                    <div className={`grid gap-4 sm:gap-6 ${
+                                        viewMode === "grid" 
+                                            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" 
+                                            : "grid-cols-1"
+                                    }`}>
+                                        {initialProducts.slice(0, 8).map((product) => {
+                                            const isCartItem = cart?.some(item => item.id === product._id);
+                                            const isWishlisted = isInWishlist(product._id);
+                                            return (
+                                                <ProductCard 
+                                                    key={product._id}
+                                                    product={product}
+                                                    isCartItem={isCartItem}
+                                                    isWishlisted={isWishlisted}
+                                                    onToggleWishlist={() => handleToggleWishlist(product)}
+                                                    onToggleCart={() => handleToggleCart(product)}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Ad Banner: Full Width */}
+                                    {viewMode === "grid" && (
+                                        <div className="w-full">
+                                            <AdBanner />
+                                        </div>
+                                    )}
+
+                                    {/* Second Grid: remaining products */}
+                                    {initialProducts.length > 8 && (
+                                        <div className={`grid gap-4 sm:gap-6 ${
+                                            viewMode === "grid" 
+                                                ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6" 
+                                                : "grid-cols-1"
+                                        }`}>
+                                            {initialProducts.slice(8).map((product) => {
+                                                const isCartItem = cart?.some(item => item.id === product._id);
+                                                const isWishlisted = isInWishlist(product._id);
+                                                return (
+                                                    <ProductCard 
+                                                        key={product._id}
+                                                        product={product}
+                                                        isCartItem={isCartItem}
+                                                        isWishlisted={isWishlisted}
+                                                        onToggleWishlist={() => handleToggleWishlist(product)}
+                                                        onToggleCart={() => handleToggleCart(product)}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </motion.div>
+
+
+                                {/* Pagination Controls */}
+                                {pagination.totalPages > 1 && (
+                                    <div className="flex items-center justify-center gap-4 pt-8 border-t border-gray-100">
+                                        <button
+                                            onClick={() => handlePageChange(pagination.page - 1)}
+                                            disabled={pagination.page <= 1}
+                                            className="px-6 py-2 rounded-full bg-stone-100 text-stone-600 font-bold text-xs uppercase tracking-widest hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-stone-100 disabled:hover:text-stone-600 transition-all"
+                                        >
+                                            Previous
+                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            {[...Array(pagination.totalPages)].map((_, i) => {
+                                                const p = i + 1;
+                                                // Only show current, first, last, and one around current
+                                                if (p === 1 || p === pagination.totalPages || Math.abs(p - pagination.page) <= 1) {
+                                                    return (
+                                                        <button
+                                                            key={p}
+                                                            onClick={() => handlePageChange(p)}
+                                                            className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${pagination.page === p ? "bg-black text-white" : "hover:bg-stone-100 text-stone-400"}`}
+                                                        >
+                                                            {p}
+                                                        </button>
+                                                    );
+                                                }
+                                                if (p === 2 || p === pagination.totalPages - 1) {
+                                                    return <span key={p} className="text-stone-300">...</span>;
+                                                }
+                                                return null;
+                                            }).filter(Boolean)}
+                                        </div>
+                                        <button
+                                            onClick={() => handlePageChange(pagination.page + 1)}
+                                            disabled={pagination.page >= pagination.totalPages}
+                                            className="px-6 py-2 rounded-full bg-stone-100 text-stone-600 font-bold text-xs uppercase tracking-widest hover:bg-black hover:text-white disabled:opacity-50 disabled:hover:bg-stone-100 disabled:hover:text-stone-600 transition-all"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
                                 )}
-                            </motion.div>
+                            </div>
                         )}
                     </AnimatePresence>
                 </div>

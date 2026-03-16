@@ -18,7 +18,20 @@ export default function ClientWrapper({ children }) {
             <div className="flex flex-1 overflow-hidden relative">
                 <aside className="hidden lg:block w-64 flex-none border-r border-[#1B4D3E]/10 overflow-y-auto bg-white">
                     {/* 2. Wrap Sidebar in Suspense because it uses useSearchParams */}
-                    <Suspense fallback={<div className="p-4 text-sm">Loading Filters...</div>}>
+                    <Suspense fallback={
+                        <div className="p-6 space-y-8 animate-pulse">
+                            {[...Array(4)].map((_, i) => (
+                                <div key={i} className="space-y-4">
+                                    <div className="h-4 bg-gray-100 rounded w-24" />
+                                    <div className="space-y-2">
+                                        {[...Array(5)].map((_, j) => (
+                                            <div key={j} className="h-8 bg-gray-50 rounded-xl w-full" />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    }>
                         <Sidebar />
                     </Suspense>
                 </aside>

@@ -329,8 +329,11 @@ export default function ProductClient({ product: initialProduct, id }) {
   useEffect(() => {
     if (!product) return;
     fetch(`/api/products?category=${product.category}`)
-      .then((r) => r.ok ? r.json() : [])
-      .then((data) => setRelatedProducts(data.filter((p) => p._id !== product._id).slice(0, 4)))
+      .then((r) => r.ok ? r.json() : { products: [] })
+      .then((data) => {
+        const productsArray = Array.isArray(data) ? data : (data.products || []);
+        setRelatedProducts(productsArray.filter((p) => p._id !== product._id).slice(0, 4));
+      })
       .catch(console.error);
 
     // Recently viewed (localStorage)

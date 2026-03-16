@@ -256,9 +256,13 @@ export default function HeroSection() {
                     {tile.content}
                   </h3>
 
-                  <p className="text-white/80 font-serif italic text-lg md:text-2xl">
+                  <p className="text-white/80 font-serif italic text-lg md:text-2xl mb-8">
                     {tile.sub}
                   </p>
+
+                  <Link href="/shop" className="px-8 py-3 bg-white text-stone-900 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-stone-100 transition-all inline-block shadow-lg">
+                    Shop Collection
+                  </Link>
                 </div>
               </div>
             ))}
