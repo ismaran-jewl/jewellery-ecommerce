@@ -26,6 +26,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const menuVariants = {
   open: {
@@ -103,6 +104,8 @@ export default function Navbar({ onMenuClick }) {
   const { cart } = useCart();
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
 
+  const { content: cms } = useSiteContent("promo_banner");
+
   // ── HYDRATION FIX ──────────────────────────────────────────
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -135,7 +138,7 @@ export default function Navbar({ onMenuClick }) {
           <motion.div
             animate={{ x: [0, 5, 0, -5, 0] }}
             transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}>
-            <p>✨ Spring Sale is Live! Flat 20% off on Diamond Jewellery. Use Code: SPARKLE20 ✨</p>
+            <p>{cms?.title || "✨ Spring Sale is Live! Flat 20% off on Diamond Jewellery. Use Code: SPARKLE20 ✨"}</p>
           </motion.div>
         </div>
 

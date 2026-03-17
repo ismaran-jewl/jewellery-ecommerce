@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Camera, Instagram, Facebook, Twitter } from "lucide-react";
+import Link from "next/link";
 
 const stories = [
   {
@@ -238,26 +239,28 @@ export default function ShareYourStory() {
               <Camera className="mr-2 w-4 h-4 group-hover:rotate-12 transition-transform" />
               Upload Photo
             </Button>
-            <Button
-              variant="outline"
-              className="group h-14 px-10 rounded-full text-sm tracking-[0.15em] uppercase font-bold backdrop-blur-sm transition-all"
-              style={{
-                borderColor: "rgba(61, 31, 13, 0.15)",
-                background: "rgba(61, 31, 13, 0.05)",
-                color: "#3D1F0D",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,158,128,0.5)";
-                e.currentTarget.style.color = "#FF9E80";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(61, 31, 13, 0.15)";
-                e.currentTarget.style.color = "#3D1F0D";
-              }}
-            >
-              View Gallery
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href="/community">
+              <Button
+                variant="outline"
+                className="group h-14 px-10 rounded-full text-sm tracking-[0.15em] uppercase font-bold backdrop-blur-sm transition-all"
+                style={{
+                  borderColor: "rgba(61, 31, 13, 0.15)",
+                  background: "rgba(61, 31, 13, 0.05)",
+                  color: "#3D1F0D",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(255,158,128,0.5)";
+                  e.currentTarget.style.color = "#FF9E80";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(61, 31, 13, 0.15)";
+                  e.currentTarget.style.color = "#3D1F0D";
+                }}
+              >
+                View Gallery
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </div>

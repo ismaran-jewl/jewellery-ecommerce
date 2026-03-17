@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Clock, ShoppingBag, X, Star } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 /* ============================= */
 /* HORIZONTAL SCROLL COMPONENT  */
@@ -93,83 +95,15 @@ const HorizontalScroll = ({ items, onItemClick }) => {
 };
 
 /* ============================= */
-/* QUICK VIEW MODAL              */
-/* ============================= */
-const QuickView = ({ product, onClose }) => {
-  if (!product) return null;
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/40 backdrop-blur-md"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ y: "100%", opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: "100%", opacity: 0 }}
-        transition={{ type: "spring", damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-t-[2.5rem] md:rounded-[2.5rem] overflow-hidden max-w-4xl w-full shadow-2xl flex flex-col md:flex-row max-h-[90vh] md:max-h-[85vh]"
-      >
-        <div className="md:w-1/2 h-[300px] md:h-auto bg-gray-100 flex-shrink-0">
-          {product.type === "image" ? (
-            <img src={product.src} className="w-full h-full object-cover" alt="Product" />
-          ) : (
-            <video src={product.src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-          )}
-        </div>
-        <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-between relative overflow-y-auto">
-          <button onClick={onClose} className="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:bg-gray-100 rounded-full transition-colors z-10">
-            <X className="w-5 h-5 text-gray-400" />
-          </button>
-          <div>
-            <Badge className="w-fit mb-4 border-none px-3" style={{ background: "#FFE8D6", color: "#E07040" }}>
-              {product.label}
-            </Badge>
-            <h3 className="text-2xl md:text-4xl font-serif mb-2" style={{ color: "#2D2D2D" }}>
-              Signature Piece No. {product.id + 1}
-            </h3>
-            <div className="flex items-center gap-2 mb-6 text-orange-400">
-              {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
-              <span className="text-gray-400 text-sm ml-2">(48 Reviews)</span>
-            </div>
-            <p className="text-gray-500 text-base mb-8 leading-relaxed">
-              Experience the pinnacle of our {product.label.toLowerCase()} collection. Crafted with sustainable materials and designed for the modern silhouette.
-            </p>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-              <span className="text-3xl font-light" style={{ color: "#2D2D2D" }}>$189.00</span>
-              <div className="flex gap-2">
-                {["S", "M", "L"].map((size) => (
-                  <div key={size} className="w-10 h-10 border rounded-full flex items-center justify-center text-sm cursor-pointer hover:border-black transition-all">
-                    {size}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          <Button
-            className="w-full py-6 rounded-full text-lg border-0"
-            style={{ background: "linear-gradient(135deg, #FF9E80, #E8603C)", color: "white" }}
-          >
-            <ShoppingBag className="mr-2 w-5 h-5" />
-            Add to Bag
-          </Button>
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
-
-/* ============================= */
 /* MAIN COMPONENT                */
 /* ============================= */
 export default function SeasonalOffers() {
-  const [activeProduct, setActiveProduct] = useState(null);
+  const router = useRouter();
   const [mediaItems, setMediaItems] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ hours: 12, minutes: 45, seconds: 30 });
+
+  const { content: cms } = useSiteContent("seasonal_banner");
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -192,23 +126,52 @@ export default function SeasonalOffers() {
   }, []);
 
   useEffect(() => {
-    const items = [
-      { type: "image", src: "/images/product1.jpg", label: "New Arrival" },
-      { type: "video", src: "/videos/product1.mp4", label: "Live Demo" },
-      { type: "image", src: "/images/product2.jpg", label: "Limited Edition" },
-      { type: "image", src: "/images/product3.jpg", label: "Organic" },
-      { type: "video", src: "/videos/product2.mp4", label: "BTS" },
-      { type: "image", src: "/images/product4.jpg", label: "Best Seller" },
-      { type: "image", src: "/images/product5.jpg", label: "Trending" },
-      { type: "video", src: "/videos/product3.mp4", label: "Collection" },
-    ];
-    setMediaItems(items.map((item, i) => ({
-      ...item, id: i,
-      top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,
-      left: (i % 4) * 25 + Math.random() * 5,
-      size: 220 + Math.random() * 60,
-      rotate: -8 + Math.random() * 16,
-    })));
+    async function fetchProducts() {
+      try {
+        const res = await fetch("/api/products?homepageSection=Seasonal&limit=8");
+        const data = await res.json();
+        if (data.products && data.products.length > 0) {
+          const items = data.products.map((p) => {
+            const isVideo = p.image?.endsWith(".mp4");
+            return {
+              ...p,
+              type: isVideo ? "video" : "image",
+              src: p.image,
+              label: p.category, 
+            };
+          });
+          setMediaItems(items.map((item, i) => ({
+            ...item,
+            top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,
+            left: (i % 4) * 25 + Math.random() * 5,
+            size: 220 + Math.random() * 60,
+            rotate: -8 + Math.random() * 16,
+          })));
+        } else {
+          // Fallback if no db products
+          const backupItems = [
+            { type: "image", src: "/images/product1.jpg", label: "New Arrival", id: 1 },
+            { type: "video", src: "/videos/product1.mp4", label: "Live Demo", id: 2 },
+            { type: "image", src: "/images/product2.jpg", label: "Limited Edition", id: 3 },
+            { type: "image", src: "/images/product3.jpg", label: "Organic", id: 4 },
+            { type: "video", src: "/videos/product2.mp4", label: "BTS", id: 5 },
+            { type: "image", src: "/images/product4.jpg", label: "Best Seller", id: 6 },
+            { type: "image", src: "/images/product5.jpg", label: "Trending", id: 7 },
+            { type: "video", src: "/videos/product3.mp4", label: "Collection", id: 8 },
+          ];
+          setMediaItems(backupItems.map((item, i) => ({
+            ...item,
+            top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,
+            left: (i % 4) * 25 + Math.random() * 5,
+            size: 220 + Math.random() * 60,
+            rotate: -8 + Math.random() * 16,
+          })));
+        }
+      } catch (err) {
+        console.error("Failed to fetch seasonal products", err);
+      }
+    }
+    fetchProducts();
   }, []);
 
   return (
@@ -227,7 +190,7 @@ export default function SeasonalOffers() {
               whileHover={{ scale: 1.08, zIndex: 50, opacity: 1 }}
               style={{ top: `${item.top}%`, left: `${item.left}%`, width: item.size, rotate: `${item.rotate}deg` }}
               className="absolute pointer-events-auto cursor-pointer rounded-[1.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500"
-              onClick={() => setActiveProduct(item)}
+              onClick={() => router.push(`/product/${item._id || item.id}`)}
             >
               {item.type === "image" ? (
                 <img src={item.src} className="w-full aspect-[4/5] object-cover" alt="Product" />
@@ -255,29 +218,35 @@ export default function SeasonalOffers() {
             className="w-full max-w-2xl bg-white/50 backdrop-blur-xl p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl shadow-black/5 mb-6 md:mb-8 mx-4 md:mx-0 text-center"
           >
             <h2 className="text-2xl md:text-4xl font-serif mb-2 md:mb-3 leading-tight" style={{ color: "#2D2D2D" }}>
-              The{" "}
-              <span
-                className="italic"
-                style={{
-                  background: "linear-gradient(135deg, #FF9E80, #E8603C)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Seasonal
-              </span>
-              <br className="hidden md:block" /> Edit
+              {cms?.title ? (
+                <span dangerouslySetInnerHTML={{ __html: cms.title.replace("Seasonal", `<span class="italic" style="background: linear-gradient(135deg, #FF9E80, #E8603C); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Seasonal</span>`) }} />
+              ) : (
+                <>
+                  The{" "}
+                  <span
+                    className="italic"
+                    style={{
+                      background: "linear-gradient(135deg, #FF9E80, #E8603C)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    Seasonal
+                  </span>
+                  <br className="hidden md:block" /> Edit
+                </>
+              )}
             </h2>
             <p className="text-xs md:text-base mb-4 md:mb-6" style={{ color: "#8A8A8A" }}>
-              {isMobile ? "Scroll to explore our collection" : "Click any piece to explore the details"}
+              {cms?.subtitle || (isMobile ? "Scroll to explore our collection" : "Click any piece to explore the details")}
             </p>
-            <Link href="/seasonal-edit" className="w-full sm:w-auto">
+            <Link href={cms?.buttonLink || "/seasonal-edit"} className="w-full sm:w-auto">
               <Button
                 size="lg"
                 className="rounded-full px-6 md:px-8 py-4 md:py-5 text-sm md:text-base w-full sm:w-auto border-0"
                 style={{ background: "#2D2D2D", color: "white" }}
               >
-                Explore All
+                {cms?.buttonText || "Explore All"}
                 <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
               </Button>
             </Link>
@@ -285,7 +254,7 @@ export default function SeasonalOffers() {
 
           {isMobile && (
             <div className="w-full overflow-x-hidden">
-              <HorizontalScroll items={mediaItems} onItemClick={setActiveProduct} />
+              <HorizontalScroll items={mediaItems} onItemClick={(item) => router.push(`/product/${item._id || item.id}`)} />
             </div>
           )}
         </div>
@@ -320,7 +289,6 @@ export default function SeasonalOffers() {
       )}
 
       <AnimatePresence>
-        {activeProduct && <QuickView product={activeProduct} onClose={() => setActiveProduct(null)} />}
       </AnimatePresence>
     </section>
   );

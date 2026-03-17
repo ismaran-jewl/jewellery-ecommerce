@@ -1,20 +1,19 @@
-
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
-import SeasonalEditClient from "./SeasonalEditClient";
+import FeaturedClient from "./FeaturedClient";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Seasonal Edit 2026 | Curated Luxury Jewellery",
-  description: "Explore our handpicked seasonal edit featuring the finest solitaire diamonds, golden charms, and rare masterpieces.",
+  title: "Featured Collection | Curated Luxury Jewellery",
+  description: "Explore our most highly coveted and signature pieces, specially curated for you.",
 };
 
-export default async function SeasonalEditPage() {
+export default async function FeaturedPage() {
   await dbConnect();
 
-  // Fetch products tagged with "Seasonal" in their homepageSections array.
+  // Fetch products tagged with "Featured" in their homepageSections array.
   const products = await Product.find({
-    homepageSections: "Seasonal"
+    homepageSections: "Featured"
   }).lean();
 
   const formattedProducts = products.map(p => ({
@@ -26,14 +25,14 @@ export default async function SeasonalEditPage() {
 
   return (
     <main className="min-h-screen bg-[#FDFCFB]">
-        <Suspense fallback={<SeasonalSkeleton />}>
-          <SeasonalEditClient initialProducts={formattedProducts} />
+        <Suspense fallback={<FeaturedSkeleton />}>
+          <FeaturedClient initialProducts={formattedProducts} />
         </Suspense>
     </main>
   );
 }
 
-function SeasonalSkeleton() {
+function FeaturedSkeleton() {
   return (
     <div className="container mx-auto px-6 py-12 max-w-7xl animate-pulse">
       <div className="h-12 bg-gray-100 rounded-3xl w-1/3 mb-4 mx-auto" />

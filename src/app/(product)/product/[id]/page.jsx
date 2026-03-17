@@ -1,10 +1,18 @@
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
 import ProductClient from "./ProductClient";
+import mongoose from "mongoose";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata({ params }) {
   const { id } = await params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return {
+      title: "Product Not Found | Jewellery Store",
+    };
+  }
+
   await dbConnect();
   const product = await Product.findById(id).lean();
 
@@ -27,6 +35,11 @@ export async function generateMetadata({ params }) {
 
 export default async function Page({ params }) {
   const { id } = await params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    notFound();
+  }
+
   await dbConnect();
   
   const rawProduct = await Product.findById(id).lean();

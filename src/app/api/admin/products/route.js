@@ -34,7 +34,7 @@ export async function POST(request) {
     await dbConnect();
 
     const body = await request.json();
-    const { name, description, price, category, type, material, gender, image, stock } = body;
+    const { name, description, price, category, type, material, gender, image, stock, homepageSections } = body;
 
     const product = new Product({
       name,
@@ -46,6 +46,7 @@ export async function POST(request) {
       gender: gender || "Women",
       image,
       stock: stock ? parseInt(stock) : 0,
+      homepageSections: homepageSections || [],
     });
 
     await product.save();

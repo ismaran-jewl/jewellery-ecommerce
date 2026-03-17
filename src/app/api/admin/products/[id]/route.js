@@ -14,7 +14,7 @@ export async function PUT(request, { params }) {
 
     const { id } = await params;
     const body = await request.json();
-    const { name, description, price, category, type, material, gender, image, stock } = body;
+    const { name, description, price, category, type, material, gender, image, stock, homepageSections } = body;
 
     const updateData = {};
     if (name) updateData.name = name;
@@ -26,6 +26,7 @@ export async function PUT(request, { params }) {
     if (gender) updateData.gender = gender;
     if (image) updateData.image = image;
     if (stock !== undefined) updateData.stock = parseInt(stock);
+    if (homepageSections !== undefined) updateData.homepageSections = homepageSections;
 
     const product = await Product.findByIdAndUpdate(id, updateData, {
       new: true,

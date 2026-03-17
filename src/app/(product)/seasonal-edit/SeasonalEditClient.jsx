@@ -5,8 +5,46 @@ import { motion } from "framer-motion";
 import ProductCard from "@/components/shop/ProductCard";
 import { Sparkles, Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SeasonalEditClient({ initialProducts }) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { cart, addToCart: addToCartHook, removeFromCart } = useCart();
+  const { isInWishlist, toggleWishlist: toggleWishlistHook } = useWishlist();
+
+  const handleToggleWishlist = async (product) => {
+      if (!session) {
+          toast.error("Please login to save items to your wishlist", {
+              action: { label: "Login", onClick: () => router.push("/login") }
+          });
+          return;
+      }
+      try {
+          await toggleWishlistHook(product);
+      } catch (error) {
+          toast.error("Something went wrong. Please try again.");
+      }
+  };
+
+  const handleToggleCart = (product) => {
+      // cart items from hook usually have .id or ._id depending on structure
+      const isCartItem = cart?.some(item => item.id === product._id || item._id === product._id);
+      if (isCartItem) {
+          removeFromCart(product._id);
+          toast.success("Removed from bag");
+      } else {
+          addToCartHook(product, 1);
+          toast.success("Added to bag", {
+              action: { label: "View Bag", onClick: () => router.push("/cart") }
+          });
+      }
+  };
+
   return (
     <div className="relative">
       {/* Decorative Background Elements */}
@@ -70,24 +108,26 @@ export default function SeasonalEditClient({ initialProducts }) {
           transition={{ delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8"
         >
-          {initialProducts.map((product, idx) => (
-            <motion.div
-              key={product._id}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + (idx * 0.05) }}
-            >
-              <ProductCard 
-                product={product} 
-                // Note: isCartItem and isWishlisted logic shouldIdeally be managed via hooks globally
-                // but for this card display we'll pass false or handle internal state if hook available
-                isCartItem={false} 
-                isWishlisted={false}
-                onToggleWishlist={() => {}} // Placeholder: industry logic uses global hooks
-                onToggleCart={() => {}}
-              />
-            </motion.div>
-          ))}
+          {initialProducts.map((product, idx) => {
+            const isCartItem = cart?.some(item => item.id === product._id || item._id === product._id);
+            const isWishlisted = isInWishlist(product._id);
+            return (
+              <motion.div
+                key={product._id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + (idx * 0.05) }}
+              >
+                <ProductCard 
+                  product={product} 
+                  isCartItem={isCartItem} 
+                  isWishlisted={isWishlisted}
+                  onToggleWishlist={() => handleToggleWishlist(product)}
+                  onToggleCart={() => handleToggleCart(product)}
+                />
+              </motion.div>
+            );
+          })}
         </motion.div>
 
         {/* Featured Quote / Section Break */}

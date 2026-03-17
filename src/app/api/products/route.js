@@ -17,6 +17,7 @@ export async function GET(request) {
     const minPrice = searchParams.get("minPrice");
     const maxPrice = searchParams.get("maxPrice");
     const search = searchParams.get("search");
+    const homepageSection = searchParams.get("homepageSection");
 
     let query = {};
 
@@ -33,6 +34,7 @@ export async function GET(request) {
     
     if (type) query.type = type;
     if (material) query.material = material;
+    if (homepageSection) query.homepageSections = homepageSection;
     
     if (minPrice || maxPrice) {
       query.price = {};

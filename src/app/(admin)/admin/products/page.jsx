@@ -7,12 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Plus, Edit, Trash2, Search, Loader2, RefreshCw, Upload, Image as ImageIcon } from "lucide-react";
 import { apiUrl } from "@/lib/fetcher";
 import { getImageUrl } from "@/lib/utils";
 
 const fmt = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
+
+const HOMEPAGE_SECTIONS = ["Featured", "Seasonal", "VoiceGift", "Modern Minimalist", "The Bridal Suite", "Royal Heritage"];
 
 export default function AdminProductsPage() {
   const [products, setProducts]       = useState([]);
@@ -25,7 +28,7 @@ export default function AdminProductsPage() {
   
   const [formData, setFormData] = useState({
     name: "", description: "", price: "", category: "",
-    type: "", material: "", gender: "Women", image: "", stock: "",
+    type: "", material: "", gender: "Women", image: "", stock: "", homepageSections: [],
   });
 
   const handleImageUpload = async (e) => {
@@ -99,7 +102,7 @@ export default function AdminProductsPage() {
       name: p.name, description: p.description || "",
       price: p.price.toString(), category: p.category,
       type: p.type, material: p.material, gender: p.gender || "Women",
-      image: p.image, stock: p.stock.toString(),
+      image: p.image, stock: p.stock.toString(), homepageSections: p.homepageSections || [],
     });
     setIsDialogOpen(true);
   };
@@ -115,6 +118,52 @@ export default function AdminProductsPage() {
 
   const filtered = products.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase()));
 
+  const renderTable = (items) => (
+    <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-stone-50 text-[10px] uppercase text-stone-500 font-bold tracking-wider">
+          <tr><th className="px-6 py-3 text-left">Product</th><th className="px-6 py-3 text-left">Category</th><th className="px-6 py-3 text-left">Price</th><th className="px-6 py-3 text-left">Stock</th><th className="px-6 py-3 text-right">Actions</th></tr>
+        </thead>
+        <tbody className="divide-y divide-stone-100">
+          {loading ? [...Array(3)].map((_, i) => <tr key={i} className="animate-pulse"><td colSpan={5} className="p-6 h-12 bg-stone-50/50" /></tr>) :
+            items.length === 0 ? (
+              <tr><td colSpan={5} className="px-6 py-8 text-center text-stone-500">No products found</td></tr>
+            ) :
+            items.map(p => (
+              <tr key={p._id} className="hover:bg-stone-50/40">
+                <td className="px-6 py-4 flex items-center gap-3">
+                  {p.image?.endsWith('.mp4') ? (
+                    <video 
+                      src={getImageUrl(p.image)} 
+                      className="w-10 h-10 rounded-lg object-cover border" 
+                      autoPlay loop muted playsInline
+                    />
+                  ) : (
+                    <img 
+                      src={getImageUrl(p.image)} 
+                      className="w-10 h-10 rounded-lg object-cover border" 
+                      onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Error"; }}
+                    />
+                  )}
+                  <span className="font-semibold text-stone-800">{p.name}</span>
+                </td>
+                <td className="px-6 py-4"><span className="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium capitalize">{p.category}</span></td>
+                <td className="px-6 py-4 font-bold text-stone-800">{fmt(p.price)}</td>
+                <td className="px-6 py-4"><span className={`text-[10px] font-bold uppercase ${p.stock <= 5 ? "text-red-500" : "text-emerald-600"}`}>{p.stock} in stock</span></td>
+                <td className="px-6 py-4 text-right">
+                  <div className="flex justify-end gap-1">
+                    <button onClick={() => handleEdit(p)} className="p-1.5 hover:bg-stone-100 rounded text-stone-400 hover:text-stone-800"><Edit className="w-4 h-4" /></button>
+                    <button onClick={() => handleDelete(p._id)} className="p-1.5 hover:bg-red-50 rounded text-stone-300 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -126,7 +175,7 @@ export default function AdminProductsPage() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => { setEditingProduct(null); setFormData({ name: "", description: "", price: "", category: "", type: "", material: "", gender: "Women", image: "", stock: "" }); }} className="bg-stone-800 hover:bg-stone-900 text-white">
+              <Button onClick={() => { setEditingProduct(null); setFormData({ name: "", description: "", price: "", category: "", type: "", material: "", gender: "Women", image: "", stock: "", homepageSections: [] }); }} className="bg-stone-800 hover:bg-stone-900 text-white">
                 <Plus className="w-4 h-4 mr-2" /> Add
               </Button>
             </DialogTrigger>
@@ -154,6 +203,30 @@ export default function AdminProductsPage() {
                     </div>
                   ))}
                 </div>
+                
+                <div className="space-y-1">
+                  <Label>Homepage Assignment</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {HOMEPAGE_SECTIONS.map(section => (
+                      <label key={section} className="flex items-center space-x-2 bg-stone-50 border border-stone-200 px-3 py-1.5 rounded-md cursor-pointer hover:bg-stone-100 transition-colors">
+                        <input
+                          type="checkbox"
+                          className="rounded border-stone-300 text-stone-800 focus:ring-stone-800"
+                          checked={formData.homepageSections.includes(section)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData({ ...formData, homepageSections: [...formData.homepageSections, section] });
+                            } else {
+                              setFormData({ ...formData, homepageSections: formData.homepageSections.filter(s => s !== section) });
+                            }
+                          }}
+                        />
+                        <span className="text-xs font-medium text-stone-700">{section}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <Label className="flex justify-between items-center">
@@ -180,12 +253,20 @@ export default function AdminProductsPage() {
                   <div className="flex flex-col items-center justify-center p-2 border-2 border-dashed border-stone-100 rounded-lg bg-stone-50/50 min-h-[80px] group relative">
                     {formData.image ? (
                       <>
-                        <img 
-                          src={getImageUrl(formData.image)} 
-                          alt="Preview" 
-                          className="h-16 w-16 object-cover rounded-md shadow-sm border border-white"
-                          onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Invalid+URL"; }}
-                        />
+                        {formData.image.endsWith('.mp4') ? (
+                          <video 
+                            src={getImageUrl(formData.image)} 
+                            className="h-16 w-16 object-cover rounded-md shadow-sm border border-white"
+                            autoPlay loop muted playsInline
+                          />
+                        ) : (
+                          <img 
+                            src={getImageUrl(formData.image)} 
+                            alt="Preview" 
+                            className="h-16 w-16 object-cover rounded-md shadow-sm border border-white"
+                            onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Invalid+URL"; }}
+                          />
+                        )}
                         <button 
                           type="button"
                           onClick={() => setFormData({ ...formData, image: "" })}
@@ -212,38 +293,65 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-stone-50 text-[10px] uppercase text-stone-500 font-bold tracking-wider">
-            <tr><th className="px-6 py-3 text-left">Product</th><th className="px-6 py-3 text-left">Category</th><th className="px-6 py-3 text-left">Price</th><th className="px-6 py-3 text-left">Stock</th><th className="px-6 py-3 text-right">Actions</th></tr>
-          </thead>
-          <tbody className="divide-y divide-stone-100">
-            {loading ? [...Array(3)].map((_, i) => <tr key={i} className="animate-pulse"><td colSpan={5} className="p-6 h-12 bg-stone-50/50" /></tr>) :
-              filtered.map(p => (
-                <tr key={p._id} className="hover:bg-stone-50/40">
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img 
-                      src={getImageUrl(p.image)} 
-                      className="w-10 h-10 rounded-lg object-cover border" 
-                      onError={(e) => { e.target.src = "https://via.placeholder.com/150?text=Error"; }}
-                    />
-                    <span className="font-semibold text-stone-800">{p.name}</span>
-                  </td>
-                  <td className="px-6 py-4"><span className="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-stone-600 font-medium capitalize">{p.category}</span></td>
-                  <td className="px-6 py-4 font-bold text-stone-800">{fmt(p.price)}</td>
-                  <td className="px-6 py-4"><span className={`text-[10px] font-bold uppercase ${p.stock <= 5 ? "text-red-500" : "text-emerald-600"}`}>{p.stock} in stock</span></td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-1">
-                      <button onClick={() => handleEdit(p)} className="p-1.5 hover:bg-stone-100 rounded text-stone-400 hover:text-stone-800"><Edit className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(p._id)} className="p-1.5 hover:bg-red-50 rounded text-stone-300 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="all">All Products</TabsTrigger>
+          <TabsTrigger value="distribution">Storefront Distribution</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all" className="space-y-4">
+          {renderTable(filtered)}
+        </TabsContent>
+
+        <TabsContent value="distribution" className="space-y-12">
+          {/* Section 1: By Category (Main Pages) */}
+          <div className="space-y-6">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-1 bg-stone-800 rounded-full" />
+              <h3 className="text-xl font-bold text-stone-900">By Storefront Categories (Pages)</h3>
+            </div>
+            <div className="grid grid-cols-1 gap-8">
+              {["Rings", "Necklaces", "Earrings", "Bracelets", "Bangles", "Sets"].map(category => {
+                const categoryProducts = filtered.filter(p => p.category === category);
+                if (categoryProducts.length === 0) return null;
+                return (
+                  <div key={category} className="space-y-3">
+                    <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded w-fit">{category}</h4>
+                    {renderTable(categoryProducts)}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Section 2: By Homepage Sections */}
+          <div className="space-y-6 pt-6 border-t border-stone-200">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-1 bg-stone-800 rounded-full" />
+              <h3 className="text-xl font-bold text-stone-900">By Homepage Sections</h3>
+            </div>
+            <div className="grid grid-cols-1 gap-8">
+              {HOMEPAGE_SECTIONS.map(section => {
+                const sectionProducts = filtered.filter(p => p.homepageSections?.includes(section));
+                if (sectionProducts.length === 0) return null;
+                return (
+                  <div key={section} className="space-y-3">
+                    <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded w-fit">{section}</h4>
+                    {renderTable(sectionProducts) }
+                  </div>
+                );
+              })}
+              {filtered.filter(p => !p.homepageSections || p.homepageSections.length === 0).length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded w-fit">Unassigned</h4>
+                  {renderTable(filtered.filter(p => !p.homepageSections || p.homepageSections.length === 0))}
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
+

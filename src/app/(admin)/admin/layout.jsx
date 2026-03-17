@@ -11,73 +11,131 @@ export default function AdminLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
 
-  const navItems = [
-    { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
-    { id: "products",  icon: Package,         label: "Products",  href: "/admin/products" },
-    { id: "orders",    icon: ShoppingCart,     label: "Orders",    href: "/admin/orders" },
-    { id: "promos",    icon: Tag,             label: "Promos",    href: "/admin/promos" },
-    { id: "messages",  icon: MessageSquare,    label: "Messages",  href: "/admin/messages" },
-    { id: "inquiries", icon: HelpCircle,       label: "Inquiries", href: "/admin/inquiries" },
-    { id: "gallery",   icon: ImageIcon,        label: "Gallery",   href: "/admin/gallery" },
+  const menuGroups = [
+    {
+      title: "Main",
+      items: [
+        { id: "dashboard", icon: LayoutDashboard, label: "Overview", href: "/admin", sub: "Performance stats" },
+        { id: "orders",    icon: ShoppingCart,    label: "Sales",    href: "/admin/orders", sub: "Process orders" },
+      ]
+    },
+    {
+      title: "Catalog",
+      items: [
+        { id: "products",  icon: Package,         label: "Inventory", href: "/admin/products", sub: "Manage products" },
+        { id: "gallery",   icon: ImageIcon,        label: "Media",    href: "/admin/gallery", sub: "Imagery assets" },
+      ]
+    },
+    {
+      title: "Interaction",
+      items: [
+        { id: "messages",  icon: MessageSquare,    label: "Messages",  href: "/admin/messages", sub: "Customer chat" },
+        { id: "inquiries", icon: HelpCircle,       label: "Inquiries", href: "/admin/inquiries", sub: "Support tickets" },
+      ]
+    },
+    {
+      title: "Marketing",
+      items: [
+        { id: "promos",    icon: Tag,             label: "Campaigns", href: "/admin/promos", sub: "Promo & codes" },
+      ]
+    },
+    {
+      title: "Storefront",
+      items: [
+        { id: "content",   icon: LayoutDashboard, label: "Page Content", href: "/admin/content", sub: "Manage UI text" },
+      ]
+    }
   ];
 
+  const allNavItems = menuGroups.flatMap(g => g.items);
+
   return (
-    <div className="flex min-h-screen bg-stone-50">
+    <div className="flex min-h-screen bg-[#FBFBFB]">
       {/* Mobile overlay */}
       {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:sticky top-0 inset-y-0 left-0 z-50 w-60 bg-white border-r border-stone-100 shadow-sm transform transition-transform duration-200 ease-in-out h-screen overflow-y-auto ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        <div className="p-5 border-b border-stone-100">
-          <h2 className="text-lg font-bold text-stone-800">Admin Panel</h2>
-          <p className="text-[10px] text-stone-400 mt-0.5 uppercase tracking-wider">Store Management</p>
+      <aside className={`fixed lg:sticky top-0 inset-y-0 left-0 z-50 w-64 bg-white border-r border-stone-200/60 shadow-sm transform transition-transform duration-300 ease-in-out h-screen overflow-y-auto ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <div className="p-6">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-6 h-6 rounded-md bg-stone-900 flex items-center justify-center">
+              <span className="text-[10px] font-bold text-white">IG</span>
+            </div>
+            <h2 className="text-sm font-black text-stone-900 uppercase tracking-tighter">Ismaran Admin</h2>
+          </div>
+          <p className="text-[10px] text-stone-400 font-medium uppercase tracking-[0.2em] ml-8">v2.4 Final</p>
         </div>
-        <nav className="p-3 space-y-0.5">
-          {navItems.map(({ id, icon: Icon, label, href }) => {
-            const isActive = pathname === href;
-            return (
-              <Link
-                key={id}
-                href={href}
-                onClick={() => setIsSidebarOpen(false)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all text-sm font-medium ${
-                  isActive
-                    ? "bg-stone-800 text-white shadow-sm"
-                    : "text-stone-500 hover:bg-stone-100 hover:text-stone-800"
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {label}
-              </Link>
-            );
-          })}
+
+        <nav className="px-4 pb-8 space-y-6">
+          {menuGroups.map((group) => (
+            <div key={group.title} className="space-y-1">
+              <h3 className="px-3 text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-2">{group.title}</h3>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const isActive = pathname === item.href;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.id}
+                      href={item.href}
+                      onClick={() => setIsSidebarOpen(false)}
+                      className={`group flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${
+                        isActive
+                          ? "bg-stone-900 text-white shadow-md shadow-stone-200"
+                          : "text-stone-500 hover:bg-stone-50 hover:text-stone-900"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className={`w-4 h-4 ${isActive ? "text-white" : "text-stone-400 group-hover:text-stone-900"}`} />
+                        <div>
+                          <p className="text-sm font-semibold leading-none">{item.label}</p>
+                          <p className={`text-[10px] mt-1 font-medium ${isActive ? "text-stone-400" : "text-stone-300"}`}>{item.sub}</p>
+                        </div>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 flex flex-col">
         {/* Header */}
-        <header className="bg-white/90 backdrop-blur-sm border-b border-stone-100 px-5 py-3.5 flex items-center justify-between sticky top-0 z-30">
-          <div className="flex items-center gap-3">
-            <button className="lg:hidden p-1.5 hover:bg-stone-100 rounded-lg" onClick={() => setIsSidebarOpen(true)}>
+        <header className="bg-white/80 backdrop-blur-md border-b border-stone-200/50 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button className="lg:hidden p-2 hover:bg-stone-100 rounded-xl transition-colors" onClick={() => setIsSidebarOpen(true)}>
               <Menu className="w-5 h-5 text-stone-600" />
             </button>
             <div>
-              <h1 className="text-base font-bold text-stone-800">
-                {navItems.find(i => i.href === pathname)?.label || "Admin"}
+              <nav className="flex items-center gap-2 text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-0.5">
+                <span>Admin</span>
+                <span className="text-stone-200">/</span>
+                <span className="text-stone-900">{menuGroups.find(g => g.items.some(i => i.href === pathname))?.title || "System"}</span>
+              </nav>
+              <h1 className="text-lg font-black text-stone-900 tracking-tight leading-none">
+                {allNavItems.find(i => i.href === pathname)?.label || "Dashboard"}
               </h1>
-              <p className="text-[10px] text-stone-400 hidden sm:block">Jewellery Store Management</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-stone-800 text-white flex items-center justify-center text-xs font-bold">A</div>
+          
+          <div className="flex items-center gap-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs font-bold text-stone-900">Admin Account</p>
+              <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-tight">System Online</p>
+            </div>
+            <div className="w-10 h-10 rounded-2xl bg-stone-100 border border-stone-200 flex items-center justify-center overflow-hidden">
+               <span className="text-xs font-black text-stone-900">AD</span>
+            </div>
           </div>
         </header>
 
         {/* Dynamic Page Content */}
-        <div className="flex-1 p-5 sm:p-6">
+        <div className="flex-1 p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
           {children}
         </div>
       </main>

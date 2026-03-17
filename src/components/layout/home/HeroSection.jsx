@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Mic, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { siteConfig } from "@/config/seo";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const QR_LINK = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${siteConfig.url}`;
 const WAVE_BARS = [8, 18, 24, 14, 20, 10, 22, 16];
@@ -20,6 +21,8 @@ export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [current, setCurrent] = useState(0);
+
+  const { content: cms } = useSiteContent("home_hero");
 
   const next = () => setCurrent((p) => (p + 1) % HERO_SLIDES.length);
   const prev = () => setCurrent((p) => (p - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
@@ -41,6 +44,11 @@ export default function HeroSection() {
 
   const GOLD = "#B5622A";
 
+  const displayTitle = cms?.title || "Gifts That Speak Your Heart.";
+  const displaySub = cms?.subtitle || "Personalize your jewellery with a hidden voice message — accessible via our signature QR tech.";
+  const displayBtnText = cms?.buttonText || "Shop Collection";
+  const displayBtnLink = cms?.buttonLink || "/shop";
+
   return (
     <>
       <style>{`
@@ -55,7 +63,7 @@ export default function HeroSection() {
       {/* ═══════════════════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden"
-        style={{ minHeight: isMobile ? "50vh" : "50vh" }}
+        style={{ minHeight: isMobile ? "60vh" : "60vh" }}
       >
         {/* ── Background: Crossfading jewellery images ── */}
         {HERO_SLIDES.map((slide, idx) => (
@@ -67,7 +75,7 @@ export default function HeroSection() {
             <div
               className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out"
               style={{
-                backgroundImage: `url(${slide.img})`,
+                backgroundImage: `url(${cms?.imageUrl && idx === 0 ? cms.imageUrl : slide.img})`,
                 transform: current === idx ? "scale(1.06)" : "scale(1)",
               }}
             />
@@ -98,7 +106,7 @@ export default function HeroSection() {
               <div className="flex items-center gap-3 mb-6 md:mb-8">
                 <div className="w-10 h-px" style={{ background: GOLD }} />
                 <span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>
-                  Luxury Voice Gifting
+                   {cms?.metadata?.accent || "Luxury Voice Gifting"}
                 </span>
               </div>
 
@@ -106,28 +114,25 @@ export default function HeroSection() {
               <h1
                 className="leading-[1.05] mb-5 md:mb-6"
                 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(38px, 5.5vw, 76px)", color: "#3D1F0D" }}
-              >
-                Gifts That <br />
-                <em style={{ fontStyle: "italic", color: GOLD }}>Speak Your</em> <br />
-                Heart.
-              </h1>
+                dangerouslySetInnerHTML={{ __html: displayTitle.replace(/\n/g, '<br />') }}
+              />
 
               {/* Sub */}
               <p
                 className="mb-8 md:mb-10 max-w-sm text-base md:text-lg leading-relaxed"
                 style={{ fontFamily: "'Cormorant Garamond', serif", color: "#7A4528" }}
               >
-                Personalize your jewellery with a hidden voice message — accessible via our signature QR tech.
+                {displaySub}
               </p>
 
               {/* CTAs */}
               <div className="flex flex-wrap items-center gap-4 mb-8 md:mb-0">
                 <Link
-                  href="/shop"
+                  href={displayBtnLink}
                   className="px-8 md:px-10 py-3.5 md:py-4 font-semibold tracking-widest uppercase text-[11px] md:text-[12px] transition-all hover:-translate-y-0.5 hover:shadow-xl inline-block rounded-sm"
                   style={{ background: GOLD, color: "#fff", boxShadow: "0 8px 30px rgba(181,98,42,0.3)" }}
                 >
-                  Shop Collection
+                  {displayBtnText}
                 </Link>
                 <Link
                   href="/seasonal-edit"

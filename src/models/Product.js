@@ -33,6 +33,12 @@ const ProductSchema = new mongoose.Schema(
       enum: ["Women", "Men", "Unisex"],
       default: "Women",
     },
+    // NEW: homepageSections array to map products to specific homepage blocks
+    homepageSections: {
+      type: [String],
+      enum: ["Featured", "Seasonal", "VoiceGift", "Modern Minimalist", "The Bridal Suite", "Royal Heritage"],
+      default: [],
+    },
     // Phase 2: Smart Pricing Engine fields
     metalType: {
       type: String,
@@ -84,6 +90,7 @@ ProductSchema.index({ type: 1 });
 ProductSchema.index({ price: 1 });
 ProductSchema.index({ createdAt: -1 });
 ProductSchema.index({ stock: 1 });
+ProductSchema.index({ homepageSections: 1 });
 ProductSchema.index({ name: "text", description: "text" });
 
 export default mongoose.models.Product || mongoose.model("Product", ProductSchema);

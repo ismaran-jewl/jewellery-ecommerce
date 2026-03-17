@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Instagram, Facebook, Twitter, ArrowRight, Mail, Phone, Linkedin, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 // ─── Theme tokens ─────────────────────────────────────────────────────────────
 const peach = "#E8835A";
@@ -171,6 +172,12 @@ const itemVariants = {
 
 // ─── Footer ───────────────────────────────────────────────────────────────────
 export default function EnhancedFooter() {
+  const { content: cms } = useSiteContent("footer_info");
+
+  const displayStory = cms?.description || "Crafting stories in gems and jewels. Join 50,000+ style enthusiasts receiving our weekly curation of elegance.";
+  const displayEmail = cms?.metadata?.email || "ismarn.jewls@gmail.com";
+  const displayPhone = cms?.metadata?.phone || "+9648135763";
+
   return (
     <footer
       className="relative w-full overflow-hidden"
@@ -256,7 +263,7 @@ export default function EnhancedFooter() {
             </div>
 
             <p className="text-sm text-balance leading-relaxed max-w-sm" style={{ color: "#7A5C4E" }}>
-              Crafting stories in gems and jewels. Join 50,000+ style enthusiasts receiving our weekly curation of elegance.
+              {displayStory}
             </p>
 
             <div className="flex flex-col space-y-1.5">
@@ -362,7 +369,7 @@ export default function EnhancedFooter() {
                 >
                   <Mail className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-xs break-all">ismarn.jewls@gmail.com</span>
+                <span className="text-xs break-all">{displayEmail}</span>
               </div>
               <div className="flex items-center gap-3 cursor-pointer group">
                 <div
@@ -373,7 +380,7 @@ export default function EnhancedFooter() {
                 >
                   <Phone className="h-3.5 w-3.5" />
                 </div>
-                <span className="text-xs">+9648135763</span>
+                <span className="text-xs">{displayPhone}</span>
               </div>
             </div>
           </motion.div>

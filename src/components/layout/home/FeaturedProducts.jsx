@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { apiUrl } from "@/lib/fetcher";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
@@ -15,21 +16,26 @@ export default function FeaturedProducts() {
   const [addedProductId, setAddedProductId] = useState(null);
   const { addToCart } = useCart();
 
+  const { content: cms } = useSiteContent("featured_collection");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(apiUrl("/api/products"));
+        const response = await fetch(apiUrl("/api/products?homepageSection=Featured&limit=3"));
         if (response.ok) {
           const data = await response.json();
           const productsArray = Array.isArray(data) ? data : data.products;
           if (Array.isArray(productsArray) && productsArray.length > 0) {
-            setProducts(productsArray.slice(0, 3));
+            setProducts(productsArray);
             setLoading(false);
             return;
           }
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error("Failed to fetch featured products", err);
+      }
 
+      // Fallback
       setProducts([
         { id: 1, name: "Peach Sapphire Solitaire", price: "1,20,000", image: "https://i.pinimg.com/1200x/11/40/f9/1140f9933b0c265cd646744b5c00ac18.jpg" },
         { id: 2, name: "Rose Gold Temple Set", price: "85,000", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338" },
@@ -57,6 +63,9 @@ export default function FeaturedProducts() {
       </section>
     );
   }
+
+  const displayTitle = cms?.title || "The Signature Collection";
+  const displaySub = cms?.subtitle || "A curation of our most exquisite pieces, designed to define moments and transcend trends.";
 
   return (
     /* bg-transparent — background comes from the seamless canvas in page.jsx */
@@ -92,7 +101,7 @@ export default function FeaturedProducts() {
                       className="text-xs font-bold uppercase tracking-[0.3em] inline-block mr-2"
                       style={{ color: "rgba(180,90,40,0.8)" }}
                     >
-                      {word}
+                      {cms?.metadata?.accentWord || word}
                     </motion.span>
                   </span>
                 ))}
@@ -107,22 +116,28 @@ export default function FeaturedProducts() {
               className="text-3xl md:text-6xl lg:text-7xl font-serif leading-[0.9]"
               style={{ color: "#2D2D2D" }}
             >
-              <span className="inline-block overflow-hidden">
-                <motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="inline-block">The</motion.span>
-              </span>{" "}
-              <span className="inline-block overflow-hidden">
-                <motion.span
-                  variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }}
-                  className="italic font-light inline-block"
-                  style={{ color: "#E07040" }}
-                >
-                  Signature
-                </motion.span>
-              </span>
-              <br />
-              <span className="inline-block overflow-hidden">
-                <motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="inline-block">Collection</motion.span>
-              </span>
+              {cms?.title ? (
+                <span dangerouslySetInnerHTML={{ __html: cms.title.replace("Signature", `<span class="italic font-light" style="color: #E07040;">Signature</span>`).replace(/\n/g, '<br />') }} />
+              ) : (
+                <>
+                  <span className="inline-block overflow-hidden">
+                    <motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="inline-block">The</motion.span>
+                  </span>{" "}
+                  <span className="inline-block overflow-hidden">
+                    <motion.span
+                      variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }}
+                      className="italic font-light inline-block"
+                      style={{ color: "#E07040" }}
+                    >
+                      Signature
+                    </motion.span>
+                  </span>
+                  <br />
+                  <span className="inline-block overflow-hidden">
+                    <motion.span variants={{ hidden: { y: "100%" }, visible: { y: 0, transition: { duration: 0.8, ease: [0.2, 0.65, 0.3, 0.9] } } }} className="inline-block">Collection</motion.span>
+                  </span>
+                </>
+              )}
             </motion.h2>
           </div>
 
@@ -136,7 +151,7 @@ export default function FeaturedProducts() {
               className="text-xs md:text-sm leading-relaxed border-l-2 pl-4"
               style={{ color: "#7A8A82", borderColor: "rgba(82,183,136,0.3)" }}
             >
-              A curation of our most exquisite pieces, designed to define moments and transcend trends.
+              {displaySub}
             </p>
           </motion.div>
         </div>
@@ -213,7 +228,7 @@ export default function FeaturedProducts() {
 
         {/* Footer Action */}
         <div className="mt-8 md:mt-12 flex justify-center">
-          <Link href="/shop">
+          <Link href="/featured">
             <Button
               variant="ghost"
               className="group hover:bg-transparent"

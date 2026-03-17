@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Wifi, Heart, Scan, Play, ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 const steps = [
   {
@@ -170,6 +171,11 @@ function PhoneDemo() {
 // Main Section Export
 // ─────────────────────────────────────────────
 export default function AliveExperienceSection() {
+  const { content: cms } = useSiteContent("voice_gift");
+
+  const displayTitle = cms?.title || "JEWELLERY That Speaking.";
+  const displaySub = cms?.description || "No one in the market does this. Every piece we craft carries a hidden NFC chip or laser-etched QR code — scan it and your personal voice, video, or message plays instantly. Forever.";
+
   return (
     <section className="relative overflow-hidden py-24 md:py-36 bg-transparent">
 
@@ -208,18 +214,24 @@ export default function AliveExperienceSection() {
             className="font-serif text-5xl sm:text-6xl md:text-8xl leading-[0.92] tracking-tight"
             style={{ color: "#2D2D2D" }}
           >
-            JEWELLERY That
-            <br />
-            <span
-              className="italic font-light"
-              style={{
-                background: "linear-gradient(135deg, #FF9E80 0%, #E8603C 40%, #FF9E80 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Speaks.
-            </span>
+             {cms?.title ? (
+                <span dangerouslySetInnerHTML={{ __html: cms.title.replace("Speaks", `<span class="italic font-light" style="background: linear-gradient(135deg, #FF9E80 0%, #E8603C 40%, #FF9E80 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Speaks.</span>`).replace("Speaking", `<span class="italic font-light" style="background: linear-gradient(135deg, #FF9E80 0%, #E8603C 40%, #FF9E80 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Speaks.</span>`) }} />
+             ) : (
+                <>
+                  JEWELLERY That
+                  <br />
+                  <span
+                    className="italic font-light"
+                    style={{
+                      background: "linear-gradient(135deg, #FF9E80 0%, #E8603C 40%, #FF9E80 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    Speaks.
+                  </span>
+                </>
+             )}
           </motion.h2>
 
           <motion.p
@@ -230,11 +242,7 @@ export default function AliveExperienceSection() {
             className="mt-7 font-sans text-base md:text-xl max-w-2xl mx-auto leading-relaxed"
             style={{ color: "#6B7280" }}
           >
-            No one in the market does this. Every piece we craft carries a hidden{" "}
-            <span className="font-semibold" style={{ color: "#52B788" }}>
-              NFC chip or laser-etched QR code
-            </span>{" "}
-            — scan it and your personal voice, video, or message plays instantly. Forever.
+            {displaySub}
           </motion.p>
         </div>
 
@@ -366,7 +374,7 @@ export default function AliveExperienceSection() {
           className="mt-16 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <Link
-            href="/shop"
+            href="/voice-gifting"
             className="group inline-flex items-center gap-3 font-sans font-bold text-sm tracking-wide px-8 py-4 rounded-full"
             style={{
               background: "linear-gradient(135deg, #FF9E80 0%, #E8603C 100%)",

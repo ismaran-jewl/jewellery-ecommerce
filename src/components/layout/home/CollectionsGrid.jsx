@@ -127,8 +127,8 @@ export default function CollectionsGrid() {
                     className="rounded-full px-4 py-2 md:px-8 md:py-6 text-xs md:text-base flex items-center gap-2 group/btn transition-all w-fit border-0"
                     style={{ background: "rgba(255,255,255,0.92)", color: "#2D2D2D" }}
                   >
-                    <Link href="/gallery">
-                      <span className="hidden md:inline">Explore Gallery</span>
+                    <Link href={`/collections?name=${encodeURIComponent(collection.name)}`}>
+                      <span className="hidden md:inline">Explore Collection</span>
                       <span className="md:hidden">Explore</span>
                       <ArrowUpRight size={16} className="group-hover/btn:rotate-45 transition-transform" />
                     </Link>

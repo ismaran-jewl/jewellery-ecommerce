@@ -35,15 +35,26 @@ export default function ProductCard({
                 {/* Image Container with elegant background */}
                 <div className="relative aspect-[4/5] overflow-hidden bg-[#FDFCFB]">
                     {product.image ? (
-                        <Image
-                            src={getImageUrl(product.image)}
-                            alt={product.name}
-                            fill
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
-                            className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
-                        />
+                        product.image.endsWith(".mp4") ? (
+                            <video
+                                src={getImageUrl(product.image)}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
+                            />
+                        ) : (
+                            <Image
+                                src={getImageUrl(product.image)}
+                                alt={product.name}
+                                fill
+                                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                                className="w-full h-full object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-110"
+                            />
+                        )
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-stone-200">
+                        <div className="w-full h-full flex items-center justify-center text-stone-200 bg-gray-50">
                             <ShoppingBag size={48} strokeWidth={1} />
                         </div>
                     )}

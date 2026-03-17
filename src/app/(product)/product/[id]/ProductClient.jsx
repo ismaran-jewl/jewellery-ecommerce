@@ -22,34 +22,47 @@ function ImageZoom({ src, alt }) {
   const containerRef = useRef(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [zoomed, setZoomed] = useState(false);
+  const isVideo = src?.endsWith(".mp4");
 
   const handleMouseMove = useCallback((e) => {
+    if (isVideo) return;
     const rect = containerRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
     setPos({ x, y });
-  }, []);
+  }, [isVideo]);
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full aspect-square overflow-hidden rounded-2xl md:rounded-3xl border border-[#ede3d8] bg-white cursor-zoom-in select-none shadow-sm"
+      className={`relative w-full aspect-square overflow-hidden rounded-2xl md:rounded-3xl border border-[#ede3d8] bg-white ${!isVideo ? "cursor-zoom-in" : ""} select-none shadow-sm`}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setZoomed(true)}
-      onMouseLeave={() => setZoomed(false)}
+      onMouseEnter={() => !isVideo && setZoomed(true)}
+      onMouseLeave={() => !isVideo && setZoomed(false)}
     >
-      <img
-        src={getImageUrl(src)}
-        alt={alt}
-        className="w-full h-full object-cover transition-transform duration-200"
-        style={
-          zoomed
-            ? { transform: "scale(2.4)", transformOrigin: `${pos.x}% ${pos.y}%` }
-            : { transform: "scale(1)", transformOrigin: "center" }
-        }
-        draggable={false}
-      />
-      {!zoomed && (
+      {isVideo ? (
+        <video
+          src={getImageUrl(src)}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <img
+          src={getImageUrl(src)}
+          alt={alt}
+          className="w-full h-full object-cover transition-transform duration-200"
+          style={
+            zoomed
+              ? { transform: "scale(2.4)", transformOrigin: `${pos.x}% ${pos.y}%` }
+              : { transform: "scale(1)", transformOrigin: "center" }
+          }
+          draggable={false}
+        />
+      )}
+      {!zoomed && !isVideo && (
         <div className="absolute bottom-3 right-3 flex items-center gap-1 bg-black/40 backdrop-blur-sm text-white text-[10px] font-semibold px-2.5 py-1.5 rounded-full pointer-events-none">
           <ZoomIn className="w-3 h-3" /> Hover to Zoom
         </div>
@@ -75,25 +88,37 @@ function ProductGallery({ images, name }) {
       
       {imgArray.length > 1 && (
         <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
-          {imgArray.map((src, i) => (
-            <button
-              key={i}
-              type="button"
-              onClick={() => setActiveIdx(i)}
-              className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
-                activeIdx === i 
-                  ? "border-[#C59D5F] opacity-100 shadow-md scale-105" 
-                  : "border-transparent opacity-60 hover:opacity-100 bg-[#fdf6ef]"
-              }`}
-            >
-              <img 
-                src={getImageUrl(src)} 
-                alt={`${name} thumbnail ${i + 1}`} 
-                className="w-full h-full object-cover bg-[#fdf6ef]" 
-                draggable={false}
-              />
-            </button>
-          ))}
+          {imgArray.map((src, i) => {
+            const isVideo = src?.endsWith(".mp4");
+            return (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setActiveIdx(i)}
+                className={`w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${
+                  activeIdx === i 
+                    ? "border-[#C59D5F] opacity-100 shadow-md scale-105" 
+                    : "border-transparent opacity-60 hover:opacity-100 bg-[#fdf6ef]"
+                }`}
+              >
+                {isVideo ? (
+                  <video 
+                    src={getImageUrl(src)} 
+                    className="w-full h-full object-cover bg-[#fdf6ef]" 
+                    muted 
+                    playsInline 
+                  />
+                ) : (
+                  <img 
+                    src={getImageUrl(src)} 
+                    alt={`${name} thumbnail ${i + 1}`} 
+                    className="w-full h-full object-cover bg-[#fdf6ef]" 
+                    draggable={false}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -670,11 +695,22 @@ export default function ProductClient({ product: initialProduct, id }) {
                 >
                   <Link href={`/product/${rp._id}`}>
                     <div className="aspect-[4/5] overflow-hidden bg-[#fdf6ef]">
-                      <img
-                        src={getImageUrl(rp.image)}
-                        alt={rp.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                      />
+                      {rp.image?.endsWith(".mp4") ? (
+                        <video
+                          src={getImageUrl(rp.image)}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                      ) : (
+                        <img
+                          src={getImageUrl(rp.image)}
+                          alt={rp.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        />
+                      )}
                     </div>
                     <div className="p-4">
                       <p className="font-semibold text-sm text-[#2d1a10] truncate group-hover:text-[#C59D5F] transition-colors">{rp.name}</p>
