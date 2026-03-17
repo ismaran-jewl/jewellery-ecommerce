@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   motion,
-  useMotionValue,
   AnimatePresence,
 } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -37,64 +36,53 @@ const HorizontalScroll = ({ items, onItemClick }) => {
         className="horizontal-scroll-container flex gap-4 overflow-x-auto pb-4 px-4 snap-x snap-proximity hide-scrollbar"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}
       >
-        {items.map((item, index) => {
-          const offset = items.length > 1 ? index / (items.length - 1) : 0;
-          const distance = Math.abs(scrollProgress - offset);
-          const scale = 1 - Math.min(distance * 0.3, 0.1);
-          const rotate = (scrollProgress - offset) * 5;
-          const opacity = 1 - Math.min(distance * 1.2, 0.4);
-
-          return (
-            <motion.div key={item.id} className="flex-shrink-0 w-[220px] snap-center" onClick={() => onItemClick(item)}>
-              <motion.div
-                whileTap={{ scale: 0.95 }}
-                animate={{ scale, rotateY: rotate, opacity }}
-                transition={{ type: "spring", stiffness: 150, damping: 20, mass: 0.8 }}
-                className="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer bg-gray-100"
-                style={{ height: "280px", transformStyle: "preserve-3d" }}
-              >
-                {item.type === "image" ? (
-                  <img src={item.src} className="w-full h-full object-cover" alt="Product" />
-                ) : (
-                  <video src={item.src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
-                )}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"
-                  style={{ opacity: 0.7 + distance * 0.3 }}
-                />
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="absolute top-3 left-3"
-                >
-                  <Badge className="bg-white/95 text-[#E07040] border-none px-2.5 py-0.5 text-[10px] shadow-md backdrop-blur-sm">
-                    {item.label}
-                  </Badge>
-                </motion.div>
-                <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                  <p className="text-sm font-semibold mb-0.5 line-clamp-1">Signature No. {item.id + 1}</p>
-                  <p className="text-[10px] text-white/70">Tap to explore →</p>
-                </div>
-              </motion.div>
-            </motion.div>
-          );
-        })}
+        {items.map((item, index) => (
+          <motion.div
+            key={item.id}
+            className="flex-shrink-0 w-[220px] snap-center"
+            onClick={() => onItemClick(item)}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.08, duration: 0.5 }}
+          >
+            <div
+              className="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer bg-gray-100 hover:shadow-2xl transition-shadow duration-300"
+              style={{ height: "280px" }}
+            >
+              {item.type === "image" ? (
+                <img src={item.src} className="w-full h-full object-cover" alt="Product" />
+              ) : (
+                <video src={item.src} autoPlay loop muted playsInline className="w-full h-full object-cover" />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute top-3 left-3">
+                <Badge className="bg-white/95 text-[#E07040] border-none px-2.5 py-0.5 text-[10px] shadow-md backdrop-blur-sm">
+                  {item.label}
+                </Badge>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
+                <p className="text-sm font-semibold mb-0.5 line-clamp-1">Signature No. {item.id + 1}</p>
+                <p className="text-[10px] text-white/70">Tap to explore →</p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
-      <div className="mt-4 mx-4 h-1 bg-white/30 rounded-full overflow-hidden">
+      {/* Progress indicator */}
+      <div className="mt-4 mx-4 h-1 bg-black/5 rounded-full overflow-hidden">
         <motion.div
           className="h-full rounded-full"
           style={{
-            width: `${scrollProgress * 100 || 0}%`,
-            background: "linear-gradient(90deg, #FF9E80, #52B788)",
+            width: `${Math.max(scrollProgress * 100, 5)}%`,
+            background: "linear-gradient(90deg, #B5622A, #E07040)",
           }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
         />
       </div>
       <motion.div
         initial={{ opacity: 1 }}
         animate={{ opacity: scrollProgress > 0.05 ? 0 : 1 }}
-        className="flex items-center justify-center gap-2 mt-3 text-xs"
-        style={{ color: "rgba(100,100,100,0.6)" }}
+        className="flex items-center justify-center gap-2 mt-3 text-xs text-stone-400"
       >
         <span>Swipe to explore</span>
         <motion.span animate={{ x: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>→</motion.span>
@@ -224,20 +212,21 @@ export default function SeasonalOffers() {
   }, []);
 
   return (
-    <section className="relative py-12 md:py-20 px-0 md:px-6 bg-transparent min-h-[70vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden">
+    <section className="relative py-12 md:py-20 px-0 md:px-6 bg-transparent min-h-[60vh] md:min-h-[75vh] flex items-center justify-center overflow-hidden">
 
-      {/* Desktop: Floating Products */}
+      {/* Desktop: Floating Products — entrance animation only, NO constant bob */}
       {!isMobile && (
         <div className="absolute inset-0 pointer-events-none z-0">
-          {mediaItems.map((item) => (
+          {mediaItems.map((item, index) => (
             <motion.div
               key={item.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1, y: [0, -20, 0] }}
-              whileHover={{ scale: 1.05, zIndex: 50 }}
-              transition={{ y: { duration: 4 + Math.random() * 2, repeat: Infinity, ease: "easeInOut" } }}
+              initial={{ opacity: 0, scale: 0.85, y: 30 }}
+              whileInView={{ opacity: 0.9, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.08, duration: 0.7, ease: "easeOut" }}
+              whileHover={{ scale: 1.08, zIndex: 50, opacity: 1 }}
               style={{ top: `${item.top}%`, left: `${item.left}%`, width: item.size, rotate: `${item.rotate}deg` }}
-              className="absolute pointer-events-auto cursor-pointer rounded-[2rem] overflow-hidden shadow-xl"
+              className="absolute pointer-events-auto cursor-pointer rounded-[1.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-500"
               onClick={() => setActiveProduct(item)}
             >
               {item.type === "image" ? (
@@ -245,9 +234,9 @@ export default function SeasonalOffers() {
               ) : (
                 <video src={item.src} autoPlay loop muted playsInline className="w-full aspect-[4/5] object-cover" />
               )}
-              <div className="absolute inset-0 bg-black/10 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <div className="bg-white/90 p-3 rounded-full shadow-lg">
-                  <Sparkles className="w-6 h-6" style={{ color: "#E07040" }} />
+                  <Sparkles className="w-5 h-5" style={{ color: "#E07040" }} />
                 </div>
               </div>
             </motion.div>
@@ -260,8 +249,10 @@ export default function SeasonalOffers() {
         <div className="flex flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-2xl bg-white/40 backdrop-blur-xl p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl shadow-[#FFD4C2]/20 mb-6 md:mb-8 mx-4 md:mx-0 text-center"
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-2xl bg-white/50 backdrop-blur-xl p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-2xl shadow-black/5 mb-6 md:mb-8 mx-4 md:mx-0 text-center"
           >
             <h2 className="text-2xl md:text-4xl font-serif mb-2 md:mb-3 leading-tight" style={{ color: "#2D2D2D" }}>
               The{" "}
@@ -300,13 +291,14 @@ export default function SeasonalOffers() {
         </div>
       </div>
 
-      {/* Desktop Countdown */}
+      {/* Desktop Countdown — entrance animation only */}
       {!isMobile && (
         <motion.div
           initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
-          className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-20 bg-white/40 backdrop-blur-xl px-6 lg:px-8 py-4 lg:py-6 rounded-[2rem] shadow-2xl text-center"
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="absolute right-6 lg:right-12 top-1/2 -translate-y-1/2 z-20 bg-white/50 backdrop-blur-xl px-6 lg:px-8 py-4 lg:py-6 rounded-[2rem] shadow-2xl text-center"
         >
           <div className="flex items-center justify-center gap-2 mb-4" style={{ color: "#E07040" }}>
             <Clock className="w-5 h-5" />

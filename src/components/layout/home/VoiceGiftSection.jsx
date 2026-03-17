@@ -52,9 +52,9 @@ function NFCPulse() {
           key={i}
           className="absolute rounded-full"
           style={{ border: "1.5px solid #FFAD8E" }}
-          initial={{ width: 44, height: 44, opacity: 0.9 }}
+          initial={{ width: 44, height: 44, opacity: 0.7 }}
           animate={{ width: 112, height: 112, opacity: 0 }}
-          transition={{ duration: 2.6, repeat: Infinity, delay: i * 0.85, ease: "easeOut" }}
+          transition={{ duration: 3.5, repeat: Infinity, delay: i * 1.1, ease: "easeOut" }}
         />
       ))}
       <div className="relative z-10 w-14 h-14 rounded-full bg-gradient-to-br from-[#FFD4C2] to-[#FFEADC] border border-[#FFB899]/60 flex items-center justify-center shadow-lg shadow-[#FFAD8E]/30">
@@ -185,14 +185,14 @@ export default function AliveExperienceSection() {
         >
           <div className="inline-flex items-center gap-2.5 bg-white/70 backdrop-blur-md border border-[#FFD4C2]/80 text-[#C05A2E] text-[10px] font-sans font-bold tracking-[0.3em] uppercase px-6 py-2.5 rounded-full shadow-lg shadow-[#FFD4C2]/30">
             <motion.span
-              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity }}
+              animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 3, repeat: Infinity }}
               className="w-1.5 h-1.5 rounded-full bg-[#FF9E80] inline-block"
             />
             World&apos;s First · Memory-Linked Jewellery
             <motion.span
-              animate={{ scale: [1, 1.5, 1], opacity: [0.7, 1, 0.7] }}
-              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+              animate={{ scale: [1, 1.3, 1], opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 3, repeat: Infinity, delay: 1.5 }}
               className="w-1.5 h-1.5 rounded-full bg-[#52B788] inline-block"
             />
           </div>

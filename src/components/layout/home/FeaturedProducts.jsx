@@ -170,8 +170,8 @@ export default function FeaturedProducts() {
 
                 {/* Glass Card */}
                 <div className="absolute inset-x-3 bottom-3 md:inset-x-4 md:bottom-4">
-                  <div className="relative overflow-hidden rounded-3xl bg-white/15 backdrop-blur-md border border-white/25 p-5 md:p-6 text-white shadow-lg">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-50 pointer-events-none" />
+                  <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20 p-4 md:p-6 text-white shadow-lg">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-40 pointer-events-none" />
 
                     <div className="relative z-10 flex justify-between items-end gap-4">
                       <div className="flex-1 min-w-0">

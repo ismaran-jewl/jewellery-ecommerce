@@ -1,7 +1,7 @@
-# 💎 Expert Audit Report: ISMARN Jewels E-Commerce
+# 💎 Expert Audit Report: ISMARN Jewels E-Commerce (Follow-Up)
 
 ## 📜 Executive Summary
-The **ISMARN Jewels** platform is a technologically ambitious and visually sophisticated e-commerce site. Built on the absolute cutting edge (Next.js 15+, React 19, Tailwind 4), it successfully establishes a premium luxury aesthetic. However, there are significant "last-mile" polish issues—specifically regarding **data integrity (incorrect images)** and **UX friction (mandatory auth for cart)**—that currently undermine the expert-grade experience it aims to provide.
+The **ISMARN Jewels** platform continues to establish a premium luxury aesthetic. Recent updates have successfully addressed critical path UX issues, specifically **enabling the Guest Cart** and **fixing the desktop filter sidebar visibility.** However, substantial polish and data integrity issues remain, most notably the **glaring data mismatch** where product images do not match their titles.
 
 ---
 
@@ -11,12 +11,11 @@ The **ISMARN Jewels** platform is a technologically ambitious and visually sophi
 ### **The Good**
 - **Palette & Typography:** The use of **OKLCH colors** and the pairing of *Playfair Display* (Serif) with *DM Sans* (Sans) creates a stunning, high-contrast luxury feel.
 - **Micro-interactions:** The cursor-tracking ring and `framer-motion` transitions make the site feel "alive" and expensive.
-- **Concept:** The "Voice Gifting" and "Memory Piece" USP (Unique Selling Proposition) is brilliantly integrated into the Hero section and Navbar.
+- **Concept:** The "Voice Gifting" and "Memory Piece" USP is brilliantly integrated into the Hero section and Navbar.
 
 ### **Expert Critique**
-- **Hero Clutter:** The absolute-positioned cards in the Hero section are visually interesting but lead to **aggressive overlapping** on mobile viewports.
-- **The "Blue Glow" Glitch:** There is a saturated blue vignette effect in the Hero section that feels out of place with the cream/gold palette. It looks more like a rendering debug artifact than an intentional glow.
-- **Asymmetrical Risk:** The "Signature Collection" grid is artistic but risks creating "dead space" on ultra-wide monitors.
+- **Hero Clutter:** The absolute-positioned cards in the Hero section are visually interesting but lead to aggressive overlapping on mobile viewports.
+- **[NOT FIXED] The "Blue Glow" Glitch:** The saturated blue vignette effect in the Hero section (and other pages) still feels out of place with the cream/gold palette. It continues to look more like a rendering debug artifact than an intentional glow.
 
 ---
 
@@ -28,46 +27,34 @@ The **ISMARN Jewels** platform is a technologically ambitious and visually sophi
 - **SEO Discipline:** Excellent use of Next.js Metadata API, automated Structured Data (JSON-LD), and canonical tags.
 - **Code Structure:** Clean separation of concerns with a hybrid Server/Client component model in the Shop page for SEO and speed.
 
-### **The Issues**
-- **Hydration Mismatch:** A console error related to `antigravity-scroll-lock` indicates a rendering discrepancy between the server and the browser.
-- **Error Handling:** While `Suspense` and `skeleton loaders` are used, the "Shop" and "Cart" pages rely on them for too long, leading to a "jittery" page load perception.
-
 ---
 
 ## 🛒 E-Commerce & Functional Audit
-**Overall Impression:** 6/10 (Needs Polish)
+**Overall Impression:** 8/10 (Much Improved UX)
 
-### **Critical Findings**
-- **❌ Data Mismatch (High Priority):** Several products are mapped to incorrect assets.
-    - *Example:* The "Diamond Solitaire Ring" displays a black T-shirt.
+### **Status of Critical Findings**
+- **✅ Guest Cart (FIXED):** The restrictive mandatory authentication has been removed. Users can successfully add items to the cart as guests without friction.
+- **✅ Responsive Sidebar (FIXED):** The filter sidebar is now correctly persistent and visible on the left side of the screen on desktop screens (>1024px) for easier browsing.
+- **❌ Data Mismatch (NOT FIXED - High Priority):** Several products are mapped to completely incorrect assets. 
+    - *Example:* The "Diamond Solitaire Ring" still displays a prominent black graphic T-shirt.
     - *Example:* The "Gold Chain Necklace" displays a blue wave graphic.
-- **🛑 Auth Friction:** Requiring a user to log in *before* adding an item to the cart is a major conversion killer. Modern e-commerce standards favor "Guest Add-to-Cart."
-- **📐 Responsive Sidebar:** On large desktop viewports (1920px), the filter sidebar is hidden inside a menu. It should be persistent on high resolutions to facilitate easy browsing.
+    - *Example:* Other jewellery pieces display duplicated placeholder images of pearl earrings.
 
 ---
 
-## 📈 SEO & Performance Audit
-- **Meta Tags:** Correctly implemented across all pages.
-- **Image Optimization:** Uses `next/image` but the source data integrity issues override the technical benefits.
-- **Load Times:** Fast initial response, but client-side secondary fetches (cart/wishlist) introduce noticeable lag.
+## 🚀 Expert Roadmap & Open Recommendations
 
----
-
-## 🚀 Expert Roadmap & Recommendations
-
-1.  **[CRITICAL] Content Cleanup:** Audit the MongoDB collection to ensure every product `image` URL correctly corresponds to its `name`.
-2.  **[UX] Persistent Filters:** Modify [src/app/(product)/layout.js](file:///p:/Coding/jewellery-ecommerce/src/app/%28product%29/layout.js) to show the Sidebar by default on headers/desktop (>1024px).
-3.  **[CONVERSION] Guest Cart:** Update [useCart.js](file:///p:/Coding/jewellery-ecommerce/src/hooks/useCart.js) and `/api/cart` to allow adding items to `localStorage` without a mandatory session, syncing only at checkout.
-4.  **[AESTHETICS] Mobile Hero Refactor:** Replace absolute positioning with a responsive `flex` or `grid` stack for mobile viewports to prevent card-on-text overlap.
-5.  **[GLOW] Refine Vignette:** Reduce the saturation of the blue edge-glow in the [HeroSection.jsx](file:///p:/Coding/jewellery-ecommerce/src/components/layout/home/HeroSection.jsx) to a subtle warm gold or pearl sheen.
+1.  **[CRITICAL] Content Cleanup:** Audit the MongoDB collection and immediately fix the product `image` URLs so they correspond securely to the jewellery.
+2.  **[AESTHETICS] Mobile Hero Refactor:** Replace absolute positioning with a responsive `flex` or `grid` stack for mobile viewports to prevent card-on-text overlap.
+3.  **[GLOW] Refine Vignette:** Reduce or remove the saturation of the heavy blue edge-glow to a subtle warm gold, or turn it off entirely for better visual harmony.
 
 ---
 
 ### **Proof of Audit Recordings**
 ````carousel
-![Homepage Visual Audit](file:///C:/Users/HP/.gemini/antigravity/brain/28b29594-3183-42ee-86e2-66f123ddd33e/visual_audit_homepage_1773578210051.webp)
+![Follow-up Review - Home Page & Shop](file:///C:/Users/HP/.gemini/antigravity/brain/b7f7f700-d180-42fa-b586-63d5ca58a1fa/website_audit_1773677036502.webp)
 <!-- slide -->
-![Shop & Cart Functional Audit](file:///C:/Users/HP/.gemini/antigravity/brain/28b29594-3183-42ee-86e2-66f123ddd33e/shop_audit_1773578469469.webp)
+![Data Mismatch - Diamond Solitaire Ring](file:///C:/Users/HP/.gemini/antigravity/brain/b7f7f700-d180-42fa-b586-63d5ca58a1fa/.system_generated/click_feedback/click_feedback_1773677090305.png)
 ````
 
 **Analysis Conducted by Antigravity (Expert Critic Mode)**
