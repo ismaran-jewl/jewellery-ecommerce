@@ -17,7 +17,8 @@ export function useWishlist() {
     const saved = localStorage.getItem("wishlist");
     if (saved) {
       try {
-        setWishlist(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        setWishlist(Array.isArray(parsed) ? parsed.filter(Boolean) : []);
       } catch (err) {
         console.error("Wishlist parse error", err);
       }
@@ -37,7 +38,9 @@ export function useWishlist() {
         if (!res.ok) return;
 
         const data = await res.json();
-        const dbWishlist = data.wishlist.map((item) => item.product);
+        const dbWishlist = data.wishlist
+          .map((item) => item.product)
+          .filter(Boolean);
 
         setWishlist(dbWishlist);
         localStorage.setItem("wishlist", JSON.stringify(dbWishlist));
@@ -59,7 +62,7 @@ export function useWishlist() {
   // =====================================
   const addToWishlist = useCallback(
     async (product) => {
-      if (wishlist.some((item) => item._id === product._id)) return;
+      if (wishlist.some((item) => item?._id === product?._id)) return;
 
       const updated = [...wishlist, product];
       saveLocal(updated);
@@ -107,15 +110,15 @@ export function useWishlist() {
   );
 
   const toggleWishlist = (product) => {
-    if (wishlist.some((item) => item._id === product._id)) {
-      removeFromWishlist(product._id);
+    if (wishlist.some((item) => item?._id === product?._id)) {
+      removeFromWishlist(product?._id);
     } else {
       addToWishlist(product);
     }
   };
 
   const isInWishlist = (productId) => {
-    return wishlist.some((item) => item._id === productId);
+    return wishlist.some((item) => item?._id === productId);
   };
 
   return {

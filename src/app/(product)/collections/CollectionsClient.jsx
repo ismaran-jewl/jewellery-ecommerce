@@ -6,11 +6,47 @@ import ProductCard from "@/components/shop/ProductCard";
 import { Diamond, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const COLLECTIONS = ["Modern Minimalist", "The Bridal Suite", "Royal Heritage"];
 
 export default function CollectionsClient({ initialProducts, initialFilter }) {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [activeFilter, setActiveFilter] = useState(initialFilter || null);
+  
+  const { cart, addToCart: addToCartHook, removeFromCart } = useCart();
+  const { isInWishlist, toggleWishlist: toggleWishlistHook } = useWishlist();
+
+  const handleToggleWishlist = async (product) => {
+    if (!session) {
+      toast.error("Please login to save items to your wishlist", {
+        action: { label: "Login", onClick: () => router.push("/login") }
+      });
+      return;
+    }
+    try {
+      await toggleWishlistHook(product);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleToggleCart = (product) => {
+    const isCartItem = cart?.some(item => item.id === product._id || item._id === product._id);
+    if (isCartItem) {
+      removeFromCart(product._id);
+    } else {
+      addToCartHook(product, 1);
+      toast.success("Added to Bag", {
+        action: { label: "View Bag", onClick: () => router.push("/cart") }
+      });
+    }
+  };
   
   const displayedProducts = activeFilter 
     ? initialProducts.filter(p => p.homepageSections?.includes(activeFilter))
@@ -108,10 +144,10 @@ export default function CollectionsClient({ initialProducts, initialFilter }) {
             >
               <ProductCard 
                 product={product} 
-                isCartItem={false} 
-                isWishlisted={false}
-                onToggleWishlist={() => {}}
-                onToggleCart={() => {}}
+                isCartItem={cart?.some(item => item.id === product._id || item._id === product._id)} 
+                isWishlisted={isInWishlist(product._id)}
+                onToggleWishlist={() => handleToggleWishlist(product)}
+                onToggleCart={() => handleToggleCart(product)}
               />
             </motion.div>
           )) : (

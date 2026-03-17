@@ -12,7 +12,8 @@ export function useCart() {
 			const savedCart = localStorage.getItem("cart");
 			if (savedCart) {
 				try {
-					setCart(JSON.parse(savedCart));
+					const parsed = JSON.parse(savedCart);
+					setCart(Array.isArray(parsed) ? parsed.filter(Boolean) : []);
 				} catch (error) {
 					console.error("Failed to parse cart", error);
 				}

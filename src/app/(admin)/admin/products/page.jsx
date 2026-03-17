@@ -15,7 +15,7 @@ import { getImageUrl } from "@/lib/utils";
 
 const fmt = (n) => `₹${Number(n || 0).toLocaleString("en-IN")}`;
 
-const HOMEPAGE_SECTIONS = ["Featured", "Seasonal", "VoiceGift", "Modern Minimalist", "The Bridal Suite", "Royal Heritage"];
+const HOMEPAGE_SECTIONS = ["Featured", "Seasonal", "VoiceGift", "Modern Minimalist", "The Bridal Suite", "Royal Heritage", "Community"];
 
 export default function AdminProductsPage() {
   const [products, setProducts]       = useState([]);
@@ -25,6 +25,7 @@ export default function AdminProductsPage() {
   const [isDialogOpen, setIsDialogOpen]     = useState(false);
   const [submitting, setSubmitting]         = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
+  const [activeTab, setActiveTab]           = useState("all");
   
   const [formData, setFormData] = useState({
     name: "", description: "", price: "", category: "",
@@ -175,8 +176,14 @@ export default function AdminProductsPage() {
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => { setEditingProduct(null); setFormData({ name: "", description: "", price: "", category: "", type: "", material: "", gender: "Women", image: "", stock: "", homepageSections: [] }); }} className="bg-stone-800 hover:bg-stone-900 text-white">
-                <Plus className="w-4 h-4 mr-2" /> Add
+              <Button 
+                onClick={() => { 
+                  setEditingProduct(null); 
+                  setFormData({ name: "", description: "", price: "", category: "Rings", type: "Band", material: "Gold", gender: "Women", image: "", stock: "10", homepageSections: activeTab !== "all" && HOMEPAGE_SECTIONS.includes(activeTab) ? [activeTab] : [] }); 
+                }} 
+                className="bg-stone-800 hover:bg-stone-900 text-white shadow-lg shadow-stone-200"
+              >
+                <Plus className="w-4 h-4 mr-2" /> New Product
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -293,63 +300,58 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="all">All Products</TabsTrigger>
-          <TabsTrigger value="distribution">Storefront Distribution</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="all" onValueChange={setActiveTab} className="w-full">
+        <div className="overflow-x-auto pb-4 scrollbar-hide">
+          <TabsList className="inline-flex w-auto bg-stone-100/50 p-1.5 rounded-2xl h-auto gap-1">
+            <TabsTrigger value="all" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all">All Inventory</TabsTrigger>
+            <TabsTrigger value="Featured" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Featured</TabsTrigger>
+            <TabsTrigger value="Seasonal" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Seasonal Edit</TabsTrigger>
+            <TabsTrigger value="VoiceGift" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Gifting Page</TabsTrigger>
+            <TabsTrigger value="Modern Minimalist" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Minimalist</TabsTrigger>
+            <TabsTrigger value="Royal Heritage" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Heritage</TabsTrigger>
+            <TabsTrigger value="The Bridal Suite" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Bridal Page</TabsTrigger>
+            <TabsTrigger value="Community" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium">Stories</TabsTrigger>
+            <TabsTrigger value="categories" className="rounded-xl py-3 px-8 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all font-medium italic">Shop Catalog</TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="all" className="space-y-4">
-          {renderTable(filtered)}
-        </TabsContent>
+        <div className="mt-6">
+          <TabsContent value="all" className="space-y-4 m-0">
+            {renderTable(filtered)}
+          </TabsContent>
 
-        <TabsContent value="distribution" className="space-y-12">
-          {/* Section 1: By Category (Main Pages) */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-1 bg-stone-800 rounded-full" />
-              <h3 className="text-xl font-bold text-stone-900">By Storefront Categories (Pages)</h3>
-            </div>
-            <div className="grid grid-cols-1 gap-8">
-              {["Rings", "Necklaces", "Earrings", "Bracelets", "Bangles", "Sets"].map(category => {
-                const categoryProducts = filtered.filter(p => p.category === category);
-                if (categoryProducts.length === 0) return null;
-                return (
-                  <div key={category} className="space-y-3">
-                    <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded w-fit">{category}</h4>
-                    {renderTable(categoryProducts)}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Section 2: By Homepage Sections */}
-          <div className="space-y-6 pt-6 border-t border-stone-200">
-            <div className="flex items-center gap-2">
-              <div className="h-4 w-1 bg-stone-800 rounded-full" />
-              <h3 className="text-xl font-bold text-stone-900">By Homepage Sections</h3>
-            </div>
-            <div className="grid grid-cols-1 gap-8">
-              {HOMEPAGE_SECTIONS.map(section => {
-                const sectionProducts = filtered.filter(p => p.homepageSections?.includes(section));
-                if (sectionProducts.length === 0) return null;
-                return (
-                  <div key={section} className="space-y-3">
-                    <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded w-fit">{section}</h4>
-                    {renderTable(sectionProducts) }
-                  </div>
-                );
-              })}
-              {filtered.filter(p => !p.homepageSections || p.homepageSections.length === 0).length > 0 && (
-                <div className="space-y-3">
-                  <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest bg-stone-50 px-3 py-1 rounded w-fit">Unassigned</h4>
-                  {renderTable(filtered.filter(p => !p.homepageSections || p.homepageSections.length === 0))}
+          {HOMEPAGE_SECTIONS.map(section => (
+            <TabsContent key={section} value={section} className="space-y-4 m-0">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-lg font-bold text-stone-800">{section} Display</h3>
+                  <p className="text-xs text-stone-400">Products currently assigned to appear in the {section} section of the storefront.</p>
                 </div>
-              )}
-            </div>
-          </div>
-        </TabsContent>
+                <div className="text-xs font-bold text-stone-500 bg-stone-100 px-3 py-1 rounded-full uppercase tracking-widest">
+                  {filtered.filter(p => p.homepageSections?.includes(section)).length} Items
+                </div>
+              </div>
+              {renderTable(filtered.filter(p => p.homepageSections?.includes(section)))}
+            </TabsContent>
+          ))}
+
+          <TabsContent value="categories" className="space-y-12 m-0">
+            {["Rings", "Necklaces", "Earrings", "Bracelets", "Bangles", "Sets"].map(category => {
+              const categoryProducts = filtered.filter(p => p.category === category);
+              if (categoryProducts.length === 0) return null;
+              return (
+                <div key={category} className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-4 w-1 bg-stone-800 rounded-full" />
+                    <h4 className="text-sm font-bold text-stone-600 uppercase tracking-widest">{category}</h4>
+                    <span className="text-[10px] text-stone-300">({categoryProducts.length})</span>
+                  </div>
+                  {renderTable(categoryProducts)}
+                </div>
+              );
+            })}
+          </TabsContent>
+        </div>
       </Tabs>
     </div>
   );

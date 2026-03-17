@@ -36,7 +36,7 @@ const ProductSchema = new mongoose.Schema(
     // NEW: homepageSections array to map products to specific homepage blocks
     homepageSections: {
       type: [String],
-      enum: ["Featured", "Seasonal", "VoiceGift", "Modern Minimalist", "The Bridal Suite", "Royal Heritage"],
+      enum: ["Featured", "Seasonal", "VoiceGift", "Modern Minimalist", "The Bridal Suite", "Royal Heritage", "Community"],
       default: [],
     },
     // Phase 2: Smart Pricing Engine fields

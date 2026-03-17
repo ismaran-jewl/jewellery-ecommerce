@@ -4,8 +4,43 @@ import { motion } from "framer-motion";
 import ProductCard from "@/components/shop/ProductCard";
 import { Sparkles, Star, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function FeaturedClient({ initialProducts }) {
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { cart, addToCart: addToCartHook, removeFromCart } = useCart();
+  const { isInWishlist, toggleWishlist: toggleWishlistHook } = useWishlist();
+
+  const handleToggleWishlist = async (product) => {
+    if (!session) {
+      toast.error("Please login to save items to your wishlist", {
+        action: { label: "Login", onClick: () => router.push("/login") }
+      });
+      return;
+    }
+    try {
+      await toggleWishlistHook(product);
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+
+  const handleToggleCart = (product) => {
+    const isCartItem = cart?.some(item => item.id === product._id || item._id === product._id);
+    if (isCartItem) {
+      removeFromCart(product._id);
+    } else {
+      addToCartHook(product, 1);
+      toast.success("Added to Bag", {
+        action: { label: "View Bag", onClick: () => router.push("/cart") }
+      });
+    }
+  };
   return (
     <div className="relative">
       {/* Decorative Background Elements */}
@@ -78,10 +113,10 @@ export default function FeaturedClient({ initialProducts }) {
             >
               <ProductCard 
                 product={product} 
-                isCartItem={false} 
-                isWishlisted={false}
-                onToggleWishlist={() => {}}
-                onToggleCart={() => {}}
+                isCartItem={cart?.some(item => item.id === product._id || item._id === product._id)} 
+                isWishlisted={isInWishlist(product._id)}
+                onToggleWishlist={() => handleToggleWishlist(product)}
+                onToggleCart={() => handleToggleCart(product)}
               />
             </motion.div>
           )) : (
