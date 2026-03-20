@@ -15,3 +15,5 @@ export function apiUrl(path) {
   // Client-side: relative path works fine
   return path;
 }
+
+export const fetcher = (...args) => fetch(...args).then(res => res.json());
