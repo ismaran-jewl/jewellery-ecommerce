@@ -116,7 +116,7 @@ export default function HeroSection() {
             <div
               className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out"
               style={{
-                backgroundImage: `url(${getImageUrl(slide.img || slide.imageUrl)})`,
+                backgroundImage: `url('${getImageUrl(slide.img || slide.imageUrl)}')`,
                 transform: current === idx ? "scale(1.06)" : "scale(1)",
               }}
             />
