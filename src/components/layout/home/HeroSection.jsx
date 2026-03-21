@@ -1,20 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { ChevronLeft, ChevronRight, Mic, Star, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { siteConfig } from "@/config/seo";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { getImageUrl } from "@/lib/utils";
 
 const QR_LINK = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${siteConfig.url}`;
 const WAVE_BARS = [8, 18, 24, 14, 20, 10, 22, 16];
 
-const HERO_SLIDES = [
+const DEFAULT_SLIDES = [
   { id: 1, title: "The Diamond Solitaire", sub: "A promise that lasts forever.", img: "https://images.unsplash.com/photo-1598560912005-59a09551e474?auto=format&fit=crop&w=1920&q=80" },
   { id: 2, title: "Golden Hour Charms", sub: "24k Craftsmanship in every link.", img: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1920&q=80" },
   { id: 3, title: "Midnight Gold Edition", sub: "Where luxury meets the dark.", img: "https://images.unsplash.com/photo-1573408302354-010549b15295?auto=format&fit=crop&w=1920&q=80" },
-  { id: 4, title: "Heritage Pearls", sub: "Timeless elegance for her.", img: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=1920&q=80" },
-  { id: 5, title: "The Vault: Rare Gems", sub: "Exclusively curated for the 1%.", img: "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&w=1920&q=80" },
 ];
 
 export default function HeroSection() {
@@ -24,20 +23,45 @@ export default function HeroSection() {
 
   const { content: cms } = useSiteContent("home_hero");
 
-  const next = () => setCurrent((p) => (p + 1) % HERO_SLIDES.length);
-  const prev = () => setCurrent((p) => (p - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const slides = useMemo(() => {
+    // 1. If user has defined a custom slides list in metadata, use it
+    if (cms?.metadata?.slides && Array.isArray(cms.metadata.slides) && cms.metadata.slides.length > 0) {
+      return cms.metadata.slides;
+    }
+
+    // 2. If no slides list, but user set a global Media URL (imageUrl), use it as the first slide
+    if (cms?.imageUrl) {
+      return [
+        { id: 'custom-main', title: cms.title || DEFAULT_SLIDES[0].title, sub: cms.subtitle || DEFAULT_SLIDES[0].sub, img: cms.imageUrl },
+        ...DEFAULT_SLIDES.slice(1)
+      ];
+    }
+
+    // 3. Fallback to default unsplash slides
+    return DEFAULT_SLIDES;
+  }, [cms]);
+
+  const slidesLength = slides.length;
+
+  const next = useCallback(() => {
+    setCurrent((p) => (p + 1) % slidesLength);
+  }, [slidesLength]);
+
+  const prev = useCallback(() => {
+    setCurrent((p) => (p - 1 + slidesLength) % slidesLength);
+  }, [slidesLength]);
 
   useEffect(() => {
     const t = setInterval(next, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [next]);
 
   useEffect(() => {
     setMounted(true);
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
+    const checkSize = () => setIsMobile(window.innerWidth < 768);
+    checkSize();
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize);
   }, []);
 
   if (!mounted) return null;
@@ -48,6 +72,23 @@ export default function HeroSection() {
   const displaySub = cms?.subtitle || "Personalize your jewellery with a hidden voice message — accessible via our signature QR tech.";
   const displayBtnText = cms?.buttonText || "Shop Collection";
   const displayBtnLink = cms?.buttonLink || "/shop";
+  const displayAccent = cms?.metadata?.accent || "Luxury Voice Gifting";
+  
+  const floating = cms?.metadata?.floatingCards || {
+    qrText: "Scan to hear",
+    audioId: "Audio ID: 882",
+    ratingCount: "9k+ Happy Voices",
+    ratingLabel: "100% Artisan Crafted"
+  };
+
+  const tickerItems = cms?.metadata?.ticker || [
+    "Free Gift Wrapping",
+    "Voice Notes Included",
+    "QR Code Enabled",
+    "Luxury Box Included",
+    "BIS Hallmarked Gold",
+    "Insured Shipping"
+  ];
 
   return (
     <>
@@ -66,16 +107,16 @@ export default function HeroSection() {
         style={{ minHeight: isMobile ? "60vh" : "60vh" }}
       >
         {/* ── Background: Crossfading jewellery images ── */}
-        {HERO_SLIDES.map((slide, idx) => (
+        {slides.map((slide, idx) => (
           <div
-            key={slide.id}
+            key={slide.id || idx}
             className="absolute inset-0 transition-opacity duration-[1200ms] ease-in-out"
             style={{ opacity: current === idx ? 1 : 0 }}
           >
             <div
               className="absolute inset-0 bg-cover bg-center transition-transform duration-[8000ms] ease-out"
               style={{
-                backgroundImage: `url(${cms?.imageUrl && idx === 0 ? cms.imageUrl : slide.img})`,
+                backgroundImage: `url(${getImageUrl(slide.img || slide.imageUrl)})`,
                 transform: current === idx ? "scale(1.06)" : "scale(1)",
               }}
             />
@@ -106,7 +147,7 @@ export default function HeroSection() {
               <div className="flex items-center gap-3 mb-6 md:mb-8">
                 <div className="w-10 h-px" style={{ background: GOLD }} />
                 <span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>
-                   {cms?.metadata?.accent || "Luxury Voice Gifting"}
+                   {displayAccent}
                 </span>
               </div>
 
@@ -149,11 +190,13 @@ export default function HeroSection() {
             {!isMobile && (
               <div className="relative h-full flex items-center justify-center">
                 {/* Current slide info overlay */}
-                <div className="absolute bottom-16 right-0 lg:right-8 text-right z-20">
-                  <p className="text-white/60 text-[10px] tracking-[3px] uppercase font-bold mb-2">Now Showing</p>
-                  <h2 className="text-white text-3xl lg:text-4xl font-serif mb-1 drop-shadow-lg">{HERO_SLIDES[current].title}</h2>
-                  <p className="text-white/80 font-serif italic text-base lg:text-lg drop-shadow-md">{HERO_SLIDES[current].sub}</p>
-                </div>
+                {slides[current] && (
+                  <div className="absolute bottom-16 right-0 lg:right-8 text-right z-20">
+                    <p className="text-white/60 text-[10px] tracking-[3px] uppercase font-bold mb-2">Now Showing</p>
+                    <h2 className="text-white text-3xl lg:text-4xl font-serif mb-1 drop-shadow-lg">{slides[current].title}</h2>
+                    <p className="text-white/80 font-serif italic text-base lg:text-lg drop-shadow-md">{slides[current].sub}</p>
+                  </div>
+                )}
 
                 {/* QR Card */}
                 <div
@@ -169,7 +212,7 @@ export default function HeroSection() {
                   }}
                 >
                   <div className="text-[8px] uppercase tracking-[2px] font-bold text-center mb-2" style={{ color: GOLD }}>
-                    Scan to hear
+                    {floating.qrText}
                   </div>
                   <div className="w-full aspect-square bg-stone-50/80 p-2 border border-orange-50 mx-auto rounded-lg" style={{ maxWidth: "80px" }}>
                     <img src={QR_LINK} alt="Scannable QR" className="w-full h-full" />
@@ -194,7 +237,7 @@ export default function HeroSection() {
                   <div className="flex items-center gap-2 mb-2">
                     <Mic size={10} style={{ color: GOLD }} />
                     <span style={{ fontSize: 8, letterSpacing: "2px", color: GOLD, textTransform: "uppercase", fontWeight: 700 }}>
-                      Audio ID: 882
+                      {floating.audioId}
                     </span>
                   </div>
                   <div className="flex items-center gap-[3px]" style={{ height: 18 }}>
@@ -226,20 +269,20 @@ export default function HeroSection() {
                       <Star key={i} size={10} fill={GOLD} stroke="none" />
                     ))}
                   </div>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: "#3D1F0D" }}>9k+ Happy Voices</div>
-                  <div style={{ fontSize: 8, color: "#B5622A99" }}>100% Artisan Crafted</div>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#3D1F0D" }}>{floating.ratingCount}</div>
+                  <div style={{ fontSize: 8, color: "#B5622A99" }}>{floating.ratingLabel}</div>
                 </div>
               </div>
             )}
           </div>
 
           {/* ── Mobile: Current slide info + feature strip ── */}
-          {isMobile && (
+          {isMobile && slides[current] && (
             <div className="px-6 pb-4 z-20">
               <div className="mb-4">
                 <p className="text-white/70 text-[9px] tracking-[3px] uppercase font-bold mb-1">Now Showing</p>
-                <h2 className="text-white text-2xl font-serif mb-0.5 drop-shadow-lg">{HERO_SLIDES[current].title}</h2>
-                <p className="text-white/80 font-serif italic text-sm drop-shadow-md">{HERO_SLIDES[current].sub}</p>
+                <h2 className="text-white text-2xl font-serif mb-0.5 drop-shadow-lg">{slides[current].title}</h2>
+                <p className="text-white/80 font-serif italic text-sm drop-shadow-md">{slides[current].sub}</p>
               </div>
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl border border-white/60 flex flex-col items-center gap-1">
@@ -262,7 +305,7 @@ export default function HeroSection() {
           <div className="relative z-20 flex items-center justify-between px-6 md:px-16 lg:px-24 pb-6 md:pb-10">
             {/* Dots */}
             <div className="flex items-center gap-2">
-              {HERO_SLIDES.map((_, idx) => (
+              {slides.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrent(idx)}
@@ -305,12 +348,9 @@ export default function HeroSection() {
         <div className="flex gap-16 whitespace-nowrap" style={{ animation: "tickerScroll 45s linear infinite", opacity: 0.4 }}>
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-16 uppercase tracking-[3px] text-[10px] font-bold text-stone-500">
-              <span>◆ Free Gift Wrapping</span>
-              <span>◆ Voice Notes Included</span>
-              <span>◆ QR Code Enabled</span>
-              <span>◆ Luxury Box Included</span>
-              <span>◆ BIS Hallmarked Gold</span>
-              <span>◆ Insured Shipping</span>
+              {tickerItems.map((item, idx) => (
+                <span key={idx}>◆ {item}</span>
+              ))}
             </div>
           ))}
         </div>

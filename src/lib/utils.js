@@ -12,23 +12,31 @@ export function cn(...inputs) {
 export function getImageUrl(url) {
   if (!url) return "";
   
+  // Normalize string/trimmed url
+  const u = url.trim();
+
   // Handle Google Drive Links
-  if (url.includes("drive.google.com")) {
-    const fileId = url.match(/\/d\/([^/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1] || url.match(/\/file\/d\/([^/]+)/)?.[1];
+  if (u.includes("drive.google.com") || u.includes("docs.google.com")) {
+    const fileId = u.match(/\/d\/([^/]+)/)?.[1] || 
+                   u.match(/id=([^&]+)/)?.[1] || 
+                   u.match(/\/file\/d\/([^/]+)/)?.[1];
     if (fileId) {
-      // Using drive.google.com/thumbnail is often more reliable for <img> tags across different sharing settings
-      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+      // thumbnail?id is excellent for <img> tags as it handles larger images by resizing them
+      // and typically doesn't trigger the "too large to scan" virus warning page
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
     }
   }
 
   // Handle ImgBB viewer links (convert to i.ibb.co)
-  if (url.includes("ibb.co") && !url.includes("i.ibb.co")) {
-     // NOTE: ImgBB viewer links usually don't have the file extension in the URL, 
-     // making it hard to guess. However, we'll try to help if the user pastes common ones.
-     // Best practice is still direct link.
+  if (u.includes("ibb.co") && !u.includes("i.ibb.co")) {
+     const parts = u.split("/");
+     const id = parts[parts.length - 1];
+     if (id && id.length > 5) {
+        // Fallback or guess format
+     }
   }
 
-  return url;
+  return u;
 }
 
 /**
