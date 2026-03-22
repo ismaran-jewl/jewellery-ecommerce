@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
 import { SHOP_AD_BANNER } from "@/config/shop";
 
