@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#FAF7F2]">
+      <body className="min-h-screen flex flex-col bg-[#FFF8E7]">
         <AuthProvider>
           <Toaster />
           <main className="flex-1">
