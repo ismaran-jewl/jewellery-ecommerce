@@ -175,9 +175,7 @@ export default function SeasonalOffers() {
   }, []);
 
   return (
-    <section className="relative py-12 md:py-20 px-0 md:px-6 bg-transparent min-h-[60vh] md:min-h-[75vh] flex items-center justify-center overflow-hidden">
-
-      {/* Desktop: Floating Products — entrance animation only, NO constant bob */}
+    <section className="relative md:pt-14 pb-10 md:pb-10 px-0 md:px-6 bg-transparent min-h-[95vh] md:min-h-[100vh] flex justify-center overflow-visible">      {/* Desktop: Floating Products — entrance animation only, NO constant bob */}
       {!isMobile && (
         <div className="absolute inset-0 pointer-events-none z-0">
           {mediaItems.map((item, index) => (
