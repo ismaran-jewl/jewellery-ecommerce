@@ -4,6 +4,7 @@
 import { Link as LinkIcon, Sparkles, QrCode, Download } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { useMemo, Suspense, useState, useEffect } from "react";
+import { GLOBAL_CONFIG } from "@/config/global";
 
 export default function QRCodeContent({ url, type }) {
   const [mounted, setMounted] = useState(false);
@@ -13,7 +14,7 @@ export default function QRCodeContent({ url, type }) {
   }, []);
 
   const qrValue = useMemo(() => {
-    if (!mounted) return "https://ismarn.com";
+    if (!mounted) return GLOBAL_CONFIG.fallbackUrl;
     const baseUrl = window.location.origin;
     return `${baseUrl}/public-message?url=${encodeURIComponent(url)}&type=${type}`;
   }, [mounted, url, type]);
@@ -43,7 +44,7 @@ export default function QRCodeContent({ url, type }) {
     ctx.fillRect(0, 0, imgW, headerH);
 
     const logoImg = new Image();
-    logoImg.src = "/images/logo.jpg";
+    logoImg.src = GLOBAL_CONFIG.qrCodeLogo;
     logoImg.onload = () => {
       // 3. FIX: Draw Logo Watermark in Header with 1:1 Ratio (No Stretching)
       const logoSize = headerH * 0.8; // Make logo 80% of header height
@@ -106,7 +107,7 @@ export default function QRCodeContent({ url, type }) {
       <div className="bg-white rounded-[2.5rem] overflow-hidden max-w-[420px] w-full shadow-2xl">
         {/* UI Display */}
         <div className="bg-[#1B4D3E] pt-10 pb-20 text-center relative flex flex-col items-center">
-           <img src="/images/logo.jpg" className="absolute opacity-10 h-full w-auto aspect-square object-contain" alt="" />
+           <img src={GLOBAL_CONFIG.qrCodeLogo} className="absolute opacity-10 h-full w-auto aspect-square object-contain" alt="" />
            <div className="relative z-10 text-[#D4AF37] text-[10px] tracking-widest font-bold mb-2">ISMARN JEWELLERY</div>
            <h1 className="relative z-10 text-white text-4xl font-serif">Your Memory</h1>
         </div>
@@ -119,7 +120,7 @@ export default function QRCodeContent({ url, type }) {
               size={1024}
               level="H"
               fgColor="#1B4D3E"
-              imageSettings={{ src: "/images/logo.jpg", height: 200, width: 200, excavate: true }}
+              imageSettings={{ src: GLOBAL_CONFIG.qrCodeLogo, height: 200, width: 200, excavate: true }}
               style={{ width: "100%", height: "100%" }}
             />
           </div>

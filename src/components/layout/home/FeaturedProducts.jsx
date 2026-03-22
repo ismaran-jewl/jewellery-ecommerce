@@ -8,6 +8,7 @@ import { Loader2, ShoppingCart, ArrowRight, Check } from "lucide-react";
 import { useCart } from "@/hooks/useCart";
 import { apiUrl } from "@/lib/fetcher";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { FEATURED_PRODUCTS_FALLBACK } from "@/config/home";
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState([]);
@@ -36,11 +37,7 @@ export default function FeaturedProducts() {
       }
 
       // Fallback
-      setProducts([
-        { id: 1, name: "Peach Sapphire Solitaire", price: "1,20,000", image: "https://i.pinimg.com/1200x/11/40/f9/1140f9933b0c265cd646744b5c00ac18.jpg" },
-        { id: 2, name: "Rose Gold Temple Set", price: "85,000", image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338" },
-        { id: 3, name: "Blush Emerald Drops", price: "60,000", image: "https://images.unsplash.com/photo-1635767791022-343cb72909c4" },
-      ]);
+      setProducts(FEATURED_PRODUCTS_FALLBACK);
       setLoading(false);
     };
     fetchData();

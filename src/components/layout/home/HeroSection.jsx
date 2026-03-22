@@ -7,14 +7,9 @@ import { siteConfig } from "@/config/seo";
 import { useSiteContent } from "@/hooks/useSiteContent";
 import { getImageUrl } from "@/lib/utils";
 
-const QR_LINK = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${siteConfig.url}`;
-const WAVE_BARS = [8, 18, 24, 14, 20, 10, 22, 16];
+import { HERO_DEFAULT_SLIDES, HERO_WAVE_BARS, HERO_FLOATING_CARDS_DEFAULT, HERO_TICKER_ITEMS_DEFAULT } from "@/config/home";
 
-const DEFAULT_SLIDES = [
-  { id: 1, title: "The Diamond Solitaire", sub: "A promise that lasts forever.", img: "https://images.unsplash.com/photo-1598560912005-59a09551e474?auto=format&fit=crop&w=1920&q=80" },
-  { id: 2, title: "Golden Hour Charms", sub: "24k Craftsmanship in every link.", img: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1920&q=80" },
-  { id: 3, title: "Midnight Gold Edition", sub: "Where luxury meets the dark.", img: "https://images.unsplash.com/photo-1573408302354-010549b15295?auto=format&fit=crop&w=1920&q=80" },
-];
+const QR_LINK = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${siteConfig.url}`;
 
 export default function HeroSection() {
   const [mounted, setMounted] = useState(false);
@@ -32,13 +27,13 @@ export default function HeroSection() {
     // 2. If no slides list, but user set a global Media URL (imageUrl), use it as the first slide
     if (cms?.imageUrl) {
       return [
-        { id: 'custom-main', title: cms.title || DEFAULT_SLIDES[0].title, sub: cms.subtitle || DEFAULT_SLIDES[0].sub, img: cms.imageUrl },
-        ...DEFAULT_SLIDES.slice(1)
+        { id: 'custom-main', title: cms.title || HERO_DEFAULT_SLIDES[0].title, sub: cms.subtitle || HERO_DEFAULT_SLIDES[0].sub, img: cms.imageUrl },
+        ...HERO_DEFAULT_SLIDES.slice(1)
       ];
     }
 
     // 3. Fallback to default unsplash slides
-    return DEFAULT_SLIDES;
+    return HERO_DEFAULT_SLIDES;
   }, [cms]);
 
   const slidesLength = slides.length;
@@ -74,21 +69,9 @@ export default function HeroSection() {
   const displayBtnLink = cms?.buttonLink || "/shop";
   const displayAccent = cms?.metadata?.accent || "Luxury Voice Gifting";
   
-  const floating = cms?.metadata?.floatingCards || {
-    qrText: "Scan to hear",
-    audioId: "Audio ID: 882",
-    ratingCount: "9k+ Happy Voices",
-    ratingLabel: "100% Artisan Crafted"
-  };
+  const floating = cms?.metadata?.floatingCards || HERO_FLOATING_CARDS_DEFAULT;
 
-  const tickerItems = cms?.metadata?.ticker || [
-    "Free Gift Wrapping",
-    "Voice Notes Included",
-    "QR Code Enabled",
-    "Luxury Box Included",
-    "BIS Hallmarked Gold",
-    "Insured Shipping"
-  ];
+  const tickerItems = cms?.metadata?.ticker || HERO_TICKER_ITEMS_DEFAULT;
 
   return (
     <>
@@ -241,7 +224,7 @@ export default function HeroSection() {
                     </span>
                   </div>
                   <div className="flex items-center gap-[3px]" style={{ height: 18 }}>
-                    {WAVE_BARS.map((h, i) => (
+                    {HERO_WAVE_BARS.map((h, i) => (
                       <div
                         key={i}
                         className="w-[3px] rounded-sm flex-shrink-0"

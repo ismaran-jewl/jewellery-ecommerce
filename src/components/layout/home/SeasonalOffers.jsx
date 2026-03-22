@@ -11,6 +11,7 @@ import { ArrowRight, Sparkles, Clock, ShoppingBag, X, Star } from "lucide-react"
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { SEASONAL_OFFERS_FALLBACK } from "@/config/home";
 
 /* ============================= */
 /* HORIZONTAL SCROLL COMPONENT  */
@@ -149,16 +150,7 @@ export default function SeasonalOffers() {
           })));
         } else {
           // Fallback if no db products
-          const backupItems = [
-            { type: "image", src: "/images/product1.jpg", label: "New Arrival", id: 1 },
-            { type: "video", src: "/videos/product1.mp4", label: "Live Demo", id: 2 },
-            { type: "image", src: "/images/product2.jpg", label: "Limited Edition", id: 3 },
-            { type: "image", src: "/images/product3.jpg", label: "Organic", id: 4 },
-            { type: "video", src: "/videos/product2.mp4", label: "BTS", id: 5 },
-            { type: "image", src: "/images/product4.jpg", label: "Best Seller", id: 6 },
-            { type: "image", src: "/images/product5.jpg", label: "Trending", id: 7 },
-            { type: "video", src: "/videos/product3.mp4", label: "Collection", id: 8 },
-          ];
+          const backupItems = SEASONAL_OFFERS_FALLBACK;
           setMediaItems(backupItems.map((item, i) => ({
             ...item,
             top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,

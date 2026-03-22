@@ -2,8 +2,8 @@
 
 import { motion } from "framer-motion";
 import { Sparkles, ArrowRight } from "lucide-react";
-import Link from "next/link";
 import { getImageUrl } from "@/lib/utils";
+import { SHOP_AD_BANNER } from "@/config/shop";
 
 export default function AdBanner() {
     return (
@@ -22,7 +22,7 @@ export default function AdBanner() {
                     playsInline
                     className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-[3s] ease-out"
                 >
-                    <source src="/videos/hero.mp4" type="video/mp4" />
+                    <source src={SHOP_AD_BANNER.videoSrc} type="video/mp4" />
                 </video>
                 
                 {/* Advanced Glassmorphism Overlays */}
@@ -99,7 +99,7 @@ export default function AdBanner() {
                     >
                         <div className="w-full h-full rounded-2xl overflow-hidden bg-stone-100 relative group/img">
                             <img
-                                src="/images/product1.jpg"
+                                src={SHOP_AD_BANNER.imageSrc}
                                 alt="Promotion"
                                 className="w-full h-full object-cover grayscale-[0.2] transition-all duration-700 group-hover/img:scale-110 group-hover/img:grayscale-0"
                             />

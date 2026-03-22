@@ -27,6 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
 import { useCart } from "@/hooks/useCart";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { NAVBAR_DROPDOWN_IMAGES } from "@/config/layout";
 
 const menuVariants = {
   open: {
@@ -246,7 +247,7 @@ export default function Navbar({ onMenuClick }) {
                             </motion.div>
 
                             <motion.div variants={itemVariants} className="flex flex-col justify-end rounded-lg bg-gradient-to-b from-[#FFDAB9]/30 to-[#D1F2EB]/30 p-5 no-underline outline-none focus:shadow-md relative overflow-hidden group">
-                              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                              <div className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url('${NAVBAR_DROPDOWN_IMAGES.bestSellers}')` }}></div>
                               <div className="relative z-10">
                                 <div className="mb-2 mt-4 text-lg font-medium text-[#1B4D3E]">
                                   Best Sellers
@@ -292,7 +293,7 @@ export default function Navbar({ onMenuClick }) {
                               </div>
                             </motion.div>
                             <motion.div variants={itemVariants} className="flex flex-col justify-end rounded-lg bg-gradient-to-b from-[#FFDAB9]/30 to-[#D1F2EB]/30 p-5 no-underline outline-none focus:shadow-md relative overflow-hidden group">
-                              <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1611652022417-a55339f9b169?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500"></div>
+                              <div className="absolute inset-0 bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity duration-500" style={{ backgroundImage: `url('${NAVBAR_DROPDOWN_IMAGES.gifts}')` }}></div>
                               <div className="relative z-10">
                                 <div className="mb-2 mt-4 text-lg font-medium text-[#1B4D3E]">
                                   Personalized Gifts
@@ -459,7 +460,7 @@ export default function Navbar({ onMenuClick }) {
             variants={menuVariants}
           >
             {/* Decorative Background */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" />
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url('${NAVBAR_DROPDOWN_IMAGES.stardust}')` }} />
 
             <div className="flex-1 p-6 space-y-1 relative z-10">
               <motion.div variants={itemVariants}>

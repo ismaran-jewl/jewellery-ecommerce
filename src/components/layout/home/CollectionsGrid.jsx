@@ -5,27 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight } from "lucide-react";
 import { useRef } from "react";
 import Link from "next/link";
-
-const collections = [
-  {
-    name: "Modern Minimalist",
-    desc: "Everyday luxury for the office",
-    image: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=800",
-    size: "col-span-1 md:col-span-1 h-[240px] md:h-[500px]"
-  },
-  {
-    name: "The Bridal Suite",
-    desc: "Timeless pieces for your big day",
-    image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800",
-    size: "col-span-1 md:col-span-2 h-[300px] md:h-[500px]"
-  },
-  {
-    name: "Royal Heritage",
-    desc: "Inspired by ancient craftsmanship",
-    image: "https://i.pinimg.com/736x/28/26/f3/2826f32d2e67a1baf351356d800fd049.jpg",
-    size: "col-span-2 md:col-span-3 h-[250px] md:h-[500px]"
-  },
-];
+import { HOME_COLLECTIONS as collections } from "@/config/home";
 
 export default function CollectionsGrid() {
   const containerRef = useRef(null);

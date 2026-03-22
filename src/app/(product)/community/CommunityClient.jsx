@@ -5,27 +5,7 @@ import { ArrowLeft, Instagram, Camera } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-const stories = [
-  {
-    id: 1,
-    img: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=400&auto=format&fit=crop",
-    name: "Sarah & James",
-    text: `"We'll never forget the day he proposed."`
-  },
-  {
-    id: 2,
-    img: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400&auto=format&fit=crop",
-    name: "The Graduation",
-    text: `"A gift from my parents to celebrate a new chapter."`
-  },
-  {
-    id: 3,
-    img: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=400&auto=format&fit=crop",
-    name: "Anniversary",
-    text: `"Ten years of love, captured in one timeless piece."`
-  },
-];
-
+import { COMMUNITY_STORIES } from "@/config/product";
 export default function CommunityClient() {
   return (
     <div className="relative pb-24">
@@ -91,7 +71,7 @@ export default function CommunityClient() {
           transition={{ delay: 0.3 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
         >
-          {stories.map((story, idx) => (
+          {COMMUNITY_STORIES.map((story, idx) => (
              <motion.div
                key={story.id}
                initial={{ opacity: 0, scale: 0.9 }}

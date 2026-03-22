@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Tag, Ruler } from "lucide-react";
 import CategoryIcon from "./CategoryIcon";
+import { SHOP_HERO_VIDEO } from "@/config/shop";
 
 export default function HeroBanner() {
     return (
@@ -12,8 +13,8 @@ export default function HeroBanner() {
                 muted
                 playsInline
                 className="absolute inset-0 w-full h-full object-cover z-0"
-                src="https://videos.pexels.com/video-files/3254013/3254013-hd.mp4"
-                poster="https://images.pexels.com/photos/1689731/pexels-photo-1689731.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+                src={SHOP_HERO_VIDEO.src}
+                poster={SHOP_HERO_VIDEO.poster}
             />
             {/* Overlay */}
             <div className="absolute inset-0 bg-black/60 z-0" />

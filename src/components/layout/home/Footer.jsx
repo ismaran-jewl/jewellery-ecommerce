@@ -6,47 +6,13 @@ import { Instagram, Facebook, Twitter, ArrowRight, Mail, Phone, Linkedin, Youtub
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { FOOTER_SOCIAL_LINKS as SOCIAL_LINKS } from "@/config/layout";
 
 // ─── Theme tokens ─────────────────────────────────────────────────────────────
 const peach = "#E8835A";
 const peachLight = "#F2A882";
 const mint = "#5ABFA0";
 const mintLight = "#82D4BC";
-
-// ─── ✏️  SOCIAL LINKS — edit your URLs here ───────────────────────────────────
-const SOCIAL_LINKS = [
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/ismarn.jewels?igsh=amkyeTRydW45bHo4/",   // ← replace
-    icon: Instagram,
-    color: peach,
-  },
-  {
-    label: "Facebook",
-    href: "https://www.facebook.com/profile.php?id=61588464684790",       // ← replace
-    icon: Facebook,
-    color: mint,
-  },
-  {
-    label: "Twitter / X",
-    href: "https://x.com/IsmarnJewls",      // ← replace
-    icon: Twitter,
-    color: peach,
-  },
-  {
-    label: "LinkedIn",
-    href: "https://linkedin.com/in/YOUR_PROFILE", // ← replace
-    icon: Linkedin,
-    color: mint,
-  },
-  {
-    label: "YouTube",
-    href: "https://www.youtube.com/channel/UC_chCgchWVkX8fk8egjdRdQ",    // ← replace
-    icon: Youtube,
-    color: peach,
-  },
-];
-// ─────────────────────────────────────────────────────────────────────────────
 
 // ─── Big glowing drifting orb ─────────────────────────────────────────────────
 function GlowOrb({ x, y, size, colorFrom, colorTo, duration, delay }) {
