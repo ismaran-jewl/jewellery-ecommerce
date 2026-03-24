@@ -26,11 +26,17 @@ export default function Sidebar() {
       fetch("/api/products/filters")
         .then(res => res.json())
         .then(data => {
-          setFilterOptions(data);
+          if (data.error) {
+            console.error(data.error);
+            setFilterOptions({ categories: [], types: [], materials: [], genders: [] });
+          } else {
+            setFilterOptions(data);
+          }
           setLoading(false);
         })
         .catch(err => {
           console.error("Failed to fetch filters", err);
+          setFilterOptions({ categories: [], types: [], materials: [], genders: [] });
           setLoading(false);
         });
     }

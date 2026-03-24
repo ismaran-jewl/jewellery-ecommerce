@@ -160,10 +160,13 @@ export default function FeaturedProducts() {
             const gridClasses = isFeatured
               ? "col-span-2 md:col-span-2 md:row-span-2"
               : "col-span-1 md:col-span-1 md:row-span-1";
+            
+            const productId = product._id || product.id;
+            const linkHref = String(productId).length < 5 ? "/shop" : `/product/${productId}`;
 
             return (
               <motion.div
-                key={product._id || product.id}
+                key={productId}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -171,7 +174,7 @@ export default function FeaturedProducts() {
                 className={`group relative rounded-[2rem] overflow-hidden ${gridClasses}`}
               >
                 <div className="absolute inset-0 bg-stone-100">
-                  <Link href={`/product/${product._id || product.id}`} className="block w-full h-full">
+                  <Link href={linkHref} className="block w-full h-full">
                     <img
                       src={product.image || product.images?.[0] || product.imageUrl}
                       alt={product.name}
@@ -193,7 +196,7 @@ export default function FeaturedProducts() {
                             <span className="text-[10px] font-bold uppercase tracking-widest text-[#FFD4C2]">Featured</span>
                           </div>
                         )}
-                        <Link href={`/product/${product._id || product.id}`}>
+                        <Link href={linkHref}>
                           <h3 className={`font-serif ${isFeatured ? "text-2xl md:text-4xl" : "text-xl md:text-2xl"} leading-none mb-1 truncate hover:text-[#FFD4C2] transition-colors`}>
                             {product.name}
                           </h3>

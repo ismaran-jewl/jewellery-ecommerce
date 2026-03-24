@@ -84,7 +84,7 @@ export default function Filters({
 }
 
 function FilterGroup({ label, options, activeValues, onToggle }) {
-    if (!options || options.length === 0) return null;
+    if (!options || options?.length === 0) return null;
 
     return (
         <div className="space-y-4">
