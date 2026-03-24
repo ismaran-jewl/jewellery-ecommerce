@@ -31,7 +31,7 @@ export default function HomePage() {
     <div
       className="relative overflow-hidden"
       style={{
-        background: "linear-gradient(160deg, #FFF8E7 0%, #FEEECC 35%, #FDE6B0 65%, #FFF8E7 100%)",
+        background: "linear-gradient(160deg, #FFF3EB 0%, #FDE4D6 35%, #FCCCB6 65%, #FFF3EB 100%)",
       }}
     >
       <Navbar />
