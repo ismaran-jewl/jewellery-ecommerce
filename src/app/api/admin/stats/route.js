@@ -6,6 +6,8 @@ import Order from "@/models/Order";
 import Product from "@/models/Product";
 import User from "@/models/User";
 
+export const dynamic = "force-dynamic";
+
 function isAdmin(session) {
   return session?.user?.role === "admin";
 }

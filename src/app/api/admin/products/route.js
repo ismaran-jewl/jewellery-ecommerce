@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const session = await auth();

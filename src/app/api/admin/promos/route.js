@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import connectDB from "@/lib/mongodb";
 import Promo from "@/models/Promo";
 
+export const dynamic = "force-dynamic";
+
 function isAdmin(session) {
   return session?.user?.role === "admin";
 }

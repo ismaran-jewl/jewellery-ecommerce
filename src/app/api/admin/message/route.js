@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import dbConnect from "@/lib/mongodb";
 import Message from "@/models/Message";
 
+export const dynamic = "force-dynamic";
+
 // GET all messages (admin only)
 export async function GET() {
   try {
