@@ -381,22 +381,33 @@ export default function SeasonalOffers() {
       try {
         const res = await fetch("/api/products?homepageSection=Seasonal&limit=11");
         const data = await res.json();
-        const raw = data?.products?.length > 0 ? data.products : SEASONAL_OFFERS_FALLBACK;
+        let raw = data?.products?.length > 0 ? data.products : SEASONAL_OFFERS_FALLBACK;
+        
+        let paddedRaw = [...raw];
+        while (paddedRaw.length < 11) {
+          paddedRaw.push(SEASONAL_OFFERS_FALLBACK[paddedRaw.length % SEASONAL_OFFERS_FALLBACK.length]);
+        }
+
         setMediaItems(
-          raw.map((p) => ({
+          paddedRaw.map((p) => ({
             ...p,
-            type: p.image?.endsWith(".mp4") ? "video" : "image",
-            src: p.image,
-            label: p.category,
+            type: (p.image || p.src)?.endsWith(".mp4") ? "video" : (p.type || "image"),
+            src: p.image || p.src,
+            label: p.category || p.label,
           }))
         );
       } catch {
+        let paddedFallback = [...SEASONAL_OFFERS_FALLBACK];
+        while (paddedFallback.length < 11) {
+          paddedFallback.push(SEASONAL_OFFERS_FALLBACK[paddedFallback.length % SEASONAL_OFFERS_FALLBACK.length]);
+        }
+
         setMediaItems(
-          SEASONAL_OFFERS_FALLBACK.map((p) => ({
+          paddedFallback.map((p) => ({
             ...p,
-            type: p.image?.endsWith(".mp4") ? "video" : "image",
-            src: p.image,
-            label: p.category,
+            type: (p.image || p.src)?.endsWith(".mp4") ? "video" : (p.type || "image"),
+            src: p.image || p.src,
+            label: p.category || p.label,
           }))
         );
       }
