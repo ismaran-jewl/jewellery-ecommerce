@@ -26,22 +26,23 @@ export const validateImageFile = (file) => {
  * @param {string} folder - Cloudinary folder name
  */
 export const uploadImage = async (fileData, folder = "jewellery") => {
-  try {
-    // If it's a File/Blob, we might need to convert it or handle it differently
-    // In Next.js API routes, we usually get a base64 or buffer
-    
+  const upload = async (timestamp) => {
     const options = {
       folder: folder,
       resource_type: "auto",
+      timestamp: timestamp || Math.floor(Date.now() / 1000),
     };
 
-    const result = await new Promise((resolve, reject) => {
+    return await new Promise((resolve, reject) => {
       cloudinary.uploader.upload(fileData, options, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       });
     });
+  };
 
+  try {
+    const result = await upload();
     return {
       success: true,
       url: result.secure_url,
@@ -51,6 +52,30 @@ export const uploadImage = async (fileData, folder = "jewellery") => {
       format: result.format,
     };
   } catch (error) {
+    // If the failure is due to a stale request (system clock out of sync)
+    if (error.message && (error.message.includes("Stale request") || error.message.includes("timestamp"))) {
+      console.warn("Detected clock drift. Attempting to sync with Cloudinary server time...");
+      try {
+        // Fetch current time from a reliable source (using Cloudinary's own response headers)
+        const timeRes = await fetch("https://res.cloudinary.com", { method: "HEAD" });
+        const serverDate = timeRes.headers.get("date");
+        if (serverDate) {
+          const serverTimestamp = Math.floor(new Date(serverDate).getTime() / 1000);
+          const result = await upload(serverTimestamp);
+          return {
+            success: true,
+            url: result.secure_url,
+            publicId: result.public_id,
+            width: result.width,
+            height: result.height,
+            format: result.format,
+          };
+        }
+      } catch (syncError) {
+        console.error("Clock sync failed:", syncError);
+      }
+    }
+
     console.error("Cloudinary upload error:", error);
     throw new Error(error.message || "Failed to upload image to Cloudinary");
   }

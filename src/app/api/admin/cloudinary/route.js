@@ -27,11 +27,48 @@ export async function POST(request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Try parsing as JSON first (for URL imports)
+    let contentType = request.headers.get("content-type") || "";
+    
+    if (contentType.includes("application/json")) {
+      let { url } = await request.json();
+      if (!url) return NextResponse.json({ error: "No URL provided" }, { status: 400 });
+      
+      // Phase 1: Robust URL Normalization & Resolution
+      let targetUrl = url.trim();
+
+      // 1.1 Handle Pinterest redirects & oEmbed (for pin pages)
+      if (targetUrl.includes("pinterest.com/pin/") || targetUrl.includes("pin.it/")) {
+        try {
+          const oRes = await fetch(`https://www.pinterest.com/oembed.json?url=${encodeURIComponent(targetUrl)}`);
+          if (oRes.ok) {
+            const oData = await oRes.json();
+            if (oData.thumbnail_url) {
+              targetUrl = oData.thumbnail_url;
+              // Upgrade to high-res if it's a pinimg link
+              if (targetUrl.includes("i.pinimg.com")) {
+                targetUrl = targetUrl.replace(/\/\d+x\//, "/originals/");
+              }
+            }
+          }
+        } catch (error) {
+          console.error("Pinterest resolution failed:", error);
+        }
+      }
+
+      // 1.2 Handle Google Drive (already normalized in getImageUrl, but ensuring it's direct for Cloudinary)
+      // Note: Cloudinary handles drive.google.com/thumbnail?id=... links well.
+
+      const result = await uploadImage(targetUrl);
+      return NextResponse.json(result);
+    }
+
+    // Otherwise handle as FormData (for file uploads)
     const formData = await request.formData();
     const file = formData.get("file");
     
     if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+      return NextResponse.json({ error: "No file or URL provided" }, { status: 400 });
     }
 
     const buffer = await file.arrayBuffer();

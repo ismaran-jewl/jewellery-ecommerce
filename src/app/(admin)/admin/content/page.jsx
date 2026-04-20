@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Save, Loader2, Image as ImageIcon, Layout, Box, Sparkles, Plus, Trash2, ListOrdered, Mic, Star, QrCode } from "lucide-react";
+import { Save, Loader2, RefreshCw, Upload, Image as ImageIcon, Layout, Box, Sparkles, Plus, Trash2, ListOrdered, Mic, Star, QrCode } from "lucide-react";
 import { apiUrl } from "@/lib/fetcher";
 import { getImageUrl } from "@/lib/utils";
 
@@ -16,10 +16,36 @@ const DEFAULT_DATA = { title: "", subtitle: "", buttonText: "", buttonLink: "", 
 
 const ContentForm = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdate, isSaving }) => {
   const [localData, setLocalData] = useState(data);
+  const [isImporting, setIsImporting] = useState(false);
 
   useEffect(() => { 
     setLocalData(data); 
   }, [data]);
+
+  const handleImport = async () => {
+    if (!localData.imageUrl || !localData.imageUrl.startsWith("http")) {
+      toast.error("Please enter a valid external link first");
+      return;
+    }
+    setIsImporting(true);
+    try {
+      const normalized = getImageUrl(localData.imageUrl);
+      const res = await fetch("/api/admin/cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: normalized }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLocalData({ ...localData, imageUrl: data.url });
+        toast.success("Media imported and saved to Cloudinary");
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Import failed");
+      }
+    } catch { toast.error("Network error"); }
+    finally { setIsImporting(false); }
+  };
 
   return (
     <Card className="border-stone-200/60 shadow-sm overflow-hidden bg-white">
@@ -82,9 +108,26 @@ const ContentForm = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdat
             <Input value={localData.buttonLink || ""} onChange={e => setLocalData({...localData, buttonLink: e.target.value})} placeholder="e.g. /shop" className="h-9 border-stone-200" />
           </div>
           <div className="space-y-1.5 md:col-span-1">
-            <Label className="text-[10px] uppercase tracking-widest font-black text-stone-400">Media URL</Label>
+            <div className="flex justify-between items-center mb-1">
+              <Label className="text-[10px] uppercase tracking-widest font-black text-stone-400">Media URL</Label>
+              {localData.imageUrl && localData.imageUrl.startsWith("http") && !localData.imageUrl.includes("cloudinary.com") && (
+                <button 
+                  onClick={handleImport}
+                  disabled={isImporting}
+                  className="text-[10px] font-black text-amber-600 hover:text-amber-700 flex items-center gap-1 uppercase"
+                >
+                  {isImporting ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <RefreshCw className="w-2.5 h-2.5" />}
+                  Save to Cloudinary
+                </button>
+              )}
+            </div>
             <div className="relative">
-              <Input value={localData.imageUrl || ""} onChange={e => setLocalData({...localData, imageUrl: e.target.value})} placeholder="Image or Video URL" className="h-9 pr-9 border-stone-200" />
+              <Input 
+                value={localData.imageUrl || ""} 
+                onChange={e => setLocalData({...localData, imageUrl: e.target.value})} 
+                placeholder="Unsplash, Drive, etc." 
+                className="h-9 pr-9 border-stone-200" 
+              />
               <ImageIcon className="absolute right-3 top-2.5 w-4 h-4 text-stone-300" />
             </div>
             {localData.imageUrl && (
@@ -92,7 +135,7 @@ const ContentForm = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdat
                 <div className="w-8 h-8 rounded border border-stone-100 overflow-hidden bg-stone-50">
                   <img src={getImageUrl(localData.imageUrl)} alt="Preview" className="w-full h-full object-cover" />
                 </div>
-                Quick Preview
+                Live Preview (Drive/Pinterest Supported). For Pin pages, use "Save to Cloudinary" above.
               </div>
             )}
           </div>
@@ -104,25 +147,58 @@ const ContentForm = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdat
 
 const HeroEditor = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdate, isSaving }) => {
   const [localData, setLocalData] = useState(data);
+  const [importingIdx, setImportingIdx] = useState(null);
+  const [uploadingSlideIdx, setUploadingSlideIdx] = useState(null);
+
+  const handleUploadSlide = async (idx, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingSlideIdx(idx);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/admin/cloudinary", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        updateSlide(idx, "img", data.url);
+        toast.success(`Slide ${idx + 1} image uploaded`);
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Upload failed");
+      }
+    } catch { toast.error("Network error"); }
+    finally { setUploadingSlideIdx(null); }
+  };
 
   useEffect(() => {
-    // Ensure nested structures exist
+    // Ensure nested structures exist and normalize slide fields
+    const metadata = data?.metadata || {};
+    const normalizedSlides = (metadata.slides || [
+      { id: 1, title: "The Diamond Solitaire", sub: "A promise that lasts forever.", img: "https://images.unsplash.com/photo-1598560912005-59a09551e474?auto=format&fit=crop&w=1920&q=80" },
+      { id: 2, title: "Golden Hour Charms", sub: "24k Craftsmanship in every link.", img: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1920&q=80" },
+    ]).map(s => ({ ...s, img: s.img || s.imageUrl || "" }));
+
     const initialData = {
       ...DEFAULT_DATA,
       ...data,
       metadata: {
         accent: "Luxury Voice Gifting",
-        slides: [
-          { id: 1, title: "The Diamond Solitaire", sub: "A promise that lasts forever.", img: "https://images.unsplash.com/photo-1598560912005-59a09551e474?auto=format&fit=crop&w=1920&q=80" },
-          { id: 2, title: "Golden Hour Charms", sub: "24k Craftsmanship in every link.", img: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&w=1920&q=80" },
-        ],
+        ...metadata,
+        slides: normalizedSlides,
         floatingCards: {
           qrText: "Scan to hear",
           audioId: "Audio ID: 882",
           ratingCount: "9k+ Happy Voices",
-          ratingLabel: "100% Artisan Crafted"
+          ratingLabel: "100% Artisan Crafted",
+          ...metadata.floatingCards
         },
-        ticker: [
+        ticker: metadata.ticker || [
           "Free Gift Wrapping",
           "Voice Notes Included",
           "QR Code Enabled",
@@ -130,7 +206,6 @@ const HeroEditor = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdate
           "BIS Hallmarked Gold",
           "Insured Shipping"
         ],
-        ...data?.metadata
       }
     };
     setLocalData(initialData);
@@ -140,6 +215,34 @@ const HeroEditor = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdate
     const newSlides = [...(localData.metadata?.slides || [])];
     newSlides[idx] = { ...newSlides[idx], [field]: value };
     setLocalData({ ...localData, metadata: { ...localData.metadata, slides: newSlides } });
+  };
+
+  const handleImportSlide = async (idx) => {
+    const slide = localData.metadata?.slides[idx];
+    if (!slide?.img || !slide.img.startsWith("http")) {
+      toast.error("Please enter a valid external image URL first");
+      return;
+    }
+
+    setImportingIdx(idx);
+    try {
+      const normalized = getImageUrl(slide.img);
+      const res = await fetch("/api/admin/cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: normalized }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        updateSlide(idx, "img", data.url);
+        toast.success(`Slide ${idx + 1} image saved to Cloudinary`);
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Import failed");
+      }
+    } catch { toast.error("Network error"); }
+    finally { setImportingIdx(null); }
   };
 
   const addSlide = () => {
@@ -284,21 +387,51 @@ const HeroEditor = ({ itemKey, title, description, data = DEFAULT_DATA, onUpdate
                     <Label className="text-[10px] font-bold text-stone-500">Overlay Title (Static Info)</Label>
                     <Input value={slide.title} onChange={e => updateSlide(idx, "title", e.target.value)} placeholder="Slide title" className="h-8 text-xs bg-white border-stone-200" />
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-bold text-stone-500">Image URL</Label>
-                    <Input value={slide.img} onChange={e => updateSlide(idx, "img", e.target.value)} placeholder="Unsplash or media URL" className="h-8 text-xs bg-white border-stone-200" />
+                   <div className="space-y-1.5">
+                    <div className="flex justify-between items-center mb-0.5">
+                       <Label className="text-[10px] font-bold text-stone-500">Image URL</Label>
+                       <div className="flex gap-2">
+                          <label className="cursor-pointer text-[9px] font-black text-stone-600 hover:text-stone-800 flex items-center gap-1 uppercase">
+                            {uploadingSlideIdx === idx ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <Upload className="w-2.5 h-2.5" />}
+                            Upload
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*" 
+                              onChange={(e) => handleUploadSlide(idx, e)} 
+                              disabled={uploadingSlideIdx === idx}
+                            />
+                          </label>
+                          {slide.img && slide.img.startsWith("http") && !slide.img.includes("cloudinary.com") && (
+                            <button 
+                              onClick={() => handleImportSlide(idx)}
+                              disabled={importingIdx === idx}
+                              className="text-[9px] font-black text-amber-600 hover:text-amber-700 flex items-center gap-1 uppercase"
+                            >
+                              {importingIdx === idx ? <Loader2 className="w-2.5 h-2.5 animate-spin" /> : <RefreshCw className="w-2.5 h-2.5" />}
+                              Save
+                            </button>
+                          )}
+                       </div>
+                    </div>
+                    <Input value={slide.img} onChange={e => updateSlide(idx, "img", e.target.value)} placeholder="Unsplash, Drive, Pinterest, etc." className="h-8 text-xs bg-white border-stone-200" />
                   </div>
                   <div className="md:col-span-3 space-y-1.5">
                     <Label className="text-[10px] font-bold text-stone-500">Overlay Subtitle</Label>
                     <Input value={slide.sub} onChange={e => updateSlide(idx, "sub", e.target.value)} placeholder="Slide description" className="h-8 text-xs bg-white border-stone-200" />
                   </div>
                   {/* Thumbnail Preview for Slides */}
-                  {slide.img && (
+                  {(slide.img || slide.imageUrl) && (
                     <div className="md:col-span-3 mt-2 flex items-center gap-3 p-2 rounded-lg bg-white border border-stone-100 w-fit">
                         <div className="w-16 h-10 rounded overflow-hidden bg-stone-50 shadow-inner">
-                            <img src={getImageUrl(slide.img)} alt="Slide Preview" className="w-full h-full object-cover" />
+                            <img 
+                                src={getImageUrl(slide.img || slide.imageUrl)} 
+                                alt="Slide Preview" 
+                                className="w-full h-full object-cover"
+                                onError={(e) => { e.target.src = "https://placehold.co/150x100/F5F5F4/A8A29E?text=Import+Required"; }}
+                            />
                         </div>
-                        <span className="text-[9px] font-bold text-stone-400 uppercase tracking-tighter">Live Image Preview</span>
+                        <span className="text-[9px] font-bold text-stone-400 uppercase tracking-tighter">Live Preview (Drive/Pinterest Supported)</span>
                     </div>
                   )}
                 </div>

@@ -61,6 +61,38 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handleImportFromUrl = async () => {
+    if (!formData.image || !formData.image.startsWith("http")) {
+      toast.error("Please enter a valid external image URL first");
+      return;
+    }
+
+    setImageUploading(true);
+    try {
+      // Normalize before importing to ensure we get the direct image asset
+      const normalizedUrl = getImageUrl(formData.image);
+      
+      const res = await fetch("/api/admin/cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: normalizedUrl }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setFormData(prev => ({ ...prev, image: data.url }));
+        toast.success("Image imported and saved to Cloudinary");
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "Import failed");
+      }
+    } catch (error) {
+      toast.error("Network error during import");
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
@@ -238,17 +270,30 @@ export default function AdminProductsPage() {
                   <div className="space-y-1">
                     <Label className="flex justify-between items-center">
                       <span>Image URL / Path</span>
-                      <label className={`text-[10px] font-bold uppercase cursor-pointer flex items-center gap-1 ${imageUploading ? "text-stone-400" : "text-stone-600 hover:text-stone-900"}`}>
-                        {imageUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
-                        {imageUploading ? "Uploading..." : "Upload to Cloudinary"}
-                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={imageUploading} />
-                      </label>
+                      <div className="flex gap-4">
+                        <label className={`text-[10px] font-bold uppercase cursor-pointer flex items-center gap-1 ${imageUploading ? "text-stone-400" : "text-stone-600 hover:text-stone-900"}`}>
+                          {imageUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                          {imageUploading ? "Uploading..." : "Upload File"}
+                          <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={imageUploading} />
+                        </label>
+                        {formData.image && formData.image.startsWith('http') && !formData.image.includes('cloudinary.com') && (
+                          <button 
+                            type="button"
+                            onClick={handleImportFromUrl}
+                            disabled={imageUploading}
+                            className={`text-[10px] font-bold uppercase flex items-center gap-1 ${imageUploading ? "text-stone-400" : "text-amber-600 hover:text-amber-700"}`}
+                          >
+                            <RefreshCw className={`w-3 h-3 ${imageUploading ? "animate-spin" : ""}`} />
+                            Save to Cloudinary
+                          </button>
+                        )}
+                      </div>
                     </Label>
                     <div className="relative">
                       <Input 
                         value={formData.image} 
                         onChange={e => setFormData({ ...formData, image: e.target.value })} 
-                        placeholder="e.g. https://res.cloudinary.com/..."
+                        placeholder="Unsplash, Drive, Pinterest, or Dropbox link"
                         className="pr-9"
                         required 
                       />
@@ -256,6 +301,7 @@ export default function AdminProductsPage() {
                         <ImageIcon className="w-4 h-4 text-stone-300" />
                       </div>
                     </div>
+                    <p className="text-[10px] text-stone-400 font-medium italic">Supports Drive, Pinterest, Dropbox, etc. For Pinterest Pin pages, use "Save to Cloudinary" to import the image.</p>
                   </div>
                   <div className="flex flex-col items-center justify-center p-2 border-2 border-dashed border-stone-100 rounded-lg bg-stone-50/50 min-h-[80px] group relative">
                     {formData.image ? (

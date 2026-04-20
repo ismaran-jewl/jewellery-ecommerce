@@ -6,13 +6,16 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { 
   Upload, Trash2, Copy, Search, Loader2, Image as ImageIcon, 
-  ExternalLink, Check, Grid, List, RefreshCw 
+  ExternalLink, Check, Grid, List, RefreshCw, Link as LinkIcon 
 } from "lucide-react";
+import { getImageUrl } from "@/lib/utils";
 
 export default function GalleryPage() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importUrl, setImportUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState("grid"); // grid or list
   const [copiedId, setCopiedId] = useState(null);
@@ -68,6 +71,36 @@ export default function GalleryPage() {
     }
   };
 
+  const handleImportFromUrl = async () => {
+    if (!importUrl || !importUrl.startsWith("http")) {
+      toast.error("Please enter a valid external image URL");
+      return;
+    }
+
+    setImporting(true);
+    try {
+      const normalized = getImageUrl(importUrl);
+      const res = await fetch("/api/admin/cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: normalized }),
+      });
+
+      if (res.ok) {
+        toast.success("Image imported and saved to gallery");
+        setImportUrl("");
+        fetchImages();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Import failed");
+      }
+    } catch (error) {
+      toast.error("Network error during import");
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const handleDelete = async (publicId) => {
     if (!confirm("Are you sure you want to delete this image? This cannot be undone.")) return;
 
@@ -101,29 +134,52 @@ export default function GalleryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
         <div>
           <h2 className="text-xl font-bold text-stone-800">Media Gallery</h2>
           <p className="text-sm text-stone-500">Manage and upload your product images</p>
         </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <label className={`
-            flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all
-            ${uploading ? "bg-stone-100 text-stone-400 cursor-not-allowed" : "bg-stone-800 text-white hover:bg-stone-900"}
-          `}>
-            {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-            {uploading ? "Uploading..." : "Upload Image"}
-            <input 
-              type="file" 
-              className="hidden" 
-              accept="image/*" 
-              onChange={handleUpload}
-              disabled={uploading}
-            />
-          </label>
-          <Button variant="outline" size="icon" onClick={fetchImages} disabled={loading}>
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-          </Button>
+        
+        <div className="flex flex-col md:flex-row items-center gap-3 w-full xl:w-auto">
+          {/* URL Import */}
+          <div className="flex gap-2 w-full md:w-80">
+            <div className="relative flex-1">
+              <LinkIcon className="absolute left-3 top-2.5 h-4 w-4 text-stone-400" />
+              <Input 
+                value={importUrl}
+                onChange={(e) => setImportUrl(e.target.value)}
+                placeholder="Paste Drive link or Pinterest Pin URL..." 
+                className="pl-9 h-10 border-stone-200" 
+              />
+            </div>
+            <Button 
+               onClick={handleImportFromUrl} 
+               disabled={importing || !importUrl}
+               className="bg-stone-100 hover:bg-stone-200 text-stone-800 border border-stone-200 shadow-none"
+            >
+              {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : "Import"}
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <label className={`
+              flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2 rounded-xl text-sm font-medium cursor-pointer transition-all h-10
+              ${uploading ? "bg-stone-100 text-stone-400 cursor-not-allowed" : "bg-stone-800 text-white hover:bg-stone-900 shadow-md shadow-stone-200"}
+            `}>
+              {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+              {uploading ? "Uploading..." : "Upload File"}
+              <input 
+                type="file" 
+                className="hidden" 
+                accept="image/*" 
+                onChange={handleUpload}
+                disabled={uploading}
+              />
+            </label>
+            <Button variant="outline" size="icon" onClick={fetchImages} disabled={loading} className="h-10 w-10 border-stone-200">
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </Button>
+          </div>
         </div>
       </div>
 
