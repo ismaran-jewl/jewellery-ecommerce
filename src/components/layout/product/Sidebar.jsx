@@ -4,7 +4,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Filters from "@/components/shop/Filters";
 
-const ALL_FILTER_KEYS = ["gender", "category", "type", "material"];
+const ALL_FILTER_KEYS = ["gender", "category", "type", "material", "maxPrice"];
 
 export default function Sidebar() {
   const router = useRouter();
@@ -49,15 +49,26 @@ export default function Sidebar() {
 
   const handleParamToggle = useCallback((key, value) => {
     const params = new URLSearchParams(searchParams.toString());
-    const current = getParamValues(key);
-    const exists = current.some(v => v.toLowerCase() === value.toLowerCase());
     
-    const next = exists 
-        ? current.filter(v => v.toLowerCase() !== value.toLowerCase()) 
-        : [...current, value];
+    // special handling for maxPrice to make it exclusive (radio behavior)
+    if (key === "maxPrice") {
+        const current = params.get(key);
+        if (current === value) {
+            params.delete(key);
+        } else {
+            params.set(key, value);
+        }
+    } else {
+        const current = getParamValues(key);
+        const exists = current.some(v => v.toLowerCase() === value.toLowerCase());
+        
+        const next = exists 
+            ? current.filter(v => v.toLowerCase() !== value.toLowerCase()) 
+            : [...current, value];
 
-    if (next.length) params.set(key, next.join(","));
-    else params.delete(key);
+        if (next.length) params.set(key, next.join(","));
+        else params.delete(key);
+    }
     
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   }, [searchParams, getParamValues, router, pathname]);

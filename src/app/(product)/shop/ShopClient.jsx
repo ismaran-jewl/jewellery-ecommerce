@@ -14,7 +14,7 @@ import ProductCard from "@/components/shop/ProductCard";
 import EmptyState from "@/components/shop/EmptyState";
 import AdBanner from "@/components/shop/AdBanner";
 
-const ALL_FILTER_KEYS = ["gender", "category", "type", "material"];
+const ALL_FILTER_KEYS = ["gender", "category", "type", "material", "maxPrice"];
 
 export default function ShopClient({ initialProducts, pagination, categories, types, materials }) {
     const searchParams = useSearchParams();

@@ -43,12 +43,12 @@ export function useCart() {
 
 	// ── DB helpers (fire-and-forget — local state is source of truth for UI) ──
 
-	const dbAdd = async (productId, quantity) => {
+	const dbAdd = async (productId, quantity, metadata = null) => {
 		try {
 			await fetch("/api/cart", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ productId, quantity }),
+				body: JSON.stringify({ productId, quantity, metadata }),
 			});
 		} catch {
 			// silently fail — local cart still works
@@ -87,18 +87,25 @@ export function useCart() {
 
 	// ── Public methods ────────────────────────────────────────
 
-	const addToCart = (product, quantity = 1) => {
-		const existingItem = cart.find((item) => item.id === product._id);
+	const addToCart = (product, quantity = 1, metadata = null) => {
+		// If metadata is provided, we treat this as a unique item (e.g. personalized)
+		const existingItem = !metadata ? cart.find((item) => item.id === product._id && !item.metadata) : null;
+		
 		let newCart;
 		if (existingItem) {
 			newCart = cart.map((item) =>
-				item.id === product._id ? { ...item, qty: item.qty + quantity } : item
+				item.id === product._id && !item.metadata ? { ...item, qty: item.qty + quantity } : item
 			);
 		} else {
-			newCart = [...cart, { id: product._id, qty: quantity }];
+			const newItem = { 
+				id: product._id, 
+				qty: quantity,
+				...(metadata && { metadata, uniqueId: Math.random().toString(36).substr(2, 9) })
+			};
+			newCart = [...cart, newItem];
 		}
 		saveCart(newCart);
-		dbAdd(product._id, quantity); // save to DB
+		dbAdd(product._id, quantity, metadata); // save to DB
 		toast.success(`Added ${product.name} to cart`);
 	};
 

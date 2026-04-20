@@ -54,6 +54,13 @@ export default async function Page({ searchParams }) {
     filter.material = { $in: m.map(v => new RegExp(`^${v}$`, "i")) };
   }
 
+  if (sp.maxPrice) {
+    const price = parseFloat(sp.maxPrice);
+    if (!isNaN(price)) {
+      filter.price = { $lte: price };
+    }
+  }
+
   // Sorting
   const sort = {};
   if (sp.sort === "price-asc") sort.price = 1;

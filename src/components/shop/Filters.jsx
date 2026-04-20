@@ -36,6 +36,15 @@ export default function Filters({
             {/* Filter Groups */}
             <div className="flex flex-col gap-6">
                 <FilterGroup 
+                    label="Price Range" 
+                    options={["Under ₹499", "Under ₹999", "Up to ₹9999"]} 
+                    activeValues={activeFilters.maxPrice.map(v => v === "499" ? "Under ₹499" : v === "999" ? "Under ₹999" : v === "9999" ? "Up to ₹9999" : v)} 
+                    onToggle={(val) => {
+                        const priceId = val.includes("499") ? "499" : val.includes("9999") ? "9999" : "999";
+                        onToggle("maxPrice", priceId);
+                    }} 
+                />
+                <FilterGroup 
                     label="Jewellery Type" 
                     options={types} 
                     activeValues={activeFilters.type} 
@@ -72,7 +81,7 @@ export default function Filters({
                                 onClick={() => onToggle(key, val)}
                                 className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-full text-[11px] font-medium transition-colors border border-gray-100 group"
                             >
-                                {val}
+                                {key === "maxPrice" ? (val === "499" ? "Under ₹499" : val === "999" ? "Under ₹999" : "Up to ₹9999") : val}
                                 <X size={12} className="text-gray-400 group-hover:text-red-500 transition-colors" />
                             </button>
                         ))

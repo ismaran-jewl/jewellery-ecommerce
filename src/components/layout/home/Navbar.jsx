@@ -277,11 +277,11 @@ export default function Navbar({ onMenuClick }) {
                           >
                             <motion.div variants={itemVariants} className="flex flex-col space-y-5">
                               <div>
-                                <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">By Occasion</h4>
+                                <h4 className="font-serif text-lg font-medium text-[#1B4D3E] border-b border-[#1B4D3E]/10 pb-2">By Price</h4>
                                 <ul className="space-y-1 mt-2">
-                                  <li><NavigationMenuLink asChild><Link href="/shop?type=birthday" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Birthday Gifts</Link></NavigationMenuLink></li>
-                                  <li><NavigationMenuLink asChild><Link href="/shop?type=anniversary" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Anniversary Gifts</Link></NavigationMenuLink></li>
-                                  <li><NavigationMenuLink asChild><Link href="/shop?type=wedding" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Wedding Gifts</Link></NavigationMenuLink></li>
+                                  <li><NavigationMenuLink asChild><Link href="/shop?maxPrice=499" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Under ₹499</Link></NavigationMenuLink></li>
+                                  <li><NavigationMenuLink asChild><Link href="/shop?maxPrice=999" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Under ₹999</Link></NavigationMenuLink></li>
+                                  <li><NavigationMenuLink asChild><Link href="/shop?maxPrice=9999" className="block p-2 text-sm text-[#1B4D3E]/80 hover:text-[#1B4D3E] hover:bg-[#D1F2EB]/50 rounded-md transition-colors">Up to ₹9999</Link></NavigationMenuLink></li>
                                 </ul>
                               </div>
                               <div>
@@ -478,8 +478,9 @@ export default function Navbar({ onMenuClick }) {
               </motion.div>
               <motion.div variants={itemVariants}>
                 <MobileNavAccordion title="Gifts">
-                  <MobileNavLink href="/shop?type=birthday" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Birthday Gifts</MobileNavLink>
-                  <MobileNavLink href="/shop?type=anniversary" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Anniversary Gifts</MobileNavLink>
+                  <MobileNavLink href="/shop?maxPrice=499" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Under ₹499</MobileNavLink>
+                  <MobileNavLink href="/shop?maxPrice=999" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Under ₹999</MobileNavLink>
+                  <MobileNavLink href="/shop?maxPrice=9999" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Up to ₹9999</MobileNavLink>
                   <MobileNavLink href="/voice-gift/create" closeMenu={() => setIsMenuOpen(false)} className="border-none pl-8 text-base bg-transparent">Personalized Gifts</MobileNavLink>
                 </MobileNavAccordion>
               </motion.div>
