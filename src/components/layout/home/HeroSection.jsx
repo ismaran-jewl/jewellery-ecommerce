@@ -87,7 +87,7 @@ export default function HeroSection() {
       {/* ═══════════════════════════════════════════════════════ */}
       <section
         className="relative overflow-hidden"
-        style={{ minHeight: isMobile ? "60vh" : "60vh" }}
+        style={{ minHeight: isMobile ? "40vh" : "60vh" }}
       >
         {/* ── Background: Crossfading jewellery images ── */}
         {slides.map((slide, idx) => (
@@ -119,15 +119,15 @@ export default function HeroSection() {
         {/* ═══════════════════════════════════ */}
         {/* CONTENT LAYER                      */}
         {/* ═══════════════════════════════════ */}
-        <div className="relative z-10 h-full flex flex-col justify-between" style={{ minHeight: isMobile ? "50vh" : "50vh" }}>
+        <div className="relative z-10 h-full flex flex-col justify-between" style={{ minHeight: isMobile ? "40vh" : "50vh" }}>
 
           {/* ── Main Grid: Text + Accents ── */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 items-center px-6 md:px-16 lg:px-24 pt-12 md:pt-16">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 items-center px-6 md:px-16 lg:px-24 pt-4 md:pt-16">
 
             {/* LEFT — Brand Statement */}
             <div className="max-w-xl">
               {/* Accent */}
-              <div className="flex items-center gap-3 mb-6 md:mb-8">
+              <div className="flex items-center gap-3 mb-2 md:mb-8">
                 <div className="w-10 h-px" style={{ background: GOLD }} />
                 <span className="text-[11px] tracking-[3px] uppercase font-medium" style={{ color: GOLD }}>
                    {displayAccent}
@@ -136,35 +136,35 @@ export default function HeroSection() {
 
               {/* Headline */}
               <h1
-                className="leading-[1.05] mb-5 md:mb-6"
-                style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(38px, 5.5vw, 76px)", color: "#3D1F0D" }}
+                className="leading-[1.05] mb-2 md:mb-6"
+                style={{ fontFamily: "'Playfair Display', serif", fontSize: isMobile ? "clamp(24px, 7vw, 42px)" : "clamp(38px, 5.5vw, 76px)", color: "#3D1F0D" }}
                 dangerouslySetInnerHTML={{ __html: displayTitle.replace(/\n/g, '<br />') }}
               />
 
               {/* Sub */}
               <p
-                className="mb-8 md:mb-10 max-w-sm text-base md:text-lg leading-relaxed"
+                className="mb-4 md:mb-10 max-w-sm text-sm md:text-lg leading-relaxed"
                 style={{ fontFamily: "'Cormorant Garamond', serif", color: "#7A4528" }}
               >
                 {displaySub}
               </p>
 
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 mb-8 md:mb-0">
+              <div className="flex flex-wrap items-center gap-4 mb-4 md:mb-0">
                 <Link
                   href={displayBtnLink}
-                  className="px-8 md:px-10 py-3.5 md:py-4 font-semibold tracking-widest uppercase text-[11px] md:text-[12px] transition-all hover:-translate-y-0.5 hover:shadow-xl inline-block rounded-sm"
+                  className="px-6 md:px-10 py-2.5 md:py-4 font-semibold tracking-widest uppercase text-[10px] md:text-[12px] transition-all hover:-translate-y-0.5 hover:shadow-xl inline-block rounded-sm"
                   style={{ background: GOLD, color: "#fff", boxShadow: "0 8px 30px rgba(181,98,42,0.3)" }}
                 >
                   {displayBtnText}
                 </Link>
                 <Link
                   href="/seasonal-edit"
-                  className="group flex items-center gap-2 text-[11px] md:text-[12px] tracking-widest uppercase font-semibold transition-colors hover:text-[#B5622A]"
+                  className="group flex items-center gap-2 text-[10px] md:text-[12px] tracking-widest uppercase font-semibold transition-colors hover:text-[#B5622A]"
                   style={{ color: "#7A4528" }}
                 >
                   Seasonal Edit
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </div>
@@ -261,31 +261,24 @@ export default function HeroSection() {
 
           {/* ── Mobile: Current slide info + feature strip ── */}
           {isMobile && slides[current] && (
-            <div className="px-6 pb-4 z-20">
-              <div className="mb-4">
-                <p className="text-white/70 text-[9px] tracking-[3px] uppercase font-bold mb-1">Now Showing</p>
-                <h2 className="text-white text-2xl font-serif mb-0.5 drop-shadow-lg">{slides[current].title}</h2>
-                <p className="text-white/80 font-serif italic text-sm drop-shadow-md">{slides[current].sub}</p>
+            <div className="px-6 pb-2 z-20 flex items-end justify-between gap-4">
+              <div className="flex-1">
+                <p className="text-white/70 text-[8px] tracking-[3px] uppercase font-bold mb-0.5">Now Showing</p>
+                <h2 className="text-white text-xl font-serif mb-0 drop-shadow-lg leading-tight">{slides[current].title}</h2>
               </div>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl border border-white/60 flex flex-col items-center gap-1">
-                  <Mic size={12} style={{ color: GOLD }} />
-                  <span style={{ fontSize: 7, color: GOLD, fontWeight: 700, textTransform: "uppercase" }}>Voice Note</span>
+              <div className="flex gap-2 mb-1">
+                <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-lg border border-white/60 flex flex-col items-center">
+                  <Mic size={10} style={{ color: GOLD }} />
                 </div>
-                <div className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl border border-white/60 flex flex-col items-center gap-1">
-                  <Star size={12} style={{ color: GOLD }} />
-                  <span style={{ fontSize: 7, color: GOLD, fontWeight: 700, textTransform: "uppercase" }}>9k+ Reviews</span>
-                </div>
-                <div className="bg-white/80 backdrop-blur-md p-2.5 rounded-xl border border-white/60 flex flex-col items-center gap-1">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 11 23 16 16 16 16 8" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>
-                  <span style={{ fontSize: 7, color: GOLD, fontWeight: 700, textTransform: "uppercase" }}>24h Ship</span>
+                <div className="bg-white/80 backdrop-blur-md p-1.5 rounded-lg border border-white/60 flex flex-col items-center">
+                  <Star size={10} style={{ color: GOLD }} />
                 </div>
               </div>
             </div>
           )}
 
           {/* ── Bottom Bar: Navigation + Dots ── */}
-          <div className="relative z-20 flex items-center justify-between px-6 md:px-16 lg:px-24 pb-6 md:pb-10">
+          <div className="relative z-20 flex items-center justify-between px-6 md:px-16 lg:px-24 pb-4 md:pb-10">
             {/* Dots */}
             <div className="flex items-center gap-2">
               {slides.map((_, idx) => (
@@ -294,8 +287,8 @@ export default function HeroSection() {
                   onClick={() => setCurrent(idx)}
                   className="transition-all duration-500 rounded-full"
                   style={{
-                    width: current === idx ? 28 : 8,
-                    height: 4,
+                    width: current === idx ? (isMobile ? 16 : 28) : (isMobile ? 6 : 8),
+                    height: isMobile ? 3 : 4,
                     background: current === idx ? GOLD : "rgba(255,255,255,0.4)",
                   }}
                   aria-label={`Go to slide ${idx + 1}`}
@@ -307,17 +300,17 @@ export default function HeroSection() {
             <div className="flex items-center gap-2">
               <button
                 onClick={prev}
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/25 bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-stone-900 active:scale-95 transition-all duration-300"
+                className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border border-white/25 bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-stone-900 active:scale-95 transition-all duration-300"
                 aria-label="Previous slide"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-3 h-3 md:w-4 md:h-4" />
               </button>
               <button
                 onClick={next}
-                className="w-10 h-10 flex items-center justify-center rounded-full border border-white/25 bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-stone-900 active:scale-95 transition-all duration-300"
+                className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-full border border-white/25 bg-white/10 backdrop-blur-md text-white hover:bg-white hover:text-stone-900 active:scale-95 transition-all duration-300"
                 aria-label="Next slide"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
               </button>
             </div>
           </div>
