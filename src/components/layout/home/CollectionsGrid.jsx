@@ -18,7 +18,7 @@ export default function CollectionsGrid() {
 
   return (
     /* bg-transparent — background comes from the seamless canvas in page.jsx */
-    <section ref={containerRef} className="relative pt-4 pb-16 md:pt-8 md:pb-32 bg-transparent">
+    <section ref={containerRef} className="relative pt-4 pb-8 md:pt-6 md:pb-12 bg-transparent">
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
 

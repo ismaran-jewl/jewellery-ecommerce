@@ -177,7 +177,7 @@ export default function AliveExperienceSection() {
   const displaySub = cms?.description || "No one in the market does this. Every piece we craft carries a hidden NFC chip or laser-etched QR code — scan it and your personal voice, video, or message plays instantly. Forever.";
 
   return (
-    <section className="relative overflow-hidden py-24 md:py-36 bg-transparent">
+    <section className="relative overflow-hidden py-10 md:py-16 bg-transparent">
 
       {/* MAIN CONTENT (z-10) */}
       <div className="relative z-10 max-w-7xl mx-auto px-5 md:px-10">

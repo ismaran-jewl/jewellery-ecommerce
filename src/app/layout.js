@@ -5,6 +5,10 @@ import "@/app/globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+// ─────────────────────────────────────────────
+// Metadata
+// ─────────────────────────────────────────────
+
 export const metadata = {
   title: {
     default: "ISMARN Jewels | Luxury Handcrafted Memory Jewellery",
@@ -40,34 +44,49 @@ export const metadata = {
   },
 };
 
+// ─────────────────────────────────────────────
+// Root Layout
+// ─────────────────────────────────────────────
+
 export default function RootLayout({ children }) {
   const structuredData = generateStructuredData("organization");
 
   return (
     <html lang="en">
       <head>
+        {/* Charset & Viewport */}
         <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="#2D5A40" />
-        
-        {/* Structured Data */}
+
+        {/* Structured Data (SEO) */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
-        
-        {/* Fonts */}
+
+        {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#FFF8E7]" suppressHydrationWarning>
+
+      <body
+        className="min-h-screen flex flex-col bg-[#FFF8E7] antialiased"
+        suppressHydrationWarning
+      >
         <AuthProvider>
+          {/* Toast Notifications */}
           <Toaster />
-          <main className="flex-1">
+
+          {/* Page Content */}
+          <main className="flex-1 w-full max-w-screen overflow-x-hidden">
             {children}
           </main>
+
+          {/* Analytics */}
           <Analytics />
           <SpeedInsights />
         </AuthProvider>

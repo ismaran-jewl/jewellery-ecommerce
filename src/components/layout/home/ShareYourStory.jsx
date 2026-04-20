@@ -113,7 +113,7 @@ export default function ShareYourStory() {
     <section
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="relative py-20 lg:py-32 min-h-[auto] lg:min-h-[800px] bg-transparent overflow-hidden flex flex-col items-center justify-center"
+      className="relative py-10 lg:py-16 bg-transparent overflow-hidden flex flex-col items-center justify-center"
     >
       {/* Subtle warm glow — reduced scale animation */}
       <div
