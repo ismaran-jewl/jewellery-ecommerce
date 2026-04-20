@@ -42,7 +42,7 @@ const HorizontalScroll = ({ items, onItemClick }) => {
         {items.map((item, index) => (
           <motion.div
             key={item.id}
-            className="flex-shrink-0 w-[220px] snap-center"
+            className="flex-shrink-0 w-[160px] sm:w-[200px] snap-center"
             onClick={() => onItemClick(item)}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ const HorizontalScroll = ({ items, onItemClick }) => {
           >
             <div
               className="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer bg-gray-100 hover:shadow-2xl transition-shadow duration-300"
-              style={{ height: "280px" }}
+              style={{ height: "220px" }}
             >
               {item.type === "image" ? (
                 <img src={item.src} className="w-full h-full object-cover" alt="Product" />
@@ -143,9 +143,9 @@ export default function SeasonalOffers() {
           });
           setMediaItems(items.map((item, i) => ({
             ...item,
-            top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,
+            top: i < 4 ? 5 + Math.random() * 20 : 65 + Math.random() * 20,
             left: (i % 4) * 25 + Math.random() * 5,
-            size: 220 + Math.random() * 60,
+            size: 130 + Math.random() * 50,
             rotate: -8 + Math.random() * 16,
           })));
         } else {
@@ -153,9 +153,9 @@ export default function SeasonalOffers() {
           const backupItems = SEASONAL_OFFERS_FALLBACK;
           setMediaItems(backupItems.map((item, i) => ({
             ...item,
-            top: i < 4 ? 10 + Math.random() * 15 : 70 + Math.random() * 15,
+            top: i < 4 ? 5 + Math.random() * 20 : 65 + Math.random() * 20,
             left: (i % 4) * 25 + Math.random() * 5,
-            size: 220 + Math.random() * 60,
+            size: 130 + Math.random() * 50,
             rotate: -8 + Math.random() * 16,
           })));
         }
@@ -167,7 +167,8 @@ export default function SeasonalOffers() {
   }, []);
 
   return (
-    <section className="relative pt-6 md:pt-10 pb-8 md:pb-10 px-0 md:px-6 bg-transparent flex justify-center overflow-visible">      {/* Desktop: Floating Products — entrance animation only, NO constant bob */}
+    <section className="relative md:pt-14 pb-10 md:pb-10 px-0 md:px-6 bg-transparent min-h-[95vh] md:min-h-[100vh] flex justify-center overflow-visible">      {/* Desktop: Floating Products — entrance animation only, NO constant bob */}
+      {/* Desktop: Floating Products — entrance animation only, NO constant bob */}
       {!isMobile && (
         <div className="absolute inset-0 pointer-events-none z-0">
           {mediaItems.map((item, index) => (
