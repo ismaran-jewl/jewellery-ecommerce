@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Search, ShoppingBag, Heart, User, X, LayoutDashboard, LogOut, ShoppingCart, Menu, ChevronDown, ArrowRight, Instagram, Facebook, Twitter, Shield } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -166,8 +167,15 @@ export default function Navbar({ onMenuClick }) {
               </button>
 
               {/* Logo */}
-              <Link href="/" className={`text-2xl sm:text-3xl font-serif font-bold tracking-tight text-[#1B4D3E] hover:text-[#2d1a10] transition-colors ${isSearchOpen ? 'hidden sm:block' : ''}`}>
-                ISMARN
+              <Link href="/" className={`${isSearchOpen ? 'hidden sm:block' : ''}`}>
+                <Image 
+                  src="/images/logo-v2.jpg" 
+                  alt="ISMARN Jewels" 
+                  width={400} 
+                  height={100} 
+                  className="h-8 sm:h-10 w-auto object-contain"
+                  priority
+                />
               </Link>
             </div>
 

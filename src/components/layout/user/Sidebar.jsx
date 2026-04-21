@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
@@ -52,9 +53,15 @@ export default function Sidebar({ onClose }) {
     <div className="flex h-full w-full flex-col border-r bg-white px-3 py-4 shadow-sm">
 
       <div className="mb-6 px-4">
-        <span className="text-2xl font-black text-[#1B4D3E]">
-          ISMARN
-        </span>
+        <Link href="/">
+          <Image 
+            src="/images/logo-v2.jpg" 
+            alt="ISMARN Jewels" 
+            width={120} 
+            height={40} 
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
       </div>
 
       {/* Clickable User Card */}

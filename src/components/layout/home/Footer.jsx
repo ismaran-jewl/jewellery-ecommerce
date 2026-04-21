@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Instagram, Facebook, Twitter, ArrowRight, Mail, Phone, Linkedin, Youtube } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -218,12 +219,16 @@ export default function EnhancedFooter() {
 
           {/* Brand — 4 cols */}
           <motion.div variants={itemVariants} className="lg:col-span-4 space-y-3">
-            <div className="group cursor-default">
-              <h2 className="text-2xl font-serif font-bold tracking-tight" style={{ color: peach }}>
-                ISMARN
-              </h2>
+            <div className="group cursor-default inline-block">
+              <Image 
+                src="/images/logo-v2.jpg" 
+                alt="ISMARN Jewels" 
+                width={150} 
+                height={40} 
+                className="h-10 w-auto object-contain"
+              />
               <div
-                className="h-0.5 w-0 group-hover:w-16 transition-all duration-500 ease-out"
+                className="h-0.5 w-0 group-hover:w-full transition-all duration-500 ease-out mt-1"
                 style={{ background: `linear-gradient(90deg, ${peach}, ${mint})` }}
               />
             </div>
